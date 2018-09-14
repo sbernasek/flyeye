@@ -9,7 +9,7 @@ FlyEye provides methods for analyzing and visualizing expression data measured *
 FlyEye Installation
 =========
 
-After downloading the [latest distribution](releases/download/v0.1.0/flyeye-0.1.0-beta.tar.gz), the simplest method is to install via ``pip``::
+After downloading the [latest distribution](https://github.com/sebastianbernasek/flyeye/archive/v0.1.0-beta.tar.gz), the simplest method is to install via ``pip``:
 
     pip install flyeye-0.1.0-beta.tar.gz
 
