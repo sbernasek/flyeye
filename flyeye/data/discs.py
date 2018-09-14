@@ -253,10 +253,14 @@ class Disc(Cells):
 
                 # append channel to list
                 data.extend([trend, residuals, flux_raw, flux])
-                columns.extend([ch+'_trend', ch+'_residuals', ch+'_flux_raw', ch+'_flux'])
+                columns.extend([ch+'_trend',
+                                ch+'_residuals',
+                                ch+'_flux_raw',
+                                ch+'_flux'])
 
             # append cells fluctuations dataframe to list
             data = np.array(data).T
+            data = data.reshape((len(cells.df.index), len(columns)))
             df = pd.DataFrame(data=data, index=cells.df.index, columns=columns)
             fluctuations.append(df)
 

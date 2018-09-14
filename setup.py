@@ -16,6 +16,7 @@ setup(
         "scipy >= 1.1.0",
         "pandas == 0.23.4",
         "matplotlib >= 2.0.0",
-        "astroML == 0.3"
+        "astroML == 0.3",
+        "astroML-addons == 0.2.2"
     ],
 )
