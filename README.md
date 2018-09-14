@@ -2,7 +2,7 @@
 FlyEye Overview
 ===========
 
-FlyEye provides methods for analyzing and visualizing expression data measured *in vivo* using the **FlyEye Silhouette** package for OSX. The initial release is limited to basic tools required to replicate [our study](https://github.com/sebastianbernasek/pnt_yan_ratio) of Pnt and Yan expression during retinal patterning in *Drosophila*.
+FlyEye provides methods for analyzing and visualizing expression data measured *in vivo* using the **FlyEye Silhouette** package for macOS. The initial release is limited to basic tools required to replicate [our study](https://github.com/sebastianbernasek/pnt_yan_ratio) of Pnt and Yan expression during retinal patterning in *Drosophila*.
 
 
 
