@@ -11,7 +11,7 @@ setup(
     url='https://github.com/sebastianbernasek/flyeye',
     license='MIT',
     description='Analysis package for FlyEye Silhouette data.',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[
         "scipy >= 1.1.0",
         "pandas == 0.23.4",
