@@ -14,11 +14,6 @@ warnings.filterwarnings(action="ignore",
                         module="scipy",
                         message="^internal gelsd")
 
-# filter scipy multidimensional indexing warning (fixed in scipy v1.2.0)
-warnings.filterwarnings(action="ignore",
-                        module="scipy",
-                        category=FutureWarning)
-
 
 def savgol(x, window_size=100, polyorder=1):
     """
@@ -39,7 +34,10 @@ def savgol(x, window_size=100, polyorder=1):
     window_size = int(window_size)
 
     # apply filter
-    trend = savgol_filter(x, window_length=window_size, polyorder=polyorder)
+    with warnings.catch_warnings():
+        # filter multidimensional indexing warning (fixed in scipy v1.2.0)
+        warnings.filterwarnings('ignore', category=FutureWarning)
+        trend = savgol_filter(x, window_size, polyorder=polyorder)
 
     return trend
 
