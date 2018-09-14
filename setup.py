@@ -2,7 +2,7 @@ from distutils.core import setup
 from setuptools import find_packages
 
 setup(
-    name='FlyEye',
+    name='flyeye',
     version='0.1.0',
     author='Sebastian Bernasek',
     author_email='sebastian@u.northwestern.com',
