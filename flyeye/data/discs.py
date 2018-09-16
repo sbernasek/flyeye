@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-from .silhouette import Silhouette
+from .silhouette import SilhouetteData
 from .image import ImageStack
 from .cells import Cells
 from ..dynamics.averages import detrend_signal
@@ -106,8 +106,8 @@ class Disc(Cells):
         disc (data.discs.Disc)
         """
 
-        # load silhouette file
-        silhouette = Silhouette(path, recompile=recompile)
+        # load silhouette file data
+        silhouette = SilhouetteData(path, recompile=recompile)
 
         # instantiate disc
         disc = Disc(df=silhouette.df,
@@ -127,7 +127,7 @@ class Disc(Cells):
         Returns:
         stack (data.image.ImageStack)
         """
-        return ImageStack(self.path)
+        return ImageStack.from_silhouette(self.path)
 
     def standardize_labels(self):
         """ Convert all alternate precursor labels to 'pre' """
@@ -241,7 +241,7 @@ class Disc(Cells):
                 if window_size > 3:
                     residuals, trend = detrend_signal(x, window_size, order)
                 else:
-                    trend = x.mean()
+                    trend = x.mean() * np.ones(x.size)
                     residuals = x - trend
 
                 # normalize residuals

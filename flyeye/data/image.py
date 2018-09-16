@@ -2,84 +2,150 @@ __author__ = 'Sebastian Bernasek'
 
 from os.path import join
 import matplotlib.pyplot as plt
-import scipy
+import matplotlib.image as mpimg
 import numpy as np
 from glob import glob
 from matplotlib import patches
-from scipy.ndimage import filters
+from scipy.ndimage import filters, rotate
+from scipy.ndimage import grey_closing, median_filter
 from copy import deepcopy
 
+from .silhouette import Silhouette
 
-class Image:
+
+class Smoothing:
     """
-    Object representing an 8-bit image.
+    Smoothing operation applied to images.
+
+    Default behavior entails three iterations of grey closing followed by a 3-pixel wide median filter.
 
     Attributes:
-    im (np.ndarray[uint8]) - 8-bit RGB pixel values. Array is shaped (X,Y,3).
-    crops (dict) - stored crop boundaries
+    niters (int) - number of grey closing iterations
+    size (int) - pixel size of median filter in XY dimensions
     """
 
-    def __init__(self, im,
-                 fliplr=True,
-                 rotation=0,
-                 default_crop=None):
+    def __init__(self, niters=3, size=3):
         """
-        Instantiate image.
+        Instantiate smoothing filter.
 
         Args:
-        im (np.ndarray[uint8]) - 8-bit RGB pixel values
-        fliplr (bool) - if True, flip about Y axis
-        rotation (float) - rotate image
-        default_crop (array like, length 4) - crop boundary supplied as fractions of each axis, eg (xmin, xmax, ymin, ymax) where values are on a 0 to 1 scale
+        niters (int) - number of grey closing iterations
+        size (int) - pixel size of median filter in XY dimensions
         """
+        self.niters = niters
+        self.size = size
 
-        # store image
-        self.im = im
-
-        # flip image about Y axis
-        if fliplr == True:
-            self.fliplr()
-
-        # rotate image
-        self.rotate(rotation)
-
-        # set default crop
-        if default_crop is not None:
-            xlow, xhigh, ylow, yhigh = default_crop
-            xmin, xmax, ymin, ymax = self.get_crop_indices(xlow=xlow, xhigh=xhigh, ylow=ylow, yhigh=yhigh)
-            self.im = self.im[ymin:ymax, xmin:xmax, :]
-
-        # instantiate crop library
-        self.crops = {}
-
-    def __getitem__(self, color):
-        """ Return scalar image of single color channel. """
-        return ScalarImage.from_8bit(self.im[:, :, 'rgb'.index(color)])
-
-    def save(fig, filename,
-             crop=None,
-             dpi=300,
-             fmt='png',
-             transparent=True):
+    def __call__(self, im):
         """
-        Save rendered image.
-        """
-        fig.savefig(filename, dpi=dpi, format=fmt, transparent=transparent)
-
-    @staticmethod
-    def from_tiff(path, **kwargs):
-        """
-        Load from ndimage readbale image file.
+        Apply smoothing to image.
 
         Args:
-        path (str) - image path
-        kwargs: keyword arguments for Image instantiation
+        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
 
         Returns:
-        im (data.image.Image)
+        im (np.ndarray(np.float32))
         """
-        im = scipy.ndimage.imread(path, flatten=False, mode='RGB')
-        return Image(im, **kwargs)
+        im = self.grey_closing(im, niters=self.niters)
+        im = self.median_filter(im, size=self.size)
+        return im
+
+    @staticmethod
+    def grey_closing(im, niters=3):
+        """
+        Apply grey closing operation to image.
+
+        Args:
+        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
+        niters (int) - number of grey closing iterations
+
+        Returns
+        im (np.ndarray(np.float32))
+        """
+
+        # get filter size
+        shape_to_size = {2: 3, 3: (3,3,1), 4: (1,3,3,1)}
+        filter_size = shape_to_size[len(im.shape)]
+
+        # apply grey closing
+        for _ in range(niters):
+            im = grey_closing(im, size=filter_size)
+
+        return im
+
+    @staticmethod
+    def median_filter(im, size=3):
+        """
+        Apply grey closing operation to image.
+
+        Args:
+        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
+        size (int) - pixel size of median filter in XY dimensions
+
+        Returns
+        im (np.ndarray(np.float32))
+        """
+
+        # get filter size
+        shape_to_size = {2: size, 3: (size,size,1), 4: (1,size,size,1)}
+        filter_size = shape_to_size[len(im.shape)]
+
+        return median_filter(im, size=filter_size)
+
+
+class ScalarField:
+    """
+    Object representing a floating-point 2D scalar field that can take on positive or negative values.
+
+    Attributes:
+    im (np.ndarray[float32]) - scalar values, (X,Y)
+    fig (matplotlib.figure.Figure) - image rendering
+    """
+
+    def __init__(self, im):
+        """
+        Instantiate scalar field.
+
+        Args:
+        im (np.ndarray[float32]) - scalar values, (X,Y)
+        """
+        self.im = im
+        self.fig = None
+
+    def __add__(self, image):
+        """ Return pixelwise sum. """
+        return ScalarField(self.im+image.im)
+
+    def __sub__(self, image):
+        """ Return pixelwise difference. """
+        return ScalarField(self.im-image.im)
+
+    def __mul__(self, image):
+        """ Return pixelwise product. """
+        return ScalarField(self.im*image.im)
+
+    def __truediv__(self, image):
+        """ Return pixelwise ratio. """
+        with np.errstate(divide='ignore'):
+            im = np.log2(self.im/image.im)
+        return ScalarField(im)
+
+    @staticmethod
+    def from_8bit(im):
+        """ Instantiate from 8-bit image. """
+        return ScalarField(im.astype(np.float64) / 255)
+
+    @staticmethod
+    def uint8_to_float32(im_uint8):
+        """
+        Convert 8-bit array to floating point values on a 0-1 interval.
+
+        Args:
+        im_uint8 (np.ndarray[uint8])
+
+        Returns:
+        im_float32 (np.ndarray[float32])
+        """
+        return im_uint8.astype(np.float64) / 255
 
     @staticmethod
     def _fliplr(im):
@@ -92,11 +158,11 @@ class Image:
 
     @staticmethod
     def _rotate(im, angle=0):
-        """ Roatate image array. """
-        return scipy.ndimage.rotate(im, angle)
+        """ Rotate image array. """
+        return rotate(im, angle)
 
     def rotate(self, angle):
-        """ Roatate image. """
+        """ Apply rotation to image. """
         self.im = self._rotate(self.im, angle=angle)
 
     @staticmethod
@@ -111,194 +177,30 @@ class Image:
         """ Compute image index boundaries from fractional bounds. """
         return self._get_crop_indices(self.im, **kwargs)
 
-    def add_crop(self, name='crop', **kwargs):
-        """ Add named crop. """
-        xmin, xmax, ymin, ymax = self.get_crop_indices(**kwargs)
-
-        self.crops[name] = {'bounds': (xmin, xmax, ymin, ymax),
-                           'image': self.im[ymin:ymax, xmin:xmax, :]}
-
-    def build_colorfilter(self, scheme='rgb', channels='rgb', reference='r'):
-        """ Build filter for converting between RGB and MG colorschemes. """
-
-        colorfilter = np.identity(3)
-
-        # MG schemes
-        if scheme == 'mg':
-
-            if reference == 'r':
-                # channel blue to red
-                colorfilter[0, 0] = 0
-                colorfilter[2, 0] = 1
-
-            else:
-                # channel red to blue
-                colorfilter[2, 2] = 0
-                colorfilter[0, 2] = 1
-
-            if 'm' not in channels:
-                colorfilter[2, 0] = 0
-                colorfilter[0, 2] = 0
-                colorfilter[2, 2] = 0
-                colorfilter[0, 0] = 0
-
-            if 'g' not in channels:
-                colorfilter[1, 1] = 0
-
-        # RGB schemes
-        else:
-            for i, c in enumerate(scheme):
-                if c not in channels:
-                    colorfilter[:, i] = 0
-
-        return colorfilter
-
-    @staticmethod
-    def _apply_colorfilter(im, colorfilter):
-        """ Apply colorfilter to image array. """
-        return np.dot(im, colorfilter).astype(np.uint8)
-
-    def add_rectangle(self, crop, ax,
-                      fill=False,
-                      linestyle='dashed',
-                      color='white',
-                      linewidth=3,
-                      **kwargs):
-        """ Add rectangular patch to axis. """
-        bounds = self.crops[crop]['bounds']
-        xmin, xmax, ymin, ymax = bounds
-        dx, dy = xmax-xmin, ymax-ymin
-        box = patches.Rectangle((xmin, ymin), dx, dy,
-                                fill=fill, linestyle=linestyle, linewidth=linewidth, color=color, **kwargs)
-        ax.add_patch(box)
-
-    @staticmethod
-    def _rescale(im, method='range', lbound=35, ubound=99., blur=0.0):
-        """ Rescale image colors for maximum contrast. """
-        im = deepcopy(im)
-        if method == 'range':
-            im_scaled = (im - im.min(axis=(0, 1)))/(im.max(axis=(0, 1))-im.min(axis=(0, 1)))
-
-        elif method == 'asymmetric':
-            im = filters.gaussian_filter(im, sigma=blur)
-            im[im==0] = 1e-10
-            log_im = np.log10(im)
-            lower, upper = np.percentile(log_im, q=(lbound, ubound))
-            log_im[log_im<lower] = lower
-            log_im[log_im>upper] = upper
-            with np.errstate(divide='ignore'):
-                im_scaled = (log_im-lower)/(upper-lower)
-
-        return im_scaled
-
-    def rescale(self, method='range', **kwargs):
-        """ Rescale image and all crops for maximum contrast. """
-        self.im = self._rescale(self.im, method=method, **kwargs) * 256
-        for crop, crop_dict in self.crops.items():
-            crop_dict['image'] = self._rescale(crop_dict['image'], method=method, **kwargs) * 256
-
-    @staticmethod
-    def _filter(im, f):
-        """ Apply function to an image array. """
-        if f is None:
-            return im
-        else:
-            return f(im)
-
-    def apply_filter(self, filter_func=None):
-        """ Apply filter to image and all crops. """
-        self.im = self._filter(self.im, filter_func) * 256
-        for crop, crop_dict in self.crops.items():
-            crop_dict['image'] = self._filter(crop_dict['image'], filter_func) * 256
-
-    def render(self,
-               crop=None,
-               ax=None,
-               rectangles=None,
-               rect_kwargs={},
-               scheme='rgb',
-               channels='rgb',
-               reference='r',
-               flipud=False,
-               size=(2, 2)):
+    def apply_filter(self, func):
         """
-        Render an image or one of its crops.
-        """
-
-        # get colorfilter
-        colorfilter = self.build_colorfilter(scheme=scheme, channels=channels, reference=reference)
-
-        # apply filter to selected crop
-        if crop is None:
-            im = self._apply_colorfilter(self.im, colorfilter)
-        else:
-            im = self._apply_colorfilter(self.crops[crop]['image'], colorfilter)
-
-        # create axes and render image
-        if ax is None:
-            fig, ax = plt.subplots(figsize=size)
-
-        # flip upside down
-        if flipud:
-            im = np.flipud(im)
-
-        ax.imshow(im)
-        ax.set_xticks([]), ax.set_yticks([])
-
-        # add rectangles
-        if rectangles is not None:
-            for rect_crop in rectangles:
-                self.add_rectangle(rect_crop, ax=ax, **rect_kwargs)
-
-        plt.tight_layout()
-        return ax
-
-
-class ScalarImage:
-    """
-    Object representing a floating-point scalar image.
-
-    Attributes:
-    im (np.ndarray[np.float64]) - pixel values. Array is shaped (X,Y).
-    fig (matplotlib.figure.Figure) - image rendering
-    """
-
-    def __init__(self, im):
-        """
-        Instantiate image.
+        Apply filter to image.
 
         Args:
-        im (np.ndarray[np.float64]) - 8-bit RGB pixel values
+        func (function) - function operating on image array
         """
-        self.im = im
-        self.fig = None
+        self.im = func(self.im)
 
-    @staticmethod
-    def from_8bit(im):
-        """ Instantiate from 8-bit image. """
-        return ScalarImage(im.astype(np.float64) / (2**8))
+    def smooth(self, **kwargs):
+        """
+        Smooth image.
 
-    def __add__(self, image):
-        """ Return pixelwise sum. """
-        return ScalarImage(self.im+image.im)
+        kwargs: keyword arguments for smoothing operation
+        """
 
-    def __sub__(self, image):
-        """ Return pixelwise difference. """
-        return ScalarImage(self.im-image.im)
+        # instantiate smoothing operation
+        smoothing = Smoothing(**kwargs)
 
-    def __mul__(self, image):
-        """ Return pixelwise product. """
-        return ScalarImage(self.im*image.im)
-
-    def __truediv__(self, image):
-        """ Return pixelwise ratio. """
-        with np.errstate(divide='ignore'):
-            im = np.log2(self.im/image.im)
-        return ScalarImage(im)
+        # apply smoothing operation
+        self.apply_filter(smoothing)
 
     def save(self, name,
              directory='./',
-             crop=None,
              dpi=300,
              fmt='png',
              transparent=True):
@@ -307,8 +209,7 @@ class ScalarImage:
 
         Args:
         name (str) - file name
-        diretory (str) - target directory
-        crop (str) - key for crop to be saved, if None save whole figure
+        directory (str) - target directory
         dpi (int) - resolution
         fmt (str) - image format
         transparent (bool) - if True, remove background
@@ -346,24 +247,176 @@ class ScalarImage:
         ax.set_xticks([]), ax.set_yticks([])
 
 
-class ImageStack:
+class Image(ScalarField):
     """
-    Object representing an imagestack. Imagestack is compiled from PNG files within a Silhouette file.
+    Object contains a floating point three channel image.
 
     Attributes:
-    path (str) - path to silhouette file
-    imagestack (np.ndarray[uin8]) - Stack 8-bit RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and X,Y are the dimensions of a single cross section.
+    im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
     """
 
-    def __init__(self, path):
+    def __init__(self, im):
         """
-        Instantiate image stack from silhouette file.
+        Instantiate image.
 
         Args:
-        path (str) - path to silhouette file
+        im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
         """
-        self.path = path
-        self.imagestack = self.from_silhouette(path)
+        super().__init__(im)
+
+    def __getitem__(self, channel):
+        """
+        Return scalar field of a single color channel.
+
+        Args:
+        channel (str) - channel to extract, one of 'r', 'g', or 'b'
+
+        Returns:
+        image (ScalarField)
+        """
+        return ScalarField(self.im[:, :, 'rgb'.index(channel)])
+
+    @staticmethod
+    def from_tiff(path, **kwargs):
+        """
+        Read image file using matplotlib.image.imread.
+
+        All formats except PNG require pillow or PIL. PNG images are converted from 8-bit to floating point format by default, while other image formats must be manually converted.
+
+        Args:
+        path (str) - image path
+        kwargs: keyword arguments for Image instantiation
+
+        Returns:
+        im (data.image.Image)
+        """
+
+        # read image (non-PNG formats require pillow library)
+        im = mpimg.imread(path)
+
+        # convert to floating point format (float32)
+        if im.dtype == np.uint8:
+            im = uint8_to_float32(im)
+
+        return Image(im, **kwargs)
+
+    def build_colorfilter(self,
+                          scheme='rgb',
+                          channels='rgb',
+                          reference='r'):
+        """
+        Build filter for converting between RGB and MG colorschemes.
+
+        Args:
+        scheme (str) - colorscheme, 'rgb' or 'mg'
+        channels (str) - included channels, one or more of 'rgbmg'
+        reference (str) - reference channel (used for rgb to mg conversion)
+
+        Returns:
+        colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
+        """
+
+        colorfilter = np.identity(3, dtype=np.float32)
+
+        # MG schemes
+        if scheme == 'mg':
+
+            if reference == 'r':
+                # channel blue to red
+                colorfilter[0, 0] = 0
+                colorfilter[2, 0] = 1
+
+            else:
+                # channel red to blue
+                colorfilter[2, 2] = 0
+                colorfilter[0, 2] = 1
+
+            if 'm' not in channels:
+                colorfilter[2, 0] = 0
+                colorfilter[0, 2] = 0
+                colorfilter[2, 2] = 0
+                colorfilter[0, 0] = 0
+
+            if 'g' not in channels:
+                colorfilter[1, 1] = 0
+
+        # RGB schemes
+        else:
+            for i, c in enumerate(scheme):
+                if c not in channels:
+                    colorfilter[:, i] = 0
+
+        return colorfilter
+
+    @staticmethod
+    def _apply_colorfilter(im, colorfilter):
+        """
+        Apply colorfilter to image array.
+
+        Args:
+        im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
+        colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
+
+        Returns:
+        im_filtered (np.ndarray[float32]) - new color values, (X,Y,3)
+        """
+        return np.dot(im, colorfilter)
+
+    def render(self,
+               ax=None,
+               size=(2, 2),
+               scheme='rgb',
+               channels='rgb',
+               reference='r'):
+        """
+        Render image.
+
+        Args:
+        ax (matplotlib.axes.AxesSubplot) - if None, create figure
+        size (tuple) - image size, used if no axis provided
+        scheme (str) - colorscheme, 'rgb' or 'mg'
+        channels (str) - included channels, one or more of 'rgbmg'
+        reference (str) - reference channel (used for rgb to mg conversion)
+
+        Returns:
+        ax (matplotlib.axes.AxesSubplot)
+        """
+
+        # apply colorfilter
+        colorfilter = self.build_colorfilter(scheme, channels, reference)
+        im = self._apply_colorfilter(self.im, colorfilter)
+
+        # create axes and render image
+        if ax is None:
+            fig, ax = plt.subplots(figsize=size)
+
+        # render image
+        ax.imshow(im)
+        ax.set_xticks([]), ax.set_yticks([])
+
+        return ax
+
+
+class ImageStack(Image):
+    """
+    Object representing a 3D stack of RGB image layers. Stack is compiled from sequentially numbered images of each layer within a silhouette file.
+
+    Attributes:
+    im (np.ndarray[float32]) - RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and (X,Y) are the dimensions of a single cross section.
+    """
+
+    def __init__(self, im):
+        """
+        Instantiate image stack.
+
+        Args:
+        im (np.ndarray[float32]) - RGB pixel values, (N,X,Y,3)
+        """
+        super().__init__(im)
+
+    def __getitem__(self, layer_id):
+        """ Returns RGB image of individual layer. """
+        return self.get_layer(layer_id)
 
     @staticmethod
     def from_silhouette(path, fmt='png'):
@@ -378,65 +431,74 @@ class ImageStack:
         stack (data.image.ImageStack)
         """
 
-        files = glob(join(path, '*.'+fmt))
-        layers_dict = {}
-        for fname in files:
-            im_filename = fname.split('/')[-1].split('.')[0]
-            if '_' not in im_filename:
-                layer = int(im_filename)
-                image = scipy.ndimage.imread(fname, flatten=False, mode='RGB')
-                layers_dict[layer] = image
+        # load feed file containing layer indices
+        silhouette = Silhouette(path)
 
-        # replace missing layers
-        for i in np.arange(60):
-            if i not in layers_dict.keys():
-                layers_dict[i] = layers_dict[i-1]
+        # iterate across layer
+        ims = []
+        for layer in sorted(silhouette.feed['layer_ids']):
 
-        imagestack = np.stack(layers_dict[i] for i in np.arange(60))
-        return imagestack
+            im_path = join(path, '{:d}.{:s}'.format(layer, fmt))
 
-    def get_layer(self, layer_id, **kwargs):
+            # read image (non-PNG formats require pillow library)
+            im = mpimg.imread(im_path)
+
+            # convert to floating point format (float32)
+            if im.dtype == np.uint8:
+                im = uint8_to_float32(im)
+
+            # append to imagestack
+            ims.append(im)
+
+        # compile image stack
+        im = np.stack(ims)
+
+        # flip about yz
+        if silhouette.flip_about_yz:
+            im = im[:, ::-1, :, :]
+
+        # flip about xy
+        if silhouette.flip_about_xy:
+            im = im[::-1, :, :, :]
+
+        return ImageStack(im)
+
+    def get_layer(self, layer_id):
         """
-        Return image of individual layer.
+        Return RGB image of individual layer.
 
         Args:
         layer_id (int) - layer number
-        kwargs: keyword arguments for Image instantiation
 
         Returns:
-        im (data.image.Image)
+        image (data.image.Image)
         """
-        image = Image(self.imagestack[layer_id], **kwargs)
-        return image
+        return Image(self.im[layer_id])
 
-    def get_max_projection(self, min_layer=0, max_layer=60, **kwargs):
+    def project_max(self, min_layer=0, max_layer=-1):
         """
         Return maximum intensity projection across specified layers.
 
         Args:
         min_layer (int) - lower layer bound
         max_layer (int) - upper layer bound
-        kwargs: keyword arguments for Image instantiation
 
         Returns:
-        im (data.image.Image)
+        image (data.image.Image)
         """
-        projection = self.imagestack[min_layer: max_layer].max(axis=0)
-        image = Image(projection, **kwargs)
-        return image
+        projection = self.im[min_layer: max_layer].max(axis=0)
+        return Image(projection)
 
-    def get_mean_projection(self, min_layer=0, max_layer=60, **kwargs):
+    def project_mean(self, min_layer=0, max_layer=-1):
         """
         Return mean intensity projection across specified layers.
 
         Args:
         min_layer (int) - lower layer bound
         max_layer (int) - upper layer bound
-        kwargs: keyword arguments for Image instantiation
 
         Returns:
-        im (data.image.Image)
+        image (data.image.Image)
         """
-        projection = self.imagestack[min_layer: max_layer].mean(axis=0)
-        image = Image(projection, **kwargs)
-        return image
+        projection = self.im[min_layer: max_layer].mean(axis=0)
+        return Image(projection)

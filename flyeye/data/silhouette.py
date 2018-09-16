@@ -7,27 +7,28 @@ import pandas as pd
 
 class Silhouette:
     """
-    Interface to a FlyEye Silhouette file. Upon instantiation, individual cell measurements are aggregated into a data.cells.Cells compatible DataFrame.
-
-    Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.
+    Interface to a FlyEye Silhouette file.
 
     Attributes:
     path (str) - path to Silhouette file
-    df (pd.DataFrame) - cell measurement data
-    flip_about_yz (bool) - if True, invert about YZ plane
-    flip_about_xy (bool) - if True, invert about XY plane
+    feed (dict) - feed file containing layer IDs
+    feud (dict) - feud file containing cell type labels
     """
-
-    def __init__(self, path, recompile=False):
+    def __init__(self, path):
         """
         Instantiate interface to silhouette file.
 
         Args:
         path (str) - path to silhouette file
-        recompile (bool) - if True, recompile measurements from all layers
         """
         self.path = abspath(path)
-        self.load(recompile=recompile)
+
+        # load feed and feud files
+        self.feed = self.read_json('feed.json')
+        self.feud = self.read_json('feud.json')
+
+        # read suggested disc orientation from feed file
+        self.load_orientation()
 
     def read_json(self, filename):
         """
@@ -44,17 +45,43 @@ class Silhouette:
             out = json.load(f)
         return out
 
-    def write_json(self, filename, content):
+    def load_orientation(self):
+        """ Load suggested disc orientation from feed file. """
+
+        # read orientation
+        self.flip_about_yz = bool(self.feed['orientation']['flip_about_yz'])
+        self.flip_about_xy = bool(self.feed['orientation']['flip_about_xy'])
+
+
+class SilhouetteData(Silhouette):
+    """
+    Interface to data within a FlyEye Silhouette file.
+
+    Upon instantiation, individual cell measurements are aggregated into a data.cells.Cells compatible DataFrame.
+
+    Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.
+
+    Attributes:
+    df (pd.DataFrame) - cell measurement data
+    flip_about_yz (bool) - if True, invert about YZ plane
+    flip_about_xy (bool) - if True, invert about XY plane
+
+    Inherited attributes:
+    path (str) - path to Silhouette file
+    feed (dict) - feed file containing layer IDs
+    feud (dict) - feud file containing cell type labels
+    """
+
+    def __init__(self, path, recompile=False):
         """
-        Write serialized contents to silhouette file.
+        Instantiate interface to silhouette file data.
 
         Args:
-        filename (str) - filename
-        content (dict) - serialized contents
+        path (str) - path to silhouette file
+        recompile (bool) - if True, recompile measurements from all layers
         """
-        filepath = join(self.path, filename)
-        with open(filepath, 'w') as file:
-            json.dumps(content, file)
+        super().__init__(path)
+        self.load(recompile=recompile)
 
     def compile_measurements(self):
         """ Compile measurements from all layers (slow access). """
@@ -63,8 +90,6 @@ class Silhouette:
 
     def save_measurements(self):
         """ Save serialized measurements for fast access. """
-        #serialized_measurements = self.df.to_json(orient='records')
-        #self.write_json('measurements.json', serialized_measurements)
         self.df.to_json(join(self.path, 'measurements.json'))
 
     def load_measurements(self):
@@ -91,19 +116,6 @@ class Silhouette:
             self.compile_measurements()
             self.save_measurements()
 
-        # read suggested disc orientation from feed file
-        self.load_orientation()
-
-    def load_orientation(self):
-        """ Load suggested disc orientation from feed file. """
-
-        # load feed file
-        feed = self.read_json('feed.json')
-
-        # read orientation
-        self.flip_about_yz = bool(feed['orientation']['flip_about_yz'])
-        self.flip_about_xy = bool(feed['orientation']['flip_about_xy'])
-
     def read_labels(self):
         """
         Load segment labels from silhouette file.
@@ -112,12 +124,9 @@ class Silhouette:
         labels (dict) - {layer_id: {contour_id: label}} entries for each layer
         """
 
-        # load feud file
-        feud = self.read_json('feud.json')
-
         # compile labels for all layers
         labels = {}
-        for layer in feud['layers']:
+        for layer in self.feud['layers']:
 
             # compile {contour_id: contour_label} dictionary for current layer
             annotations = {}
@@ -170,12 +179,9 @@ class Silhouette:
         df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours
         """
 
-        # load feed file
-        feed = self.read_json('feed.json')
-
         # read contours from all layers
         contours = []
-        for layer_id in feed['layer_ids']:
+        for layer_id in self.feed['layer_ids']:
 
             # load labels for current layer
             labels = all_labels.get(layer_id, None)

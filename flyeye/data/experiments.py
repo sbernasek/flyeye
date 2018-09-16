@@ -66,7 +66,7 @@ class Experiment:
         """
 
         # identify silhouette files
-        silhouette_paths = glob(join(dirpath, '*.silhouette'))
+        silhouette_paths = sorted(glob(join(dirpath, '*.silhouette')))
 
         # load discs
         discs = {}
