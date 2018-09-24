@@ -13,12 +13,12 @@ NU FlyEye: Analysis
    :alt: header
 
 
-**NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The **Analysis** package provides methods for analyzing expression data measured *in vivo* using the **NU FlyEye: Silhouette** package for macOS.
+**NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured *in vivo* using **NU FlyEye: Silhouette**.
 
 
 Given one or more ``.silhouette`` files, **NU FlyEye: Analysis** facilitates:
 
-   - **Timeseries Construction:** convert measurements to developmental timepoints
+   - **Timeseries Construction:** convert measurements to timepoints
    - **Data Management:** query cells by developmental age and cell type
    - **Dynamic Analysis:** analyze and visualize expression dynamics
    - **Spatial Analysis:** detect and quantify spatial expression patterns

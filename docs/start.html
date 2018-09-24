@@ -40,7 +40,7 @@
 <p>To analyze your own segmented microscopy data, please read on!</p>
 <div class="section" id="input-file-structure">
 <h2>Input File Structure<a class="headerlink" href="#input-file-structure" title="Permalink to this headline">¶</a></h2>
-<p><strong>NU FlyEye: Analysis</strong> is only compatible with <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> format expression data measured via <strong>NU FlyEye: Analysis</strong>. Each of these files corresponds to a single <em>Drosophila</em> eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype follows a standardized structure:</p>
+<p><strong>NU FlyEye: Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single <em>Drosophila</em> eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype follows a standardized structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
 ├── feud.json        <span class="c1"># stack dimensionality</span>
 ├── feed.json        <span class="c1"># measurement annotations</span>
@@ -53,12 +53,18 @@
 └── N.png            <span class="c1"># Nth layer image</span>
 </pre></div>
 </div>
-<p><strong>NU FlyEye: Analysis</strong> supports analysis of individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files, as well as collections of eye discs collected under similar experimental conditions.</p>
-<p>** NOTE ** that the layer images contained in a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file are compressed versions of the full resolution microscopy data, and are not suitable as a basis for repeated expression quantification.</p>
+<p>The layer images contained in a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file are compressed versions of the original full resolution microscopy. They provide a clear visual impression of the original images while maintaining a manageable filesize. However, they are not suitable as a basis for further expression quantification.</p>
 </div>
 <div class="section" id="data-requirements">
 <h2>Data Requirements<a class="headerlink" href="#data-requirements" title="Permalink to this headline">¶</a></h2>
-<p><strong>NU FlyEye: Analysis</strong> requires that cell type annotation be complete. Unlabeled measurements are ignored upon import.</p>
+<p><strong>NU FlyEye: Analysis</strong> requires:</p>
+<blockquote>
+<div><ul class="simple">
+<li>All measurements of interest must be labeled. Unlabeled measurements are ignored upon import.</li>
+<li>Progenitors must be labeled ‘p’ or ‘pre’. Other names are possible but would require manual modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</li>
+<li>R8 cells must be fully annotated within a contiguous region. The automated conversion of measurements to developmental timepoints is dependent upon regularly spaced R8 measurements.</li>
+</ul>
+</div></blockquote>
 </div>
 </div>
 

@@ -9,7 +9,7 @@ To analyze your own segmented microscopy data, please read on!
 Input File Structure
 --------------------
 
-**NU FlyEye: Analysis** is only compatible with ``.silhouette`` format expression data measured via **NU FlyEye: Analysis**. Each of these files corresponds to a single *Drosophila* eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The ``.silhouette`` filetype follows a standardized structure:
+**NU FlyEye: Analysis** supports analysis of expression data contained in ``.silhouette`` files. Each of these files corresponds to a single *Drosophila* eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The ``.silhouette`` filetype follows a standardized structure:
 
 .. code-block:: bash
 
@@ -24,12 +24,16 @@ Input File Structure
    ├── N.json           # Nth layer measurements
    └── N.png            # Nth layer image
 
-**NU FlyEye: Analysis** supports analysis of individual ``.silhouette`` files, as well as collections of eye discs collected under similar experimental conditions.
-
-** NOTE ** that the layer images contained in a ``.silhouette`` file are compressed versions of the full resolution microscopy data, and are not suitable as a basis for repeated expression quantification.
+The layer images contained in a ``.silhouette`` file are compressed versions of the original full resolution microscopy. They provide a clear visual impression of the original images while maintaining a manageable filesize. However, they are not suitable as a basis for further expression quantification.
 
 
 Data Requirements
 -----------------
 
-**NU FlyEye: Analysis** requires that cell type annotation be complete. Unlabeled measurements are ignored upon import.
+**NU FlyEye: Analysis** requires:
+
+ - All measurements of interest must be labeled. Unlabeled measurements are ignored upon import.
+
+ - Progenitors must be labeled 'p' or 'pre'. Other names are possible but would require manual modification of the :ref:`flyeye.data <data>` source code.
+
+ - R8 cells must be fully annotated within a contiguous region. The automated conversion of measurements to developmental timepoints is dependent upon regularly spaced R8 measurements.

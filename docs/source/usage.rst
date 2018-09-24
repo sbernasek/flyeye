@@ -2,7 +2,7 @@
 Example Usage
 =============
 
-**NU FlyEye:** *Analysis* provides a wide range of functionality for analyzing expression data measured using **NU FlyEye:** *Silhouette*. A very brief introduction to some core functionalities is provided here. For detailed usage instructions please see the :ref:`documentation <documentation>`.
+**NU FlyEye: Analysis** provides a wide range of functionality for analyzing the expression data contained in ``.silhouette`` files. A very brief survey of some basic operations is provided below. For detailed usage instructions please see the :ref:`documentation <documentation>`.
 
 
 Loading an experiment
