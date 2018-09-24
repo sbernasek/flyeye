@@ -20,11 +20,15 @@ class Disc(Cells):
     Object representing all cells in a single eye disc.
 
     Attributes:
-    path (str) - unique silhouette filepath
-    triangulation (processing.triangulation.Triangulation)
+
+        path (str) - unique silhouette filepath
+
+        triangulation (processing.triangulation.Triangulation)
 
     Inherited Attributes:
-    df (pd.DataFrame) - cell measurement data
+
+        df (pd.DataFrame) - cell measurement data
+
     """
 
     def __init__(self,
@@ -39,13 +43,21 @@ class Disc(Cells):
         Instantiate object representing all cells in a single eye disc.
 
         Args:
-        df (pd.DataFrame) - cell measurement data
-        normalization (str) - normalization channel
-        flip_about_yz (bool) - if True, invert about YZ plane
-        flip_about_xy (bool) - if True, invert about XY plane
-        path (str) - silhouette filepath
-        furrow_velocity (float) - furrow inverse-velocity (hours per column)
-        offset (float) - time by which disc is shifted from first R8
+
+            df (pd.DataFrame) - cell measurement data
+
+            normalization (str) - normalization channel
+
+            flip_about_yz (bool) - if True, invert about YZ plane
+
+            flip_about_xy (bool) - if True, invert about XY plane
+
+            path (str) - silhouette filepath
+
+            furrow_velocity (float) - furrow inverse-velocity (hours per column)
+
+            offset (float) - time by which disc is shifted from first R8
+
         """
 
         Cells.__init__(self, df, normalization=normalization)
@@ -96,14 +108,21 @@ class Disc(Cells):
         Instantiate disc from silhouette file.
 
         Args:
-        path (str) - silhouette filepath
-        normalization (str) - normalization channel
-        furrow_velocity (float) - furrow inverse-velocity (hours per column)
-        recompile (bool) - if True, recompile measurements from all layers
-        kwargs: keyword arguments for disc instantiation
+
+            path (str) - silhouette filepath
+
+            normalization (str) - normalization channel
+
+            furrow_velocity (float) - furrow inverse-velocity (hours per column)
+
+            recompile (bool) - if True, recompile measurements from all layers
+
+            kwargs: keyword arguments for disc instantiation
 
         Returns:
-        disc (data.discs.Disc)
+
+            disc (data.discs.Disc)
+
         """
 
         # load silhouette file data
@@ -125,14 +144,14 @@ class Disc(Cells):
         Load image stack from silhouette file.
 
         Returns:
-        stack (data.image.ImageStack)
+
+            stack (data.image.ImageStack)
+
         """
         return ImageStack.from_silhouette(self.path)
 
     def standardize_labels(self):
         """ Convert all alternate precursor labels to 'pre' """
-        # for alternate in ['p', 'prepre', 'v']:
-        #     self.df.ix[self.df.label==alternate, 'label'] = 'pre'
         names = ['p', 'prepre', 'v']
         self.df.loc[self.df.label.isin(names), 'label'] = 'pre'
 
@@ -158,7 +177,9 @@ class Disc(Cells):
         Shift disc in time.
 
         Args:
-        offset (str or float) - position of new origin, if 'first_r8' shift such that first R8 occurs at time zero
+
+            offset (str or float) - position of new origin, if 'first_r8' shift such that first R8 occurs at time zero
+
         """
 
         if offset is None:
@@ -179,7 +200,9 @@ class Disc(Cells):
         Convert each channel's fluorescence to a 0-1 scale.
 
         Args:
-        base (float) - maximum fluorescence
+
+            base (float) - maximum fluorescence
+
         """
         for channel in ['red', 'green', 'blue']:
             self.df[channel] /= base
@@ -190,7 +213,9 @@ class Disc(Cells):
         Normalize expression levels by the reference channel.
 
         Args:
-        reference_channel (str) - channel used for normalization
+
+            reference_channel (str) - channel used for normalization
+
         """
         normalization = self.df[reference_channel]
         for channel in ['red', 'green', 'blue']:
@@ -216,7 +241,9 @@ class Disc(Cells):
         Add detrended fluctuations for each fluorescence channel within each cell type to disc dataframe.
 
         Args:
-        order (int) - polyorder for local trendfitting
+
+            order (int) - polyorder for local trendfitting
+
         """
 
         fluctuations = []
@@ -272,10 +299,13 @@ class Disc(Cells):
         Determine which layers span multipotent cells. Bounds correspond to lower and upper quantiles taken from a normal fit to all progenitor layers.
 
         Args:
-        q (float) - width parameter (interquantile range), 0 to 1
+
+            q (float) - width parameter (interquantile range), 0 to 1
 
         Returns:
-        bounds (np.ndarray, length 2) - lower and upper bounds
+
+            bounds (np.ndarray, length 2) - lower and upper bounds
+
         """
         progenitors = self.select_cell_type('pre')
         layers = progenitors.df.layer.values

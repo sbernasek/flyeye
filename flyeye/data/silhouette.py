@@ -10,16 +10,22 @@ class Silhouette:
     Interface to a FlyEye Silhouette file.
 
     Attributes:
-    path (str) - path to Silhouette file
-    feed (dict) - feed file containing layer IDs
-    feud (dict) - feud file containing cell type labels
+
+        path (str) - path to Silhouette file
+
+        feed (dict) - feed file containing layer IDs
+
+        feud (dict) - feud file containing cell type labels
+
     """
     def __init__(self, path):
         """
         Instantiate interface to silhouette file.
 
         Args:
-        path (str) - path to silhouette file
+
+            path (str) - path to silhouette file
+
         """
         self.path = abspath(path)
 
@@ -35,10 +41,13 @@ class Silhouette:
         Read contents of specified JSON file.
 
         Args:
-        filename (str) - filename
+
+            filename (str) - filename
 
         Returns:
-        out (dict) - file contents
+
+            out (dict) - file contents
+
         """
         filepath = join(self.path, filename)
         with open(filepath, 'r') as f:
@@ -62,14 +71,21 @@ class SilhouetteData(Silhouette):
     Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.
 
     Attributes:
-    df (pd.DataFrame) - cell measurement data
-    flip_about_yz (bool) - if True, invert about YZ plane
-    flip_about_xy (bool) - if True, invert about XY plane
+
+        df (pd.DataFrame) - cell measurement data
+
+        flip_about_yz (bool) - if True, invert about YZ plane
+
+        flip_about_xy (bool) - if True, invert about XY plane
 
     Inherited attributes:
-    path (str) - path to Silhouette file
-    feed (dict) - feed file containing layer IDs
-    feud (dict) - feud file containing cell type labels
+
+        path (str) - path to Silhouette file
+
+        feed (dict) - feed file containing layer IDs
+
+        feud (dict) - feud file containing cell type labels
+
     """
 
     def __init__(self, path, recompile=False):
@@ -77,8 +93,11 @@ class SilhouetteData(Silhouette):
         Instantiate interface to silhouette file data.
 
         Args:
-        path (str) - path to silhouette file
-        recompile (bool) - if True, recompile measurements from all layers
+
+            path (str) - path to silhouette file
+
+            recompile (bool) - if True, recompile measurements from all layers
+
         """
         super().__init__(path)
         self.load(recompile=recompile)
@@ -101,7 +120,9 @@ class SilhouetteData(Silhouette):
         Read all contour and orientation data from silhouette file.
 
         Args:
-        recompile (bool) - if True, recompile measurements from all layers
+
+            recompile (bool) - if True, recompile measurements from all layers
+
         """
 
         # check whether measurements are available
@@ -121,7 +142,9 @@ class SilhouetteData(Silhouette):
         Load segment labels from silhouette file.
 
         Returns:
-        labels (dict) - {layer_id: {contour_id: label}} entries for each layer
+
+            labels (dict) - {layer_id: {contour_id: label}} entries for each layer
+
         """
 
         # compile labels for all layers
@@ -147,10 +170,13 @@ class SilhouetteData(Silhouette):
         Convert contour to list format.
 
         Args:
-        contour (dict) - contour from silhouette file
+
+            contour (dict) - contour from silhouette file
 
         Returns:
-        ctr_list (list) - values in data.cells.Cells compatible list format
+
+            ctr_list (list) - values in data.cells.Cells compatible list format
+
         """
 
         # extract values
@@ -173,10 +199,13 @@ class SilhouetteData(Silhouette):
         Read contours from silhouette file.
 
         Args:
-        all_labels (dict) - {layer_id: {contour_id: label}} for each layer
+
+            all_labels (dict) - {layer_id: {contour_id: label}} for each layer
 
         Returns:
-        df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours
+
+            df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours
+
         """
 
         # read contours from all layers

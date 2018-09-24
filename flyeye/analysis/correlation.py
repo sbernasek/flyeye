@@ -12,8 +12,11 @@ class CorrelationData:
     Container for correlations between 1-D timeseries.
 
     Attributes:
-    d_ij (np array) - pairwise separation distances between measurements
-    C_ij (np array) - normalized pairwise fluctuations between measurements
+
+        d_ij (np array) - pairwise separation distances between measurements
+
+        C_ij (np array) - normalized pairwise fluctuations between measurements
+
     """
 
     def __init__(self, d_ij=None, C_ij=None):
@@ -21,8 +24,11 @@ class CorrelationData:
         Instantiate container for correlations between 1-D timeseries.
 
         Args:
-        d_ij (np.ndarray) - pairwise separation distances
-        C_ij (np.ndarray) - normalized pairwise fluctuations
+
+            d_ij (np.ndarray) - pairwise separation distances
+
+            C_ij (np.ndarray) - normalized pairwise fluctuations
+
         """
 
         if d_ij is None:
@@ -39,10 +45,13 @@ class CorrelationData:
         Concatenate current instance with a second CorrelationData instance.
 
         Args:
-        correlation (analysis.correlation.CorrelationData)
+
+            correlation (analysis.correlation.CorrelationData)
 
         Returns:
-        self (analysis.correlation.CorrelationData) - updated correlations
+
+            self (analysis.correlation.CorrelationData) - updated correlations
+
         """
 
         # concatenate distanced and fluctuations
@@ -62,14 +71,21 @@ class CorrelationData:
         Group samples into x-bins and evaluate aggregate statistic of y-values.
 
         Args:
-        x (np array) - values upon which samples are grouped
-        y (np array) - values upon which aggregate statistics are evaluated
-        bins (np array) - bin edges
-        statistic (str) - aggregation statistic applied to each bin
+
+            x (np array) - values upon which samples are grouped
+
+            y (np array) - values upon which aggregate statistics are evaluated
+
+            bins (np array) - bin edges
+
+            statistic (str) - aggregation statistic applied to each bin
 
         Returns:
-        centers (np array) - bin centers
-        stats (np array) - aggregate statistic for each bin
+
+            centers (np array) - bin centers
+
+            stats (np array) - aggregate statistic for each bin
+
         """
 
         # if None, break into 10 intervals
@@ -93,15 +109,23 @@ class CorrelationData:
         Evaluate confidence interval for aggregation statistic.
 
         Args:
-        x (np array) - values upon which samples are grouped
-        y (np array) - values upon which aggregate statistics are evaluated
-        N (int) - number of repeated samples
-        confidence (int) - confidence interval, between 0 and 100
-        bins (np array) - bins within which the statistic is applied
+
+            x (np array) - values upon which samples are grouped
+
+            y (np array) - values upon which aggregate statistics are evaluated
+
+            N (int) - number of repeated samples
+
+            confidence (int) - confidence interval, between 0 and 100
+
+            bins (np array) - bins within which the statistic is applied
 
         Returns:
-        centers (np array) - centers of distance bins
-        uppers, lowers (np array) - statistic confidence interval bounds
+
+            centers (np array) - centers of distance bins
+
+            uppers, lowers (np array) - statistic confidence interval bounds
+
         """
 
         # get indices for bootstrap resampling
@@ -134,19 +158,31 @@ class CorrelationData:
         Plot pairwise normalized fluctuations versus pairwise distances.
 
         Args:
-        ax (mpl.axes.AxesSubplot) - if None, create figure
-        null_model (bool) - if True, shuffle d_ij vector
-        scatter (bool) - if True, show individual markers
-        confidence (bool) - if True, include confidence interval
-        zero (bool) - if True, include zero correlation line for reference
-        interval_kw (dict) - keyword arguments for interval formatting
-        ma_kw (dict) - keyword arguments for moving average smoothing
-        nbootstraps (int) - number of bootstrap samples for confidence interval
-        color (str) - color used for confidence interval
-        max_distance (float) - largest pairwise distance included
+
+            ax (mpl.axes.AxesSubplot) - if None, create figure
+
+            null_model (bool) - if True, shuffle d_ij vector
+
+            scatter (bool) - if True, show individual markers
+
+            confidence (bool) - if True, include confidence interval
+
+            zero (bool) - if True, include zero correlation line for reference
+
+            interval_kw (dict) - keyword arguments for interval formatting
+
+            ma_kw (dict) - keyword arguments for moving average smoothing
+
+            nbootstraps (int) - number of bootstrap samples for confidence interval
+
+            color (str) - color used for confidence interval
+
+            max_distance (float) - largest pairwise distance included
 
         Returns:
-        ax (mpl.axes.AxesSubplot)
+
+            ax (mpl.axes.AxesSubplot)
+
         """
 
         # create figure/axis
@@ -218,13 +254,19 @@ class SpatialCorrelation(CorrelationData):
     Object for evaluating spatial correlation of expression between cells.
 
     Attributes:
-    channel (str) - expression channel for which correlations are desired
-    y_only (bool) - if True, only use y-component of pairwise distances
-    raw (bool) - if True, use raw fluorescence intensities
+
+        channel (str) - expression channel for which correlations are desired
+
+        y_only (bool) - if True, only use y-component of pairwise distances
+
+        raw (bool) - if True, use raw fluorescence intensities
 
     Inherited attributes:
-    d_ij (np array) - pairwise separation distances between measurements
-    C_ij (np array) - normalized pairwise fluctuations between measurements
+
+        d_ij (np array) - pairwise separation distances between measurements
+
+        C_ij (np array) - normalized pairwise fluctuations between measurements
+
     """
 
     def __init__(self,
@@ -236,10 +278,15 @@ class SpatialCorrelation(CorrelationData):
         Instantiate object for evaluating spatial correlation of expression between cells.
 
         Args:
-        df (pd.Dataframe) - cell measurement data
-        channel (str) - expression channel for which correlations are desired
-        y_only (bool) - if True, only use y-component of pairwise distances
-        raw (bool) - if True, use raw fluorescence intensities
+
+            df (pd.Dataframe) - cell measurement data
+
+            channel (str) - expression channel for which correlations are desired
+
+            y_only (bool) - if True, only use y-component of pairwise distances
+
+            raw (bool) - if True, use raw fluorescence intensities
+
         """
 
         # store parameters
@@ -270,10 +317,13 @@ class SpatialCorrelation(CorrelationData):
         Return upper triangular portion of a 2-D matrix.
 
         Parameters:
-        matrix (2D np.ndarray)
+
+            matrix (2D np.ndarray)
 
         Returns:
-        upper (1D np.ndarray) - upper triangle, ordered row then column
+
+            upper (1D np.ndarray) - upper triangle, ordered row then column
+
         """
         return matrix[np.triu_indices(len(matrix), k=1)]
 
@@ -283,11 +333,15 @@ class SpatialCorrelation(CorrelationData):
         Get upper triangular portion of pairwise distance matrix.
 
         Args:
-        df (pd.Dataframe) - cell measurements including position data
-        y_only (bool) - if True, only use y-component of cell positions
+
+            df (pd.Dataframe) - cell measurements including position data
+
+            y_only (bool) - if True, only use y-component of cell positions
 
         Returns:
-        distances (1D np.ndarray) - pairwise distances, ordered row then column
+
+            distances (1D np.ndarray) - pairwise distances, ordered row then column
+
         """
 
         # if no measurements are included, return None
@@ -313,10 +367,13 @@ class SpatialCorrelation(CorrelationData):
         Get upper triangular portion of pairwise expression covariance matrix.
 
         Args:
-        vector (1D np.ndarray) - expression levels for each cell
+
+            vector (1D np.ndarray) - expression levels for each cell
 
         Returns:
-        covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column
+
+            covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column
+
         """
 
         # if vector is of length zero, return None

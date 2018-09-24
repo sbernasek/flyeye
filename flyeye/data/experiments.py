@@ -19,8 +19,11 @@ class Experiment:
     Object representing multiple eye discs obtained under a single set of conditions.
 
     Attributes:
-    discs (dict) - {disc ID: data.discs.Disc} pairs
-    num_discs (int) - number of discs within experiment
+
+        discs (dict) - {disc ID: data.discs.Disc} pairs
+
+        num_discs (int) - number of discs within experiment
+
     """
 
     def __init__(self, dirpath,
@@ -31,10 +34,15 @@ class Experiment:
         Instantiate object representing all discs obtained under a single set of conditions.
 
         Args:
-        dirpath (str) - path to directory containing silhouette files
-        normalization (str) - normalization channel
-        auto_alignment (bool) - if True, align discs
-        kwargs: keyword arguments for disc instantiation
+
+            dirpath (str) - path to directory containing silhouette files
+
+            normalization (str) - normalization channel
+
+            auto_alignment (bool) - if True, align discs
+
+            kwargs: keyword arguments for disc instantiation
+
         """
 
         self.discs = self.load(dirpath, normalization=normalization, **kwargs)
@@ -57,12 +65,17 @@ class Experiment:
         Load discs from silhouette files.
 
         Args:
-        dirpath (str) - path to directory containing silhouette files
-        normalization (str) - normalization channel
-        kwargs: keyword arguments for disc instantiation, e.g. furrow_velocity
+
+            dirpath (str) - path to directory containing silhouette files
+
+            normalization (str) - normalization channel
+
+            kwargs: keyword arguments for disc instantiation
 
         Returns:
-        discs (dict) - {disc_id: data.discs.Disc} pairs
+
+            discs (dict) - {disc_id: data.discs.Disc} pairs
+
         """
 
         # identify silhouette files
@@ -82,7 +95,9 @@ class Experiment:
         Align all discs within experiment.
 
         Args:
-        channel (str) - expression channel by which discs are aligned
+
+            channel (str) - expression channel by which discs are aligned
+
         """
         al = ExperimentAlignment(self, channel=channel)
         self.discs = al.get_aligned_experiment().discs
@@ -92,11 +107,15 @@ class Experiment:
         Compute pairwise quality of alignment between each disc.
 
         Args:
-        window_size (int) - number of cells for smoothing
-        kw: keyword arguments for DiscAlignment
+
+            window_size (int) - number of cells for smoothing
+
+            kw: keyword arguments for DiscAlignment
 
         Returns:
-        scores (np.ndarray) - mean quality of alignment for each disc
+
+            scores (np.ndarray) - mean quality of alignment for each disc
+
         """
 
         # compute pairwise alignment between discs
@@ -118,7 +137,9 @@ class Experiment:
         Apply time shift to all discs in experiment.
 
         Args:
-        lag (float) - time shift applied to each disc
+
+            lag (float) - time shift applied to each disc
+
         """
         _ = [disc.apply_lag(offset=lag) for disc in self.discs.values()]
 
@@ -127,7 +148,9 @@ class Experiment:
         Shift all discs s.t. t=0 is the first R8 in the reference disc.
 
         Args:
-        disc_id (int) - index of disc used as reference
+
+            disc_id (int) - index of disc used as reference
+
         """
 
         # get time of first R8
@@ -142,11 +165,15 @@ class Experiment:
         Return Cells object for all specified cells.
 
         Args:
-        cell_type (str or list) - type of cells to select
-        selection_kw: keyword arguments for cell position selection
+
+            cell_type (str or list) - type of cells to select
+
+            selection_kw: keyword arguments for cell position selection
 
         Returns:
-        cells (data.cells.Cells)
+
+            cells (data.cells.Cells)
+
         """
 
         # assign disc_id
@@ -174,13 +201,19 @@ class Experiment:
         Select cells concurrent with first N identified cells of reference cell type.
 
         Args:
-        reference_types (array like) - reference cell type(s)
-        N (int) - number of early neurons defining time window for each disc
-        lower_slip (float) - window extension (hours) prior to first neuron
-        upper_slip (int) - index of first neuron used (excludes early outliers)
+
+            reference_types (array like) - reference cell type(s)
+
+            N (int) - number of reference cells defining time window
+
+            lower_slip (float) - extension before first reference cell, hours
+
+            upper_slip (int) - reference cells skipped (excludes outliers)
 
         Returns:
-        df (DataFrame) - cells concurrent with reference cell type
+
+            df (DataFrame) - cells concurrent with reference cell type
+
         """
 
         # aggregate cells from just before/after their identification
@@ -235,12 +268,17 @@ class Experiment:
         Compile Dataframe of early R cells and concurrent progenitors.
 
         Args:
-        N (int) - number of early neurons defining time window for each disc
-        lower_slip (float) - window extension (hours) prior to first neuron
-        upper_slip (int) - index of first neuron used (excludes early outliers)
+
+            N (int) - number of reference cells defining time window
+
+            lower_slip (float) - extension before first reference cell, hours
+
+            upper_slip (int) - reference cells skipped (excludes outliers)
 
         Returns:
-        df (DataFrame) - measurements for early R cells and conc. progenitors
+
+            df (DataFrame) - measurement data for early R cells and concurrent progenitors
+
         """
 
         cell_types = [['r8'], ['r2', 'r5'], ['r3', 'r4'], ['r1', 'r6'], ['r7']]
@@ -262,15 +300,23 @@ class Experiment:
         Compile SpatialCorrelation instance for all specified cells.
 
         Args:
-        cell_type (str) - type of cells to select
-        channel (str) - expression channel for which correlations are desired
-        y_only (bool) - if True, only use y-component of data
-        raw (bool) - if True, removes normalization
-        discs_included (list or str) - included discs, defaults to all
-        selection_kw: keyword arguments for cell position selection
+
+            cell_type (str) - type of cells to select
+
+            channel (str) - expression channel for which correlations are desired
+
+            y_only (bool) - if True, only use y-component of data
+
+            raw (bool) - if True, removes normalization
+
+            discs_included (list or str) - included discs, defaults to all
+
+            selection_kw: keyword arguments for cell position selection
 
         Returns:
-        corr (analysis.correlation.SpatialCorrelation)
+
+           corr (analysis.correlation.SpatialCorrelation)
+
         """
 
         # instantiate empty SpatialCorrelation object

@@ -16,11 +16,16 @@ class Alignment:
     Object for alignment of a 1-D timeseries with another.
 
     Attributes:
-    t, x (np.ndarray) - timeseries to be aligned
-    t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
-    window_size (int) - window size used for local smoothing
-    lag (float) - computed time shift for optimal alignment
-    score (float) - computed metric for quality of alignment
+
+        t, x (np.ndarray) - timeseries to be aligned
+
+        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
+
+        window_size (int) - window size used for local smoothing
+
+        lag (float) - computed time shift for optimal alignment
+
+        score (float) - computed metric for quality of alignment
 
     """
 
@@ -32,12 +37,19 @@ class Alignment:
         Instantiate object for alignment of one timeseries with another.
 
         Args:
-        t (np.ndarray) - timepoints of timeseries to be aligned
-        x (np.ndarray) - values of timeseries to be aligned
-        t_ref (np.ndarray) - timepoints of reference
-        x_ref (np.ndarray) - values of reference
-        metric (str) - name of alignment criterion
-        window_size (int) - window size used for local smoothing
+
+            t (np.ndarray) - timepoints of timeseries to be aligned
+
+            x (np.ndarray) - values of timeseries to be aligned
+
+            t_ref (np.ndarray) - timepoints of reference
+
+            x_ref (np.ndarray) - values of reference
+
+            metric (str) - name of alignment criterion
+
+            window_size (int) - window size used for local smoothing
+
         """
 
         self.t, self.x = self._initialize_position(t, x)
@@ -59,11 +71,15 @@ class Alignment:
         Sort timeseries by time.
 
         Args:
-        t (np.ndarray) - timepoints
-        x (np.ndarray) - values
+
+            t (np.ndarray) - timepoints
+
+            x (np.ndarray) - values
 
         Returns:
-        ts, xs (np.ndarray) - time-sorted timepoints and values
+
+            ts, xs (np.ndarray) - time-sorted timepoints and values
+
         """
         sort_ind = np.argsort(t)
         return t[sort_ind], x[sort_ind]
@@ -212,13 +228,19 @@ class Alignment:
         Run alignment to determine optimal lag.
 
         Args:
-        metric (str) - name of alignment criterion
-        window_size (int) - window size for local smoothing
-        dt (float) - resolution
+
+            metric (str) - name of alignment criterion
+
+            window_size (int) - window size for local smoothing
+
+            dt (float) - resolution
 
         Returns:
-        lag (float) - time shift that maximizes quality of alignment
-        score (float) - quality of alignment
+
+            lag (float) - time shift that maximizes quality of alignment
+
+            score (float) - quality of alignment
+
         """
 
         # get smoothed metric vectors
@@ -239,10 +261,14 @@ class Alignment:
         Plot quality of alignment versus lag time.
 
         Args:
-        metric (str) - name of alignment criterion
-        ax (matplotlib.axes.AxesSubplot)
-        window_size (int) - window size for local smoothing
-        dt (float) - resolution
+
+            metric (str) - name of alignment criterion
+
+            ax (matplotlib.axes.AxesSubplot)
+
+            window_size (int) - window size for local smoothing
+
+            dt (float) - resolution
 
         """
 
@@ -281,10 +307,15 @@ class Alignment:
         Plot aligned time series.
 
         Args:
-        scatter (bool) - if True, show individual samples
-        trend (bool) - if True, show moving average
-        ax (matplotlib.axes.AxesSubplot)
-        window_size (int) - window size for local smoothing
+
+            scatter (bool) - if True, show individual samples
+
+            trend (bool) - if True, show moving average
+
+            ax (matplotlib.axes.AxesSubplot)
+
+            window_size (int) - window size for local smoothing
+
         """
 
         # add datapoints to plot
@@ -310,14 +341,20 @@ class CellsAlignment(Alignment):
     Object for alignment of one group of cells with another.
 
     Attributes:
-    df (pd.DataFrame) - aligned cells data
+
+        df (pd.DataFrame) - aligned cells data
 
     Inherited attributes:
-    t, x (np.ndarray) - timeseries to be aligned
-    t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
-    window_size (int) - window size used for local smoothing
-    lag (float) - computed time shift for optimal alignment
-    score (float) - computed metric for quality of alignment
+
+        t, x (np.ndarray) - timeseries to be aligned
+
+        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
+
+        window_size (int) - window size used for local smoothing
+
+        lag (float) - computed time shift for optimal alignment
+
+        score (float) - computed metric for quality of alignment
 
     """
 
@@ -331,12 +368,18 @@ class CellsAlignment(Alignment):
         Instantiate object for alignment of one group of cells with another.
 
         Args:
-        df (pd.DataFrame) - aligned cells data
-        reference_df (pd.DataFrame) - reference cells data
-        channel (str) - cells attribute used as alignment values
-        basis (str) - cells attribute  used as alignment timepoints
-        metric (str) - name of alignment criterion
-        window_size (int) - window size used for local smoothing (# of cells)
+
+            df (pd.DataFrame) - aligned cells data
+
+            reference_df (pd.DataFrame) - reference cells data
+
+            channel (str) - cells attribute used as alignment values
+
+            basis (str) - cells attribute  used as alignment timepoints
+
+            metric (str) - name of alignment criterion
+
+            window_size (int) - window size used for local smoothing (# of cells)
         """
 
         # extract timeseries
@@ -357,18 +400,29 @@ class DiscAlignment(CellsAlignment):
     Object for alignment of one Disc instance with another.
 
     Attributes:
-    disc (data.discs.Disc) - copy of aligned disc instance
-    hours_per_pixel (float) - distance to time scaling factor
-    space_lag (float) - computed time shift for optimal alignment (x-units)
-    time_lag (float) - computed time shift for optimal alignment (t-units)
+
+        disc (data.discs.Disc) - copy of aligned disc instance
+
+        hours_per_pixel (float) - distance to time scaling factor
+
+        space_lag (float) - computed time shift for optimal alignment (x-units)
+
+        time_lag (float) - computed time shift for optimal alignment (t-units)
 
     Inherited attributes:
-    t, x (np.ndarray) - timeseries to be aligned
-    t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
-    window_size (int) - window size used for local smoothing
-    lag (float) - computed time shift for optimal alignment
-    score (float) - computed metric for quality of alignment
-    df (pd.DataFrame) - aligned cells data
+
+        t, x (np.ndarray) - timeseries to be aligned
+
+        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned
+
+        window_size (int) - window size used for local smoothing
+
+        lag (float) - computed time shift for optimal alignment
+
+        score (float) - computed metric for quality of alignment
+
+        df (pd.DataFrame) - aligned cells data
+
     """
 
     def __init__(self, disc, reference_disc,
@@ -379,11 +433,17 @@ class DiscAlignment(CellsAlignment):
         Instantiate object for alignment of one Disc instance with another.
 
         Args:
-        disc (data.discs.Disc) - aligned disc
-        reference_disc (data.discs.Disc) - reference disc
-        channel (str) - cells attribute used as alignment values
-        metric (str) - name of alignment criterion
-        window_size (int) - window size used for local smoothing (# of cells)
+
+            disc (data.discs.Disc) - aligned disc
+
+            reference_disc (data.discs.Disc) - reference disc
+
+            channel (str) - cells attribute used as alignment values
+
+            metric (str) - name of alignment criterion
+
+            window_size (int) - window size used for local smoothing (# cells)
+
         """
 
         self.hours_per_pixel = disc.hours_per_pixel
@@ -415,12 +475,17 @@ class DiscAlignment(CellsAlignment):
         Apply lag to copy of disc.
 
         Args:
-        disc (data.discs.Disc)
-        space_lag (float) - lag to be applied (x-units)
-        time_lag (float) - lag to be applied (t-units)
+
+            disc (data.discs.Disc)
+
+            space_lag (float) - lag to be applied (x-units)
+
+            time_lag (float) - lag to be applied (t-units)
 
         Returns:
-        disc (data.discs.Disc) - copy of disc with lag applied
+
+            disc (data.discs.Disc) - copy of disc with lag applied
+
         """
         disc = deepcopy(disc)
         disc.df.centroid_x += (space_lag - disc.df.centroid_x.min())
@@ -439,8 +504,11 @@ class ExperimentAlignment:
     Object for the time-alignment of all discs within an experiment.
 
     Attributes:
-    experiment (data.experiments.Experiment) - copy of experiment
-    scores (dict) - keys are disc IDs, values are quality of alignment
+
+        experiment (data.experiments.Experiment) - copy of experiment
+
+        scores (dict) - keys are disc IDs, values are quality of alignment
+
     """
 
     def __init__(self, experiment, **kwargs):
@@ -448,8 +516,11 @@ class ExperimentAlignment:
         Instantiate object for the time-alignment of all discs within an experiment. The first disc serves as the reference.
 
         Args:
-        experiment (data.experiments.Experiment)
-        kwargs: keyword arguments for DiscAlignment instantiation
+
+            experiment (data.experiments.Experiment)
+
+            kwargs: keyword arguments for DiscAlignment instantiation
+
         """
 
         self.experiment = deepcopy(experiment)
@@ -462,12 +533,17 @@ class ExperimentAlignment:
         Align all discs with first disc.
 
         Args:
-        experiment (data.experiments.Experiment)
-        kwargs: keyword arguments for DiscAlignment instantiation
+
+            experiment (data.experiments.Experiment)
+
+            kwargs: keyword arguments for DiscAlignment instantiation
 
         Returns:
-        experiment (data.experiments.Experiment) - copy of experiment
-        alignments (dict) - keys are disc IDs, values are alignment instances
+
+            experiment (data.experiments.Experiment) - copy of experiment
+
+            alignments (dict) - {disc ID: Alignment} pairs
+
         """
         reference_disc = experiment.discs[0]
         alignments = {}
@@ -497,7 +573,9 @@ class MultiExperimentAlignment:
     Object for the time-alignment of multiple experiments. The first experiment serves as the reference.
 
     Attributes:
-    experiments (list) - copies of Experiment instances
+
+        experiments (list) - copies of Experiment instances
+
     """
 
     def __init__(self, *experiments, **kwargs):
@@ -505,8 +583,11 @@ class MultiExperimentAlignment:
         Instantiate object for the time-alignment of multiple experiments. The first experiment serves as the reference.
 
         Args:
-        experiments (iterable) - data.experiments.Experiment instances
-        kwargs: keyword arguments for the alignment
+
+            experiments (iterable) - data.experiments.Experiment instances
+
+            kwargs: keyword arguments for the alignment
+
         """
         self.experiments = [deepcopy(experiment) for experiment in experiments]
         self.align_experiments(**kwargs)
@@ -517,12 +598,16 @@ class MultiExperimentAlignment:
         Align all experiments with the first experiment.
 
         Args:
-        experiments (iterable) - data.experiments.Experiment instances
-        channel (str) - fluorescence channel by which to align experiments
-        kwargs: keyword arguments for the alignment
+
+            experiments (iterable) - data.experiments.Experiment instances
+
+            channel (str) - fluorescence channel by which to align experiments
+
+            kwargs: keyword arguments for the alignment
 
         Returns:
-        experiments (list) - list of copied Experiment instances
+
+            experiments (list) - list of copied Experiment instances
 
         """
         reference = cls.aggregate_discs(experiments[0]).select_cell_type('pre')
@@ -554,10 +639,13 @@ class MultiExperimentAlignment:
         Aggregate all discs within an Experiment into single Cells object.
 
         Args:
-        experiment (data.experiments.Experiment)
+
+            experiment (data.experiments.Experiment)
 
         Returns:
-        cells (data.cells.Cells)
+
+            cells (data.cells.Cells)
+
         """
         return reduce(add, experiment.discs.values())
 
@@ -566,7 +654,9 @@ class MultiExperimentAlignment:
         Return aligned experiments.
 
         Returns:
-        experiments (list) - list of copied Experiment instances
+
+            experiments (list) - list of copied Experiment instances
+
         """
         return self.experiments
 

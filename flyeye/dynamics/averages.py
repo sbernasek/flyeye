@@ -13,12 +13,17 @@ def savgol(x, window_size=100, polyorder=1):
     Perform Savitzky-Golay filtration of 1-D array.
 
     Args:
-    x (np.ndarray) - ordered samples
-    window_size (int) - filter size
-    polyorder (int) - polynomial order
+
+        x (np.ndarray) - ordered samples
+
+        window_size (int) - filter size
+
+        polyorder (int) - polynomial order
 
     Returns:
-    trend (np.ndarray) - smoothed values
+
+        trend (np.ndarray) - smoothed values
+
     """
 
     # window size must be odd
@@ -45,11 +50,15 @@ def get_running_mean(x, window_size=100):
     Returns running mean for a 1D vector. This is the fastest implementation, but is limited to one-dimensional arrays and doesn't permit interval specification.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    window_size (int) - size of window, W
+
+        x (np.ndarray) - ordered samples, length N
+
+        window_size (int) - size of window, W
 
     Returns:
-    means (np.ndarray) - moving average of x
+
+        means (np.ndarray) - moving average of x
+
     """
     cumsum = np.cumsum(np.insert(x, 0, 0))
     return (cumsum[window_size:] - cumsum[:-window_size]) / window_size
@@ -60,12 +69,17 @@ def get_rolling_window(x, window_size=100, resolution=1):
     Return array slices within a rolling window.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    window_size (int) - size of window, W
-    resolution (int) - sampling interval
+
+        x (np.ndarray) - ordered samples, length N
+
+        window_size (int) - size of window, W
+
+        resolution (int) - sampling interval
 
     Returns:
-    windows (np.ndarray) - sampled values, N/resolution x W
+
+        windows (np.ndarray) - sampled values, N/resolution x W
+
     """
     shape = x.shape[:-1] + (floor((x.shape[-1] - window_size + 1)/resolution), window_size)
     strides = x.strides[:-1] + (x.strides[-1]*resolution,) + (x.strides[-1],)
@@ -77,11 +91,15 @@ def get_rolling_mean(x, **kw):
     Compute rolling mean. This implementation permits flexible sampling intervals and multi-dimensional time series, but is slower than get_running_mean for 1D time series.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    kw: arguments for window specification
+
+        x (np.ndarray) - ordered samples, length N
+
+        kw: arguments for window specification
 
     Returns:
-    means (np.ndarray) - moving average of x, N/resolution x 1
+
+        means (np.ndarray) - moving average of x, N/resolution x 1
+
     """
     return get_rolling_window(x, **kw).mean(axis=-1)
 
@@ -91,11 +109,15 @@ def get_binned_mean(x, window_size=100):
     Returns mean values within non-overlapping sequential windows.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    window_size (int) - size of window, W
+
+        x (np.ndarray) - ordered samples, length N
+
+        window_size (int) - size of window, W
 
     Returns:
-    means (np.ndarray) - bin means, N/W x 1
+
+        means (np.ndarray) - bin means, N/W x 1
+
     """
     return get_rolling_mean(x, window_size=window_size, resolution=window_size)
 
@@ -105,12 +127,17 @@ def apply_custom_roller(func, x, **kwargs):
     Apply function to rolling window.
 
     Args:
-    func (function) - function applied to each window, returns 1 x N_out
-    x (np.ndarray) - ordered samples, length N
-    kwargs: keyword arguments for window specification
+
+        func (function) - function applied to each window, returns 1 x N_out
+
+        x (np.ndarray) - ordered samples, length N
+
+        kwargs: keyword arguments for window specification
 
     Returns:
-    fx (np.ndarray) - function output for each window, N/resolution x N_out
+
+        fx (np.ndarray) - function output for each window, N/resolution x N_out
+
     """
     windows = get_rolling_window(x, **kwargs)
     return np.apply_along_axis(func, axis=-1, arr=windows)
@@ -121,11 +148,15 @@ def subsample(x, frac=1):
     Subsample array with replacement.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    frac (float) - sample size (fraction of array)
+
+        x (np.ndarray) - ordered samples, length N
+
+        frac (float) - sample size (fraction of array)
 
     Returns:
-    sample (np.ndarray) - subsampled values
+
+        sample (np.ndarray) - subsampled values
+
     """
     return x[np.random.randint(0, len(x), size=floor(frac*len(x)))]
 
@@ -135,13 +166,19 @@ def bootstrap(x, func=np.mean, confidence=95, N=1000):
     Returns point estimate obtained by parametric bootstrap.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    func (function) - function applied to each bootstrap sample
-    confidence (float) - confidence interval, between 0 and 100
-    N (int) - number of bootstrap samples
+
+        x (np.ndarray) - ordered samples, length N
+
+        func (function) - function applied to each bootstrap sample
+
+        confidence (float) - confidence interval, between 0 and 100
+
+        N (int) - number of bootstrap samples
 
     Returns:
-    interval (np.ndarray) - confidence interval bounds
+
+        interval (np.ndarray) - confidence interval bounds
+
     """
     point_estimates = [func(subsample(x)) for _ in range(N)]
     q = (((100-confidence)/2), (100+confidence)/2)
@@ -157,14 +194,21 @@ def get_rolling_mean_interval(x,
     Evaluate confidence interval for moving average of ordered values.
 
     Args:
-    x (np.ndarray) - ordered samples, length N
-    window_size (int) - size of window, W
-    resolution (int) - sampling interval
-    confidence (float) - confidence interval, between 0 and 100
-    nbootstraps (int) - number of bootstrap samples
+
+        x (np.ndarray) - ordered samples, length N
+
+        window_size (int) - size of window, W
+
+        resolution (int) - sampling interval
+
+        confidence (float) - confidence interval, between 0 and 100
+
+        nbootstraps (int) - number of bootstrap samples
 
     Returns:
-    interval (np.ndarray) - confidence interval bounds, N/resolution x 2
+
+        interval (np.ndarray) - confidence interval bounds, N/resolution x 2
+
     """
 
     # define bootstrapping operation
@@ -182,12 +226,17 @@ def get_rolling_gaussian(x, window_size=100, resolution=10):
     Returns gaussian fit within sliding window.
 
     Args:
-    x (np.ndarray) - ordered samples
-    window_size (int) - size of window
-    resolution (int) - sampling interval
+
+        x (np.ndarray) - ordered samples
+
+        window_size (int) - size of window
+
+        resolution (int) - sampling interval
 
     Returns:
-    model (scipy.stats.norm)
+
+        model (scipy.stats.norm)
+
     """
 
     # assemble sliding windows
@@ -206,14 +255,20 @@ def detrend_signal(x, window_size=99, order=1):
     """
     Detrend and scale fluctuations using first-order univariate spline.
 
-    Parameters:
+    Args:
+
         x (np array) -ordered samples
+
         window_size (int) - size of interpolation window for lowpass filter
+
         order (int) - spline order
 
     Returns:
+
         residuals (np array) - detrended residuals
+
         trend (np array) - spline fit to signal
+
     """
 
     # use odd window size
@@ -242,17 +297,27 @@ def plot_mean(x, y, ax,
     Plot moving average.
 
     Args:
-    x, y (array like) - timeseries data
-    ax (matplotlib.axes.AxesSubplot) - axis which to which line is added
-    label (str) - data label
-    ma_type (str) - type of average used, either sliding, binned, or savgol
-    window_size (int) - size of window
-    resolution (int) - sampling interval
-    line_color, line_width, line_alpha, linestyle - formatting parameters
-    smooth (bool) - if True, apply secondary savgol filter
+
+        x, y (array like) - timeseries data
+
+        ax (matplotlib.axes.AxesSubplot) - axis which to which line is added
+
+        label (str) - data label
+
+        ma_type (str) - type of average used, either sliding, binned, or savgol
+
+        window_size (int) - size of window
+
+        resolution (int) - sampling interval
+
+        line_color, line_width, line_alpha, linestyle - formatting parameters
+
+        smooth (bool) - if True, apply secondary savgol filter
 
     Returns:
-    line (matplotlib.lines.Line2D)
+
+        line (matplotlib.lines.Line2D)
+
     """
 
     # get moving average (skip first point to avoid outliers)
@@ -299,18 +364,25 @@ def plot_mean_interval(x, y, ax,
     """
     Adds confidence interval for line average (sliding window or binned) to existing axes.
 
-    Parameters:
+    Args:
+
         x, y (array like) - data
+
         ax (axes) - axis which to which line is added
+
         ma_type (str) - type of average used, either 'sliding' or 'binned'
+
         window_size (int) - size of sliding window or bin (num of cells)
+
         interval_resolution (int) - sampling resolution for confidence interval
+
         nbootstraps (int) - number of bootstraps
+
         confidence (float) - confidence interval, between 0 and 100
+
         color, alpha - formatting parameters
+
     """
-    #nbootstraps = 250
-    #resolution=1
 
     if ma_type == 'binned':
         resolution = window_size
@@ -318,7 +390,8 @@ def plot_mean_interval(x, y, ax,
     y_av = get_rolling_mean(y, window_size=window_size, resolution=resolution)
     interval = get_rolling_mean_interval(y, window_size=window_size, resolution=resolution, nbootstraps=nbootstraps, confidence=confidence)
     y_lower, y_upper = interval.T
-    _ = ax.fill_between(x_av, y_lower, y_upper, color=color, alpha=alpha, lw=lw)
+    _ = ax.fill_between(x_av, y_lower, y_upper,
+                        color=color, alpha=alpha, lw=lw)
 
     if error_bars == True:
         ax.errorbar(x_av, y_av, yerr=[y_av-y_lower, y_upper-y_av], fmt='-o', color=color)

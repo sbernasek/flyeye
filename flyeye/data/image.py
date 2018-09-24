@@ -20,8 +20,11 @@ class Smoothing:
     Default behavior entails three iterations of grey closing followed by a 3-pixel wide median filter.
 
     Attributes:
-    niters (int) - number of grey closing iterations
-    size (int) - pixel size of median filter in XY dimensions
+
+        niters (int) - number of grey closing iterations
+
+        size (int) - pixel size of median filter in XY dimensions
+
     """
 
     def __init__(self, niters=3, size=3):
@@ -29,8 +32,11 @@ class Smoothing:
         Instantiate smoothing filter.
 
         Args:
-        niters (int) - number of grey closing iterations
-        size (int) - pixel size of median filter in XY dimensions
+
+            niters (int) - number of grey closing iterations
+
+            size (int) - pixel size of median filter in XY dimensions
+
         """
         self.niters = niters
         self.size = size
@@ -40,10 +46,13 @@ class Smoothing:
         Apply smoothing to image.
 
         Args:
-        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
+
+            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
 
         Returns:
-        im (np.ndarray(np.float32))
+
+            im (np.ndarray(np.float32))
+
         """
         im = self.grey_closing(im, niters=self.niters)
         im = self.median_filter(im, size=self.size)
@@ -55,11 +64,15 @@ class Smoothing:
         Apply grey closing operation to image.
 
         Args:
-        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
-        niters (int) - number of grey closing iterations
+
+            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
+
+            niters (int) - number of grey closing iterations
 
         Returns
-        im (np.ndarray(np.float32))
+
+            im (np.ndarray(np.float32))
+
         """
 
         # get filter size
@@ -78,11 +91,15 @@ class Smoothing:
         Apply grey closing operation to image.
 
         Args:
-        im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
-        size (int) - pixel size of median filter in XY dimensions
+
+            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.
+
+            size (int) - pixel size of median filter in XY dimensions
 
         Returns
-        im (np.ndarray(np.float32))
+
+            im (np.ndarray(np.float32))
+
         """
 
         # get filter size
@@ -97,8 +114,11 @@ class ScalarField:
     Object representing a floating-point 2D scalar field that can take on positive or negative values.
 
     Attributes:
-    im (np.ndarray[float32]) - scalar values, (X,Y)
-    fig (matplotlib.figure.Figure) - image rendering
+
+        im (np.ndarray[float32]) - scalar values, (X,Y)
+
+        fig (matplotlib.figure.Figure) - image rendering
+
     """
 
     def __init__(self, im):
@@ -106,7 +126,9 @@ class ScalarField:
         Instantiate scalar field.
 
         Args:
-        im (np.ndarray[float32]) - scalar values, (X,Y)
+
+            im (np.ndarray[float32]) - scalar values, (X,Y)
+
         """
         self.im = im
         self.fig = None
@@ -140,10 +162,13 @@ class ScalarField:
         Convert 8-bit array to floating point values on a 0-1 interval.
 
         Args:
-        im_uint8 (np.ndarray[uint8])
+
+            im_uint8 (np.ndarray[uint8])
 
         Returns:
-        im_float32 (np.ndarray[float32])
+
+            im_float32 (np.ndarray[float32])
+
         """
         return im_uint8.astype(np.float64) / 255
 
@@ -182,7 +207,9 @@ class ScalarField:
         Apply filter to image.
 
         Args:
-        func (function) - function operating on image array
+
+            func (function) - function operating on image array
+
         """
         self.im = func(self.im)
 
@@ -208,11 +235,17 @@ class ScalarField:
         Save rendered image.
 
         Args:
-        name (str) - file name
-        directory (str) - target directory
-        dpi (int) - resolution
-        fmt (str) - image format
-        transparent (bool) - if True, remove background
+
+            name (str) - file name
+
+            directory (str) - target directory
+
+            dpi (int) - resolution
+
+            fmt (str) - image format
+
+            transparent (bool) - if True, remove background
+
         """
         path = join(directory, name+'.'+fmt)
         self.fig.savefig(path, dpi=dpi, format=fmt, transparent=transparent)
@@ -227,10 +260,15 @@ class ScalarField:
         Render image.
 
         Args:
-        size (tuple) - figure size
-        cmap (matplotlib.cm.ColorMap) - colormap, defaults to Greys
-        vmin, vmax (float) - colorscale bounds
-        ax (matplotlib.axes.AxesSubplot) - if None, create figure
+
+            size (tuple) - figure size
+
+            cmap (matplotlib.cm.ColorMap) - colormap, defaults to Greys
+
+            vmin, vmax (float) - colorscale bounds
+
+            ax (matplotlib.axes.AxesSubplot) - if None, create figure
+
         """
 
         # create figure
@@ -260,7 +298,9 @@ class Image(ScalarField):
         Instantiate image.
 
         Args:
-        im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
+
+            im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
+
         """
         super().__init__(im)
 
@@ -269,10 +309,13 @@ class Image(ScalarField):
         Return scalar field of a single color channel.
 
         Args:
-        channel (str) - channel to extract, one of 'r', 'g', or 'b'
+
+            channel (str) - channel to extract, one of 'r', 'g', or 'b'
 
         Returns:
-        image (ScalarField)
+
+            image (ScalarField)
+
         """
         return ScalarField(self.im[:, :, 'rgb'.index(channel)])
 
@@ -284,11 +327,15 @@ class Image(ScalarField):
         All formats except PNG require pillow or PIL. PNG images are converted from 8-bit to floating point format by default, while other image formats must be manually converted.
 
         Args:
-        path (str) - image path
-        kwargs: keyword arguments for Image instantiation
+
+            path (str) - image path
+
+            kwargs: keyword arguments for Image instantiation
 
         Returns:
-        im (data.image.Image)
+
+            im (data.image.Image)
+
         """
 
         # read image (non-PNG formats require pillow library)
@@ -308,12 +355,17 @@ class Image(ScalarField):
         Build filter for converting between RGB and MG colorschemes.
 
         Args:
-        scheme (str) - colorscheme, 'rgb' or 'mg'
-        channels (str) - included channels, one or more of 'rgbmg'
-        reference (str) - reference channel (used for rgb to mg conversion)
+
+            scheme (str) - colorscheme, 'rgb' or 'mg'
+
+            channels (str) - included channels, one or more of 'rgbmg'
+
+            reference (str) - reference channel (used for rgb to mg conversion)
 
         Returns:
-        colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
+
+            colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
+
         """
 
         colorfilter = np.identity(3, dtype=np.float32)
@@ -354,11 +406,15 @@ class Image(ScalarField):
         Apply colorfilter to image array.
 
         Args:
-        im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
-        colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
+
+            im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)
+
+            colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter
 
         Returns:
-        im_filtered (np.ndarray[float32]) - new color values, (X,Y,3)
+
+            im_filtered (np.ndarray[float32]) - new color values, (X,Y,3)
+
         """
         return np.dot(im, colorfilter)
 
@@ -372,14 +428,21 @@ class Image(ScalarField):
         Render image.
 
         Args:
-        ax (matplotlib.axes.AxesSubplot) - if None, create figure
-        size (tuple) - image size, used if no axis provided
-        scheme (str) - colorscheme, 'rgb' or 'mg'
-        channels (str) - included channels, one or more of 'rgbmg'
-        reference (str) - reference channel (used for rgb to mg conversion)
+
+            ax (matplotlib.axes.AxesSubplot) - if None, create figure
+
+            size (tuple) - image size, used if no axis provided
+
+            scheme (str) - colorscheme, 'rgb' or 'mg'
+
+            channels (str) - included channels, one or more of 'rgbmg'
+
+            reference (str) - reference channel (used for rgb to mg conversion)
 
         Returns:
-        ax (matplotlib.axes.AxesSubplot)
+
+            ax (matplotlib.axes.AxesSubplot)
+
         """
 
         # apply colorfilter
@@ -402,7 +465,8 @@ class ImageStack(Image):
     Object representing a 3D stack of RGB image layers. Stack is compiled from sequentially numbered images of each layer within a silhouette file.
 
     Attributes:
-    im (np.ndarray[float32]) - RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and (X,Y) are the dimensions of a single cross section.
+
+        im (np.ndarray[float32]) - RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and (X,Y) are the dimensions of a single cross section.
     """
 
     def __init__(self, im):
@@ -410,7 +474,9 @@ class ImageStack(Image):
         Instantiate image stack.
 
         Args:
-        im (np.ndarray[float32]) - RGB pixel values, (N,X,Y,3)
+
+            im (np.ndarray[float32]) - RGB pixel values, (N,X,Y,3)
+
         """
         super().__init__(im)
 
@@ -424,11 +490,15 @@ class ImageStack(Image):
         Load imagestack from sequentially numbered images of each layer.
 
         Args:
-        path (str) - path to silhouette file
-        fmt (str) - image format for all layers
+
+            path (str) - path to silhouette file
+
+            fmt (str) - image format for all layers
 
         Returns:
-        stack (data.image.ImageStack)
+
+            stack (data.image.ImageStack)
+
         """
 
         # load feed file containing layer indices
@@ -468,10 +538,13 @@ class ImageStack(Image):
         Return RGB image of individual layer.
 
         Args:
-        layer_id (int) - layer number
+
+            layer_id (int) - layer number
 
         Returns:
-        image (data.image.Image)
+
+            image (data.image.Image)
+
         """
         return Image(self.im[layer_id])
 
@@ -480,11 +553,15 @@ class ImageStack(Image):
         Return maximum intensity projection across specified layers.
 
         Args:
-        min_layer (int) - lower layer bound
-        max_layer (int) - upper layer bound
+
+            min_layer (int) - lower layer bound
+
+            max_layer (int) - upper layer bound
 
         Returns:
-        image (data.image.Image)
+
+            image (data.image.Image)
+
         """
         projection = self.im[min_layer: max_layer].max(axis=0)
         return Image(projection)
@@ -494,11 +571,15 @@ class ImageStack(Image):
         Return mean intensity projection across specified layers.
 
         Args:
-        min_layer (int) - lower layer bound
-        max_layer (int) - upper layer bound
+
+            min_layer (int) - lower layer bound
+
+            max_layer (int) - upper layer bound
 
         Returns:
-        image (data.image.Image)
+
+            image (data.image.Image)
+
         """
         projection = self.im[min_layer: max_layer].mean(axis=0)
         return Image(projection)

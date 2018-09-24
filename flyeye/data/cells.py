@@ -16,7 +16,8 @@ class Cells:
     Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.
 
     Attributes:
-    df (pd.DataFrame) - cell measurement data
+
+        df (pd.DataFrame) - cell measurement data
 
     """
 
@@ -25,8 +26,11 @@ class Cells:
         Instantiate population of cells.
 
         Args:
-        df (pd.DataFrame) - cell measurement data
-        normalization (str) - channel against which intensities are normalized
+
+            df (pd.DataFrame) - cell measurement data
+
+            normalization (str) - channel against which intensities are normalized
+
         """
 
         # store measurements
@@ -52,7 +56,9 @@ class Cells:
         Sort cell measurements in place.
 
         Args:
-        by (str) - key on which measurements are sorted
+
+            by (str) - key on which measurements are sorted
+
         """
         self.df = self.df.sort_values(by=by, ascending=True)
 
@@ -61,7 +67,9 @@ class Cells:
         Shift cells in time.
 
         Args:
-        lag (float) - shift (NOTE: x-positions are unaffected)
+
+            lag (float) - shift (NOTE: x-positions are unaffected)
+
         """
         self.df['t'] += lag
 
@@ -70,10 +78,13 @@ class Cells:
         Select subset of cells corresponding to a specified label.
 
         Args:
-        cell_types (str or list) - type of cells to be selected (e.g. pre, r8)
+
+            cell_types (str or list) - type of cells to be selected (e.g. pre, r8)
 
         Returns:
-        cells (data.cells.Cells)
+
+            cells (data.cells.Cells)
+
         """
 
         # convert string to list
@@ -107,13 +118,19 @@ class Cells:
         Select subset of cells within specified spatial bounds.
 
         Args:
-        xmin, xmax (float) - x-coordinate bounds
-        ymin, ymax (float) - y-coordinate bounds
-        zmin, zmax (float) - z-coordinate (layer number) bounds
-        tmin, tmax (float) - time interval bounds
+
+            xmin, xmax (float) - x-coordinate bounds
+
+            ymin, ymax (float) - y-coordinate bounds
+
+            zmin, zmax (float) - z-coordinate (layer number) bounds
+
+            tmin, tmax (float) - time interval bounds
 
         Returns:
-        cells (data.cells.Cells) - copied subset of cells
+
+            cells (data.cells.Cells) - copied subset of cells
+
         """
 
         # initialize filter to include all cells
@@ -135,7 +152,9 @@ class Cells:
         Returns median nuclear diameter. Diameters are approximated as that of a circle with equivalent area to each nuclear contour.
 
         Returns:
-        nuclear_diameter (float) - median diameter
+
+            nuclear_diameter (float) - median diameter
+
         """
         return (2*np.sqrt(self.df.pixel_count/np.pi)).median()
 
@@ -147,14 +166,21 @@ class Cells:
         Bin cells and compute mean for each bin.
 
         Args:
-        x (pd.Series) - coordinate on which to bin values
-        values (pd.Series) - values to be aggregated
-        bins (np array) - edges for specified bins
-        bin_width (float) - width of bins used if no bins specified
+
+            x (pd.Series) - coordinate on which to bin values
+
+            values (pd.Series) - values to be aggregated
+
+            bins (np array) - edges for specified bins
+
+            bin_width (float) - width of bins used if no bins specified
 
         Returns:
-        bin_centers (np.ndarray) - bin centers
-        means (np array) - mean value within each bin
+
+            bin_centers (np.ndarray) - bin centers
+
+            means (np array) - mean value within each bin
+
         """
 
         if bins is None:
@@ -176,18 +202,29 @@ class Cells:
         Plot expression dynamics for specified channel.
 
         Args:
-        channel (str) - expression channel
-        ax (mpl.axes.AxesSubplot) - if None, create axes
-        scatter (bool) - if True, add markers for each measurement
-        average (bool) - if True, add moving average
-        interval - if True, add confidence interval for moving average
-        marker_kw (dict) - keyword arguments for marker formatting
-        line_kw (dict) - keyword arguments for line formatting
-        interval_kw (dict) - keyword arguments for interval formatting
-        ma_kw (dict) - keyword arguments for interval construction
+
+            channel (str) - expression channel
+
+            ax (mpl.axes.AxesSubplot) - if None, create axes
+
+            scatter (bool) - if True, add markers for each measurement
+
+            average (bool) - if True, add moving average
+
+            interval - if True, add confidence interval for moving average
+
+            marker_kw (dict) - keyword arguments for marker formatting
+
+            line_kw (dict) - keyword arguments for line formatting
+
+            interval_kw (dict) - keyword arguments for interval formatting
+
+            ma_kw (dict) - keyword arguments for interval construction
 
         Returns:
-        ax (mpl.axes.AxesSubplot)
+
+            ax (mpl.axes.AxesSubplot)
+
         """
 
         # sort values inplace
@@ -220,15 +257,23 @@ class Cells:
         Create XY scatterplot of two fluorescence channels.
 
         Args:
-        x, y (str) - channels used for x and y axes
-        color (str) - marker color
-        s (float) - marker size
-        alpha (float) - transparency of markers
-        fraction (bool) - if True, annotate fraction above midline
-        ax (mpl.axes.AxesSubplot) - if None, create figure
+
+            x, y (str) - channels used for x and y axes
+
+            color (str) - marker color
+
+            s (float) - marker size
+
+            alpha (float) - transparency of markers
+
+            fraction (bool) - if True, annotate fraction above midline
+
+            ax (mpl.axes.AxesSubplot) - if None, create figure
 
         Returns:
+
             ax (mpl.axes.AxesSubplot)
+
         """
 
         # create figure
@@ -254,7 +299,18 @@ class Cells:
 
     @staticmethod
     def annotate_fraction(ax, ratio, p=2.5):
-        """ Add fraction of cells above midline. """
+        """
+        Add fraction of cells above midline.
+
+        Args:
+
+            ax (mpl.axes.AxesSubplot)
+
+            ratio (array like) - vector of ratios
+
+            p (float) - text position relative to center line
+
+        """
         fraction = sum(ratio >= 1) / len(ratio)
         ax.text(p, p+0.5, '{:2.1%}'.format(fraction), ha='right', fontsize=8)
         ax.text(p, p-0.5, '{:2.1%}'.format(1-fraction), ha='left', fontsize=8)
@@ -268,11 +324,21 @@ class Cells:
         Plot Lomb Scargle periodogram.
 
         Args:
-        channel (str) - expression channel
-        periods (array like) - spectral frequencies to be tested
-        ymax (float) - max spectral power
-        ax (mpl.axes.AxesSubplot)
-        kwargs: spectrogram visualization keywords
+
+            channel (str) - expression channel
+
+            periods (array like) - spectral frequencies to be tested
+
+            ymax (float) - max spectral power
+
+            ax (mpl.axes.AxesSubplot)
+
+            kwargs: spectrogram visualization keywords
+
+        Returns:
+
+            ax (mpl.axes.AxesSubplot)
+
         """
 
         # compile spectrogram

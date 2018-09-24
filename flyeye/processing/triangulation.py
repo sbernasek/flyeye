@@ -17,13 +17,21 @@ class Triangulation:
     The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.
 
     Attributes:
-    params (dict) - triangulation parameters, {name: value}
-    xycoords (np.ndarray) - R8 cell positions
-    delaunay (scipy.spatial.tri) - Delaunay triangulation
-    distances (np.ndarray) - distances between adjacent R8 cells
-    edges (np.ndarray) - edge vertices
-    hours_per_pixel (float) - distance to time scaling factor
-    disc (data.discs.Disc)
+
+        params (dict) - triangulation parameters, {name: value}
+
+        xycoords (np.ndarray) - R8 cell positions
+
+        delaunay (scipy.spatial.tri) - Delaunay triangulation
+
+        distances (np.ndarray) - distances between adjacent R8 cells
+
+        edges (np.ndarray) - edge vertices
+
+        hours_per_pixel (float) - distance to time scaling factor
+
+        disc (data.discs.Disc)
+
     """
 
     def __init__(self, disc,
@@ -37,12 +45,19 @@ class Triangulation:
         Instantiate object for estimating the median distance between adjacent columns of R8 cells.
 
         Args:
-        disc (data.discs.Disc)
-        furrow_velocity (float) - furrow inverse-velocity (hours per column)
-        threshold (float) - max. quantile of included distances, 0 to 100
-        min_angle, max_angle (float) - min. and max. angle of included edges
-        include_x (bool) - if True, include x-distance
-        include_y (bool) - if True, include y-distance
+
+            disc (data.discs.Disc)
+
+            furrow_velocity (float) - furrow inverse-velocity (hours per column)
+
+            threshold (float) - max. quantile of included distances, 0 to 100
+
+            min_angle, max_angle (float) - min/max angle of included edges
+
+            include_x (bool) - if True, include x-distance
+
+            include_y (bool) - if True, include y-distance
+
         """
 
         self.triangulate(disc, furrow_velocity, threshold, min_angle=min_angle, max_angle=max_angle, include_x=include_x, include_y=include_y)
@@ -59,10 +74,13 @@ class Triangulation:
         Apply distance to time scaling to a disc.
 
         Args:
-        disc (data.discs.Disc)
+
+            disc (data.discs.Disc)
 
         Returns:
-        disc (data.discs.Disc) - disc with estimated developmental times
+
+            disc (data.discs.Disc) - disc with estimated developmental times
+
         """
         disc = self._apply_time_scaling(disc, self.hours_per_pixel)
         return disc
@@ -77,11 +95,15 @@ class Triangulation:
         Update developmental times.
 
         Args:
-        disc (data.discs.Disc)
-        hours_per_pixel (float) - distance to time scaling factor
+
+            disc (data.discs.Disc)
+
+            hours_per_pixel (float) - distance to time scaling factor
 
         Returns:
-        disc (data.discs.Disc) - disc with estimated developmental times
+
+            disc (data.discs.Disc) - disc with estimated developmental times
+
         """
         disc.df['t'] = disc.df.centroid_x * hours_per_pixel
         return disc
@@ -126,13 +148,19 @@ class Triangulation:
         Filter edges by length. Length threshold is computed as a multiple of the median edge length.
 
         Args:
-        distances (np.ndarray) - edge lengths
-        edges (np.ndarray) - edges
-        threshold (float) - maximum multiple of median length
+
+            distances (np.ndarray) - edge lengths
+
+            edges (np.ndarray) - edges
+
+            threshold (float) - maximum multiple of median length
 
         Returns:
-        distances (np.ndarray) - filtered edge lengths
-        edges (np.ndarray) - filtered edges
+
+            distances (np.ndarray) - filtered edge lengths
+
+            edges (np.ndarray) - filtered edges
+
         """
         indices = np.where(distances < threshold*np.median(distances))[0]
         return distances[indices], edges[indices]
@@ -148,12 +176,19 @@ class Triangulation:
         Run triangulation.
 
         Args:
-        disc (data.discs.Disc)
-        furrow_velocity (float) - furrow inverse-velocity (hours per column)
-        threshold (float) - max. quantile of included distances, 0 to 100
-        min_angle, max_angle (float) - min. and max. angle of included edges
-        include_x (bool) - if True, include x-distance
-        include_y (bool) - if True, include y-distance
+
+            disc (data.discs.Disc)
+
+            furrow_velocity (float) - furrow inverse-velocity (hr/column)
+
+            threshold (float) - max quantile of included distances, 0 to 100
+
+            min_angle, max_angle (float) - min/max angle of included edges
+
+            include_x (bool) - if True, include x-distance
+
+            include_y (bool) - if True, include y-distance
+
         """
 
         # get coordinates
@@ -181,7 +216,12 @@ class Triangulation:
         return np.log2(values/values.mean())
 
     @classmethod
-    def _add_edges_to_plot(cls, distances, edges, ax, hours_per_pixel, cmap=cmaps.coolwarm):
+    def _add_edges_to_plot(cls,
+                           distances,
+                           edges,
+                           ax,
+                           hours_per_pixel,
+                           cmap=cmaps.coolwarm):
         """ Add delaunay edges to existing axes. """
 
         # get scores for colormap
@@ -262,7 +302,9 @@ class Triangulation:
         self.plot_expression(ax_alt, **kwargs)
 
     def show(self, gs_parent=None, include_expression=True, is_subplot=False, **kwargs):
-        """ Plot inter-R8 distance distribution, Delaunay triangulation, and expression. """
+        """
+        Plot inter-R8 distance distribution, Delaunay triangulation, and expression.
+        """
 
         # retriangulate
         self.triangulate(self.disc, **self.params)
@@ -314,8 +356,11 @@ class ExperimentTriangulation:
     The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.
 
     Attributes:
-    experiment (data.experiments.Experiment)
-    tri (dict) - {disc ID: Triangulation} pairs
+
+        experiment (data.experiments.Experiment)
+
+        tri (dict) - {disc ID: Triangulation} pairs
+
     """
 
     def __init__(self, experiment, **kwargs):
@@ -323,8 +368,11 @@ class ExperimentTriangulation:
         Instantiate triangulation objects for all discs in an experiment.discs
 
         Args:
-        experiment (data.experiments.Experiment)
-        kwargs: triangulation keyword arguments
+
+            experiment (data.experiments.Experiment)
+
+            kwargs: triangulation keyword arguments
+
         """
         discs = experiment.discs
         self.tri = self._get_triangulations(discs, **kwargs)
@@ -340,11 +388,15 @@ class ExperimentTriangulation:
         Return experiment with updated developmental times.
 
         Args:
-        experiment (data.experiments.Experiment) - experiment to be updated
-        tri (dict) - {disc ID: Triangulation} pairs
+
+            experiment (data.experiments.Experiment) - experiment to be updated
+
+            tri (dict) - {disc ID: Triangulation} pairs
 
         Returns:
-        experiment (data.experiments.Experiment) - updated experiment
+
+            experiment (data.experiments.Experiment) - updated experiment
+
         """
         experiment.discs = {i: t.get_disc() for i, t in tri.items()}
         return experiment
@@ -355,11 +407,15 @@ class ExperimentTriangulation:
         Return dictionary of Triangulation objects.
 
         Args:
-        discs (dict) - {disc ID: Disc} pairs
-        kwargs: keyword arguments for Triangulation
+
+            discs (dict) - {disc ID: Disc} pairs
+
+            kwargs: keyword arguments for Triangulation
 
         Returns:
-        tri (dict) - {disc ID: Triangulation} pairs
+
+            tri (dict) - {disc ID: Triangulation} pairs
+
         """
         return {i: Triangulation(disc, **kwargs) for i, disc in discs.items()}
 

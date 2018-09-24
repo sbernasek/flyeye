@@ -10,15 +10,25 @@ class Spectrogram:
     Object for spectral decomposition of a 1-D timeseries via Lomb-Scargle periodogram. Internal functions are based on AstroML library.
 
     Attributes:
-    t (np.ndarray) - timepoints
-    y (np.ndarray) - values
-    dy (np.ndarray) - estimated measurement error
-    periods (np.ndarray) - oscillation periods tested (same units as t)
-    omegas (np.ndarray) - oscillation frequencies tested
-    PS (np.ndarray) - spectral power of each frequency
-    power (np.ndarray) - max. spectral power
-    dominant_period (float) - oscillation period of max. spectral power
-    dominant_frequency (float) - oscillation frequency of max. spectral power
+
+        t (np.ndarray) - timepoints
+
+        y (np.ndarray) - values
+
+        dy (np.ndarray) - estimated measurement error
+
+        periods (np.ndarray) - oscillation periods tested (same units as t)
+
+        omegas (np.ndarray) - oscillation frequencies tested
+
+        PS (np.ndarray) - spectral power of each frequency
+
+        power (np.ndarray) - max. spectral power
+
+        dominant_period (float) - oscillation period of max. spectral power
+
+        dominant_frequency (float) - oscillation frequency of max. spectral power
+
     """
 
     def __init__(self, t, y,
@@ -28,10 +38,15 @@ class Spectrogram:
         Instantiate object for spectral decomposition of a 1-D timeseries via Lomb-Scargle periodogram.
 
         Args:
-        t (np.ndarray) - timepoints
-        y (np.ndarray) - values
-        dy (np.ndarray) - estimated measurement error
-        periods (np.ndarray) - oscillation periods tested (same units as t)
+
+            t (np.ndarray) - timepoints
+
+            y (np.ndarray) - values
+
+            dy (np.ndarray) - estimated measurement error
+
+            periods (np.ndarray) - oscillation periods tested (same units as t)
+
         """
 
         # order timeseries by time
@@ -63,13 +78,19 @@ class Spectrogram:
         Evaluate periodogram.
 
         Args:
-        t (np.ndarray) - timepoints
-        y (np.ndarray) - values
-        dy (np.ndarray) - estimated measurement error
-        omega (np.ndarray) - spectral frequencies tests
+
+            t (np.ndarray) - timepoints
+
+            y (np.ndarray) - values
+
+            dy (np.ndarray) - estimated measurement error
+
+            omega (np.ndarray) - spectral frequencies tests
 
         Returns:
-        PS (np.ndarray) - normalized power spectrum
+
+            PS (np.ndarray) - normalized power spectrum
+
         """
         kw = dict(generalized=True, subtract_mean=True)
         PS = lomb_scargle(t, y, dy, omegas, **kw)
@@ -87,15 +108,23 @@ class Spectrogram:
         Determine periodicity significance thresholds. Thresholds are obtained by repeatedly subsampling data, then compiling a distribution of maximum power levels detected in each sample.
 
         Args:
-        t (np.ndarray) - timepoints
-        y (np.ndarray) - values
-        dy (np.ndarray) - estimated measurement error
-        omega (np.ndarray) - spectral frequencies tests
-        confidence (array like) - confidence levels to assess, length C
-        nbootstraps (int) - number of boostrap samples
+
+            t (np.ndarray) - timepoints
+
+            y (np.ndarray) - values
+
+            dy (np.ndarray) - estimated measurement error
+
+            omega (np.ndarray) - spectral frequencies tests
+
+            confidence (array like) - confidence levels to assess, length C
+
+            nbootstraps (int) - number of boostrap samples
 
         Returns:
-        thresholds (np.ndarray) - spectral power thresholds, length C
+
+            thresholds (np.ndarray) - spectral power thresholds, length C
+
         """
 
         if confidence is None:
@@ -117,17 +146,38 @@ class Spectrogram:
         Determine significance thresholds.
 
         Args:
-        confidence (array like) - confidence levels to assess, length C
-        nbootstraps (int) - number of boostrap samples
+
+            confidence (array like) - confidence levels to assess, length C
+
+            nbootstraps (int) - number of boostrap samples
 
         Returns:
-        thresholds (np.ndarray) - spectral power thresholds, length C
+
+            thresholds (np.ndarray) - spectral power thresholds, length C
+
         """
         return self._compute_thresholds(self.t, self.y, self.dy, self.omegas, confidence=confidence, nbootstraps=nbootstraps)
 
     @staticmethod
     def _plot_samples(ax, t, y, dy):
-        """ Plot timeseries samples. """
+        """
+        Plot timeseries samples.
+
+        Args:
+
+            ax (matplotlib.axes.AxesSubplot)
+
+            t (array like) - timeponts
+
+            y (array like) - values
+
+            dy (array like) - value uncertainties
+
+        Returns:
+
+            ax (matplotlib.axes.AxesSubplot)
+
+        """
         ax.errorbar(t, y, dy, fmt='.k', lw=1, ecolor='gray')
         ax.set_xlabel('distance')
         ax.set_ylabel('samples')
@@ -139,7 +189,9 @@ class Spectrogram:
         Plot timeseries samples.
 
         Args:
-        ax (mpl.axes.AxesSublot)
+
+            ax (mpl.axes.AxesSublot)
+
         """
         self._plot_samples(ax, self.t, self.y, self.dy)
 
@@ -155,18 +207,29 @@ class Spectrogram:
         Plot spectrogram.
 
         Args:
-        ax (mpl.axes.AxesSublot)
-        xvals (np.ndarray) - x values (periods or frequencies)
-        PS (np.ndarray) - normalized spectral powers
-        thresholds (dict) - keys are confidence levels, values are thresholds
-        xaxis (str) - quantity for x axis, either 'period' or 'frequency'
-        xunits (str) - units for x-axis label
-        ymax (float) - upper limit for y axis (max spectral power)
-        color (str) - line color
-        labelsize (int) - axis labelsize
+
+            ax (mpl.axes.AxesSublot)
+
+            xvals (np.ndarray) - x values (periods or frequencies)
+
+            PS (np.ndarray) - normalized spectral powers
+
+            thresholds (dict) - keys are confidence levels, values are thresholds
+
+            xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
+            xunits (str) - units for x-axis label
+
+            ymax (float) - upper limit for y axis (max spectral power)
+
+            color (str) - line color
+
+            labelsize (int) - axis labelsize
 
         Returns:
-        ax (mpl.axes.AxesSublot)
+
+            ax (mpl.axes.AxesSublot)
+
         """
 
         # plot spectral powers
@@ -201,15 +264,23 @@ class Spectrogram:
         Plot spectrogram.
 
         Args:
-        ax (mpl.axes.AxesSublot)
-        confidence (array like) - confidence levels to be added
-        nbootstraps (int) - number of bootstrap samples
-        xaxis (str) - quantity for x axis, either 'period' or 'frequency'
-        annotate (bool) - if True, label peak spectral power
-        kwargs: plot formatting keyword arguments
+
+            ax (mpl.axes.AxesSublot)
+
+            confidence (array like) - confidence levels to be added
+
+            nbootstraps (int) - number of bootstrap samples
+
+            xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
+            annotate (bool) - if True, label peak spectral power
+
+            kwargs: plot formatting keyword arguments
 
         Returns:
-        ax (mpl.axes.AxesSublot)
+
+            ax (mpl.axes.AxesSublot)
+
         """
 
         # compute significance thresholds
@@ -248,8 +319,11 @@ class Spectrogram:
         Annotate peak spectral power.
 
         Args:
-        ax (mpl.axes.AxesSublot)
-        xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
+            ax (mpl.axes.AxesSublot)
+
+            xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
         """
 
         # get label position
@@ -279,15 +353,23 @@ class Spectrogram:
         Plot spectrogram.
 
         Args:
-        ax (mpl.axes.AxesSublot) - if None, create figure
-        confidence (array like) - confidence levels to be added
-        nbootstraps (int) - number of bootstrap samples
-        xaxis (str) - quantity for x axis, either 'period' or 'frequency'
-        annotate (bool) - if True, label peak spectral power
-        kwargs: plot formatting keyword arguments
+
+            ax (mpl.axes.AxesSublot) - if None, create figure
+
+            confidence (array like) - confidence levels to be added
+
+            nbootstraps (int) - number of bootstrap samples
+
+            xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
+            annotate (bool) - if True, label peak spectral power
+
+            kwargs: plot formatting keyword arguments
 
         Returns:
-        ax (mpl.axes.AxesSublot)
+
+            ax (mpl.axes.AxesSublot)
+
         """
 
         # define axes
@@ -309,9 +391,13 @@ class Spectrogram:
         Plot spectrogram and corresponding signal on adjacent axes.
 
         Args:
-        confidence (array like) - confidence levels to be added
-        nbootstraps (int) - number of bootstrap samples
-        xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
+            confidence (array like) - confidence levels to be added
+
+            nbootstraps (int) - number of bootstrap samples
+
+            xaxis (str) - quantity for x axis, either 'period' or 'frequency'
+
         """
 
         # Create figure

@@ -9,9 +9,13 @@ class TimeseriesPlot:
     Object describes a 1D timeseries.
 
     Attributes:
-    x (np.ndarray) - independent variable
-    y (np.ndarray) - dependent variable
-    ax (matplotlib.axes.AxesSubplot)
+
+        x (np.ndarray) - independent variable
+
+        y (np.ndarray) - dependent variable
+
+        ax (matplotlib.axes.AxesSubplot)
+
     """
 
     def __init__(self, x, y, ax=None):
@@ -19,9 +23,13 @@ class TimeseriesPlot:
         Instantiate a 1D timeseries.
 
         Args:
-        x (np.ndarray) - independent variable
-        y (np.ndarray) - dependent variable
-        ax (matplotlib.axes.AxesSubplot)
+
+            x (np.ndarray) - independent variable
+
+            y (np.ndarray) - dependent variable
+
+            ax (matplotlib.axes.AxesSubplot)
+
         """
 
         self.x = x
@@ -50,10 +58,15 @@ class TimeseriesPlot:
         Scatterplot markers for x and y data.
 
         Args:
-        color (str) - marker color
-        alpha (float) - marker alpha
-        s (float) - marker size
-        rasterized (bool) - if True, rasterize markers
+
+            color (str) - marker color
+
+            alpha (float) - marker alpha
+
+            s (float) - marker size
+
+            rasterized (bool) - if True, rasterize markers
+
         """
         marker_kw = dict(color=color, s=s, alpha=alpha, lw=0, rasterized=rasterized)
         _ = self.ax.scatter(self.x, self.y, **marker_kw)
@@ -71,11 +84,17 @@ class TimeseriesPlot:
         Plot moving average of x and y data.
 
         Args:
-        ma_type (str) - type of average, 'savgol', 'sliding', or 'binned'
-        window_size (int) - size of sliding window or bin (num of cells)
-        resolution (int) - sampling resolution for confidence interval
-        smooth (bool) - if True, apply secondary savgol filter
-        color, alpha, lw, linestyle - formatting parameters
+
+            ma_type (str) - type of average, 'savgol', 'sliding', or 'binned'
+
+            window_size (int) - size of sliding window or bin (num of cells)
+
+            resolution (int) - sampling resolution for confidence interval
+
+            smooth (bool) - if True, apply secondary savgol filter
+
+            color, alpha, lw, linestyle - formatting parameters
+
         """
 
         ma_kw = dict(ma_type=ma_type, window_size=window_size, resolution=resolution, smooth=smooth)
@@ -97,12 +116,19 @@ class TimeseriesPlot:
         Plot confidence interval for moving average of x and y data.
 
         Args:
-        ma_type (str) - type of moving average, 'sliding' or 'binned'
-        window_size (int) - size of sliding window or bin (num of cells)
-        resolution (int) - sampling resolution for confidence interval
-        nbootstraps (int) - number of bootstraps
-        confidence (float) - confidence interval, between 0 and 100
-        color, alpha - formatting parameters
+
+            ma_type (str) - type of moving average, 'sliding' or 'binned'
+
+            window_size (int) - size of sliding window or bin (num of cells)
+
+            resolution (int) - sampling resolution for confidence interval
+
+            nbootstraps (int) - number of bootstraps
+
+            confidence (float) - confidence interval, between 0 and 100
+
+            color, alpha - formatting parameters
+
         """
 
         # define moving average keyword arguments
@@ -135,13 +161,21 @@ class TimeseriesPlot:
         Plot timeseries data.
 
         Args:
-        scatter (bool) - if True, add datapoints
-        average (bool) - if True, add moving average
-        interval (bool) - if True, add moving average interval
-        marker_kw (dict) - keyword arguments for marker formatting
-        line_kw (dict) - keyword arguments for line formatting
-        interval_kw (dict) - keyword arguments for interval formatting
-        ma_kw (dict) - keyword arguments for moving average
+
+            scatter (bool) - if True, add datapoints
+
+            average (bool) - if True, add moving average
+
+            interval (bool) - if True, add moving average interval
+
+            marker_kw (dict) - keyword arguments for marker formatting
+
+            line_kw (dict) - keyword arguments for line formatting
+
+            interval_kw (dict) - keyword arguments for interval formatting
+
+            ma_kw (dict) - keyword arguments for moving average
+
         """
 
         # add scattered data
