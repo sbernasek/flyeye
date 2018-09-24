@@ -40,9 +40,7 @@
 <div class="section" id="loading-an-experiment">
 <h2>Loading an experiment<a class="headerlink" href="#loading-an-experiment" title="Permalink to this headline">¶</a></h2>
 <p>Import an experiment from a directory containing <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
-
-<span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">experiments</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">experiments</span>
 
 <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./data&#39;</span>
 <span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -52,6 +50,10 @@
 <div class="section" id="selecting-a-disc">
 <h2>Selecting a disc<a class="headerlink" href="#selecting-a-disc" title="Permalink to this headline">¶</a></h2>
 <p>Select a specific disc:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">disc_id</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">disc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">disc_id</span><span class="p">]</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="querying-by-cell-type">
 <h2>Querying by cell type<a class="headerlink" href="#querying-by-cell-type" title="Permalink to this headline">¶</a></h2>

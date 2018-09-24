@@ -13,8 +13,6 @@ Import an experiment from a directory containing ``.silhouette`` files:
 
 .. code-block:: python
 
-   #!/usr/bin/env python
-
    from flyeye.data import experiments
 
    path = './data'
@@ -27,6 +25,7 @@ Selecting a disc
 Select a specific disc:
 
 .. code-block:: python
+
    disc_id = 2
    disc = experiment.discs[disc_id]
 
