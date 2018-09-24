@@ -44,168 +44,203 @@
 <dt id="flyeye.dynamics.averages.apply_custom_roller">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">apply_custom_roller</code><span class="sig-paren">(</span><em>func</em>, <em>x</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#apply_custom_roller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.apply_custom_roller" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply function to rolling window.</p>
-<p>Args:
-func (function) - function applied to each window, returns 1 x N_out
-x (np.ndarray) - ordered samples, length N
-kwargs: keyword arguments for window specification</p>
-<p>Returns:
-fx (np.ndarray) - function output for each window, N/resolution x N_out</p>
+<p>Args:</p>
+<blockquote>
+<div><p>func (function) - function applied to each window, returns 1 x N_out</p>
+<p>x (np.ndarray) - ordered samples, length N</p>
+<p>kwargs: keyword arguments for window specification</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>fx (np.ndarray) - function output for each window, N/resolution x N_out</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.bootstrap">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">bootstrap</code><span class="sig-paren">(</span><em>x</em>, <em>func=&lt;function mean&gt;</em>, <em>confidence=95</em>, <em>N=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.bootstrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns point estimate obtained by parametric bootstrap.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-func (function) - function applied to each bootstrap sample
-confidence (float) - confidence interval, between 0 and 100
-N (int) - number of bootstrap samples</p>
-<p>Returns:
-interval (np.ndarray) - confidence interval bounds</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>func (function) - function applied to each bootstrap sample</p>
+<p>confidence (float) - confidence interval, between 0 and 100</p>
+<p>N (int) - number of bootstrap samples</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>interval (np.ndarray) - confidence interval bounds</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.detrend_signal">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">detrend_signal</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=99</em>, <em>order=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#detrend_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.detrend_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detrend and scale fluctuations using first-order univariate spline.</p>
-<dl class="docutils">
-<dt>Parameters:</dt>
-<dd>x (np array) -ordered samples
-window_size (int) - size of interpolation window for lowpass filter
-order (int) - spline order</dd>
-<dt>Returns:</dt>
-<dd>residuals (np array) - detrended residuals
-trend (np array) - spline fit to signal</dd>
-</dl>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np array) -ordered samples</p>
+<p>window_size (int) - size of interpolation window for lowpass filter</p>
+<p>order (int) - spline order</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div><p>residuals (np array) - detrended residuals</p>
+<p>trend (np array) - spline fit to signal</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_binned_mean">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_binned_mean</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_binned_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_binned_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns mean values within non-overlapping sequential windows.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-window_size (int) - size of window, W</p>
-<p>Returns:
-means (np.ndarray) - bin means, N/W x 1</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>window_size (int) - size of window, W</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>means (np.ndarray) - bin means, N/W x 1</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_rolling_gaussian">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_gaussian</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_gaussian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns gaussian fit within sliding window.</p>
-<p>Args:
-x (np.ndarray) - ordered samples
-window_size (int) - size of window
-resolution (int) - sampling interval</p>
-<p>Returns:
-model (scipy.stats.norm)</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples</p>
+<p>window_size (int) - size of window</p>
+<p>resolution (int) - sampling interval</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>model (scipy.stats.norm)</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_rolling_mean">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_mean</code><span class="sig-paren">(</span><em>x</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute rolling mean. This implementation permits flexible sampling intervals and multi-dimensional time series, but is slower than get_running_mean for 1D time series.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-kw: arguments for window specification</p>
-<p>Returns:
-means (np.ndarray) - moving average of x, N/resolution x 1</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>kw: arguments for window specification</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>means (np.ndarray) - moving average of x, N/resolution x 1</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_rolling_mean_interval">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_mean_interval</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>confidence=95</em>, <em>nbootstraps=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate confidence interval for moving average of ordered values.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-window_size (int) - size of window, W
-resolution (int) - sampling interval
-confidence (float) - confidence interval, between 0 and 100
-nbootstraps (int) - number of bootstrap samples</p>
-<p>Returns:
-interval (np.ndarray) - confidence interval bounds, N/resolution x 2</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>window_size (int) - size of window, W</p>
+<p>resolution (int) - sampling interval</p>
+<p>confidence (float) - confidence interval, between 0 and 100</p>
+<p>nbootstraps (int) - number of bootstrap samples</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>interval (np.ndarray) - confidence interval bounds, N/resolution x 2</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_rolling_window">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_window</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_window" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array slices within a rolling window.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-window_size (int) - size of window, W
-resolution (int) - sampling interval</p>
-<p>Returns:
-windows (np.ndarray) - sampled values, N/resolution x W</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>window_size (int) - size of window, W</p>
+<p>resolution (int) - sampling interval</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>windows (np.ndarray) - sampled values, N/resolution x W</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.get_running_mean">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_running_mean</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_running_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_running_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns running mean for a 1D vector. This is the fastest implementation, but is limited to one-dimensional arrays and doesn’t permit interval specification.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-window_size (int) - size of window, W</p>
-<p>Returns:
-means (np.ndarray) - moving average of x</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>window_size (int) - size of window, W</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>means (np.ndarray) - moving average of x</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.plot_mean">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">plot_mean</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax</em>, <em>label=None</em>, <em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>line_color='k'</em>, <em>line_width=1</em>, <em>line_alpha=1</em>, <em>linestyle=None</em>, <em>markersize=2</em>, <em>smooth=False</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#plot_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.plot_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot moving average.</p>
-<p>Args:
-x, y (array like) - timeseries data
-ax (matplotlib.axes.AxesSubplot) - axis which to which line is added
-label (str) - data label
-ma_type (str) - type of average used, either sliding, binned, or savgol
-window_size (int) - size of window
-resolution (int) - sampling interval
-line_color, line_width, line_alpha, linestyle - formatting parameters
-smooth (bool) - if True, apply secondary savgol filter</p>
-<p>Returns:
-line (matplotlib.lines.Line2D)</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x, y (array like) - timeseries data</p>
+<p>ax (matplotlib.axes.AxesSubplot) - axis which to which line is added</p>
+<p>label (str) - data label</p>
+<p>ma_type (str) - type of average used, either sliding, binned, or savgol</p>
+<p>window_size (int) - size of window</p>
+<p>resolution (int) - sampling interval</p>
+<p>line_color, line_width, line_alpha, linestyle - formatting parameters</p>
+<p>smooth (bool) - if True, apply secondary savgol filter</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>line (matplotlib.lines.Line2D)</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.plot_mean_interval">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">plot_mean_interval</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax</em>, <em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=10</em>, <em>nbootstraps=1000</em>, <em>confidence=95</em>, <em>color='grey'</em>, <em>alpha=0.25</em>, <em>error_bars=False</em>, <em>lw=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#plot_mean_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.plot_mean_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds confidence interval for line average (sliding window or binned) to existing axes.</p>
-<dl class="docutils">
-<dt>Parameters:</dt>
-<dd>x, y (array like) - data
-ax (axes) - axis which to which line is added
-ma_type (str) - type of average used, either ‘sliding’ or ‘binned’
-window_size (int) - size of sliding window or bin (num of cells)
-interval_resolution (int) - sampling resolution for confidence interval
-nbootstraps (int) - number of bootstraps
-confidence (float) - confidence interval, between 0 and 100
-color, alpha - formatting parameters</dd>
-</dl>
+<p>Args:</p>
+<blockquote>
+<div><p>x, y (array like) - data</p>
+<p>ax (axes) - axis which to which line is added</p>
+<p>ma_type (str) - type of average used, either ‘sliding’ or ‘binned’</p>
+<p>window_size (int) - size of sliding window or bin (num of cells)</p>
+<p>interval_resolution (int) - sampling resolution for confidence interval</p>
+<p>nbootstraps (int) - number of bootstraps</p>
+<p>confidence (float) - confidence interval, between 0 and 100</p>
+<p>color, alpha - formatting parameters</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.savgol">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">savgol</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>polyorder=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#savgol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.savgol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform Savitzky-Golay filtration of 1-D array.</p>
-<p>Args:
-x (np.ndarray) - ordered samples
-window_size (int) - filter size
-polyorder (int) - polynomial order</p>
-<p>Returns:
-trend (np.ndarray) - smoothed values</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples</p>
+<p>window_size (int) - filter size</p>
+<p>polyorder (int) - polynomial order</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>trend (np.ndarray) - smoothed values</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="flyeye.dynamics.averages.subsample">
 <code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">subsample</code><span class="sig-paren">(</span><em>x</em>, <em>frac=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.subsample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample array with replacement.</p>
-<p>Args:
-x (np.ndarray) - ordered samples, length N
-frac (float) - sample size (fraction of array)</p>
-<p>Returns:
-sample (np.ndarray) - subsampled values</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np.ndarray) - ordered samples, length N</p>
+<p>frac (float) - sample size (fraction of array)</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>sample (np.ndarray) - subsampled values</div></blockquote>
 </dd></dl>
 
 </div>
@@ -216,20 +251,24 @@ sample (np.ndarray) - subsampled values</p>
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot">
 <em class="property">class </em><code class="descclassname">flyeye.dynamics.timeseries.</code><code class="descname">TimeseriesPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object describes a 1D timeseries.</p>
-<p>Attributes:
-x (np.ndarray) - independent variable
-y (np.ndarray) - dependent variable
-ax (matplotlib.axes.AxesSubplot)</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>x (np.ndarray) - independent variable</p>
+<p>y (np.ndarray) - dependent variable</p>
+<p>ax (matplotlib.axes.AxesSubplot)</p>
+</div></blockquote>
 <dl class="method">
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot.average">
 <code class="descname">average</code><span class="sig-paren">(</span><em>ma_type='savgol'</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>smooth=True</em>, <em>color='k'</em>, <em>alpha=1</em>, <em>lw=1</em>, <em>linestyle=None</em>, <em>**addtl</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot.average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot.average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot moving average of x and y data.</p>
-<p>Args:
-ma_type (str) - type of average, ‘savgol’, ‘sliding’, or ‘binned’
-window_size (int) - size of sliding window or bin (num of cells)
-resolution (int) - sampling resolution for confidence interval
-smooth (bool) - if True, apply secondary savgol filter
-color, alpha, lw, linestyle - formatting parameters</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ma_type (str) - type of average, ‘savgol’, ‘sliding’, or ‘binned’</p>
+<p>window_size (int) - size of sliding window or bin (num of cells)</p>
+<p>resolution (int) - sampling resolution for confidence interval</p>
+<p>smooth (bool) - if True, apply secondary savgol filter</p>
+<p>color, alpha, lw, linestyle - formatting parameters</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -242,38 +281,44 @@ color, alpha, lw, linestyle - formatting parameters</p>
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot.interval">
 <code class="descname">interval</code><span class="sig-paren">(</span><em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=25</em>, <em>nbootstraps=1000</em>, <em>confidence=95</em>, <em>color='k'</em>, <em>alpha=0.5</em>, <em>**additional</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot.interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot.interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot confidence interval for moving average of x and y data.</p>
-<p>Args:
-ma_type (str) - type of moving average, ‘sliding’ or ‘binned’
-window_size (int) - size of sliding window or bin (num of cells)
-resolution (int) - sampling resolution for confidence interval
-nbootstraps (int) - number of bootstraps
-confidence (float) - confidence interval, between 0 and 100
-color, alpha - formatting parameters</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ma_type (str) - type of moving average, ‘sliding’ or ‘binned’</p>
+<p>window_size (int) - size of sliding window or bin (num of cells)</p>
+<p>resolution (int) - sampling resolution for confidence interval</p>
+<p>nbootstraps (int) - number of bootstraps</p>
+<p>confidence (float) - confidence interval, between 0 and 100</p>
+<p>color, alpha - formatting parameters</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>scatter=False</em>, <em>average=True</em>, <em>interval=False</em>, <em>marker_kw={}</em>, <em>line_kw={}</em>, <em>interval_kw={}</em>, <em>ma_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot timeseries data.</p>
-<p>Args:
-scatter (bool) - if True, add datapoints
-average (bool) - if True, add moving average
-interval (bool) - if True, add moving average interval
-marker_kw (dict) - keyword arguments for marker formatting
-line_kw (dict) - keyword arguments for line formatting
-interval_kw (dict) - keyword arguments for interval formatting
-ma_kw (dict) - keyword arguments for moving average</p>
+<p>Args:</p>
+<blockquote>
+<div><p>scatter (bool) - if True, add datapoints</p>
+<p>average (bool) - if True, add moving average</p>
+<p>interval (bool) - if True, add moving average interval</p>
+<p>marker_kw (dict) - keyword arguments for marker formatting</p>
+<p>line_kw (dict) - keyword arguments for line formatting</p>
+<p>interval_kw (dict) - keyword arguments for interval formatting</p>
+<p>ma_kw (dict) - keyword arguments for moving average</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot.scatter">
 <code class="descname">scatter</code><span class="sig-paren">(</span><em>color='k'</em>, <em>alpha=1</em>, <em>s=1</em>, <em>rasterized=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot.scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot.scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scatterplot markers for x and y data.</p>
-<p>Args:
-color (str) - marker color
-alpha (float) - marker alpha
-s (float) - marker size
-rasterized (bool) - if True, rasterize markers</p>
+<p>Args:</p>
+<blockquote>
+<div><p>color (str) - marker color</p>
+<p>alpha (float) - marker alpha</p>
+<p>s (float) - marker size</p>
+<p>rasterized (bool) - if True, rasterize markers</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>

@@ -51,7 +51,8 @@
 <span class="sd">    Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -60,8 +61,11 @@
 <span class="sd">        Instantiate population of cells.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
-<span class="sd">        normalization (str) - channel against which intensities are normalized</span>
+
+<span class="sd">            df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">            normalization (str) - channel against which intensities are normalized</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># store measurements</span>
@@ -87,7 +91,9 @@
 <span class="sd">        Sort cell measurements in place.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        by (str) - key on which measurements are sorted</span>
+
+<span class="sd">            by (str) - key on which measurements are sorted</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
@@ -96,7 +102,9 @@
 <span class="sd">        Shift cells in time.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        lag (float) - shift (NOTE: x-positions are unaffected)</span>
+
+<span class="sd">            lag (float) - shift (NOTE: x-positions are unaffected)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">lag</span></div>
 
@@ -105,10 +113,13 @@
 <span class="sd">        Select subset of cells corresponding to a specified label.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        cell_types (str or list) - type of cells to be selected (e.g. pre, r8)</span>
+
+<span class="sd">            cell_types (str or list) - type of cells to be selected (e.g. pre, r8)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        cells (data.cells.Cells)</span>
+
+<span class="sd">            cells (data.cells.Cells)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># convert string to list</span>
@@ -142,13 +153,19 @@
 <span class="sd">        Select subset of cells within specified spatial bounds.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        xmin, xmax (float) - x-coordinate bounds</span>
-<span class="sd">        ymin, ymax (float) - y-coordinate bounds</span>
-<span class="sd">        zmin, zmax (float) - z-coordinate (layer number) bounds</span>
-<span class="sd">        tmin, tmax (float) - time interval bounds</span>
+
+<span class="sd">            xmin, xmax (float) - x-coordinate bounds</span>
+
+<span class="sd">            ymin, ymax (float) - y-coordinate bounds</span>
+
+<span class="sd">            zmin, zmax (float) - z-coordinate (layer number) bounds</span>
+
+<span class="sd">            tmin, tmax (float) - time interval bounds</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        cells (data.cells.Cells) - copied subset of cells</span>
+
+<span class="sd">            cells (data.cells.Cells) - copied subset of cells</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># initialize filter to include all cells</span>
@@ -170,7 +187,9 @@
 <span class="sd">        Returns median nuclear diameter. Diameters are approximated as that of a circle with equivalent area to each nuclear contour.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        nuclear_diameter (float) - median diameter</span>
+
+<span class="sd">            nuclear_diameter (float) - median diameter</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">pixel_count</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">.</span><span class="n">median</span><span class="p">()</span></div>
 
@@ -182,14 +201,21 @@
 <span class="sd">        Bin cells and compute mean for each bin.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        x (pd.Series) - coordinate on which to bin values</span>
-<span class="sd">        values (pd.Series) - values to be aggregated</span>
-<span class="sd">        bins (np array) - edges for specified bins</span>
-<span class="sd">        bin_width (float) - width of bins used if no bins specified</span>
+
+<span class="sd">            x (pd.Series) - coordinate on which to bin values</span>
+
+<span class="sd">            values (pd.Series) - values to be aggregated</span>
+
+<span class="sd">            bins (np array) - edges for specified bins</span>
+
+<span class="sd">            bin_width (float) - width of bins used if no bins specified</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        bin_centers (np.ndarray) - bin centers</span>
-<span class="sd">        means (np array) - mean value within each bin</span>
+
+<span class="sd">            bin_centers (np.ndarray) - bin centers</span>
+
+<span class="sd">            means (np array) - mean value within each bin</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -211,18 +237,29 @@
 <span class="sd">        Plot expression dynamics for specified channel.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        channel (str) - expression channel</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot) - if None, create axes</span>
-<span class="sd">        scatter (bool) - if True, add markers for each measurement</span>
-<span class="sd">        average (bool) - if True, add moving average</span>
-<span class="sd">        interval - if True, add confidence interval for moving average</span>
-<span class="sd">        marker_kw (dict) - keyword arguments for marker formatting</span>
-<span class="sd">        line_kw (dict) - keyword arguments for line formatting</span>
-<span class="sd">        interval_kw (dict) - keyword arguments for interval formatting</span>
-<span class="sd">        ma_kw (dict) - keyword arguments for interval construction</span>
+
+<span class="sd">            channel (str) - expression channel</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot) - if None, create axes</span>
+
+<span class="sd">            scatter (bool) - if True, add markers for each measurement</span>
+
+<span class="sd">            average (bool) - if True, add moving average</span>
+
+<span class="sd">            interval - if True, add confidence interval for moving average</span>
+
+<span class="sd">            marker_kw (dict) - keyword arguments for marker formatting</span>
+
+<span class="sd">            line_kw (dict) - keyword arguments for line formatting</span>
+
+<span class="sd">            interval_kw (dict) - keyword arguments for interval formatting</span>
+
+<span class="sd">            ma_kw (dict) - keyword arguments for interval construction</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># sort values inplace</span>
@@ -255,15 +292,23 @@
 <span class="sd">        Create XY scatterplot of two fluorescence channels.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        x, y (str) - channels used for x and y axes</span>
-<span class="sd">        color (str) - marker color</span>
-<span class="sd">        s (float) - marker size</span>
-<span class="sd">        alpha (float) - transparency of markers</span>
-<span class="sd">        fraction (bool) - if True, annotate fraction above midline</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot) - if None, create figure</span>
+
+<span class="sd">            x, y (str) - channels used for x and y axes</span>
+
+<span class="sd">            color (str) - marker color</span>
+
+<span class="sd">            s (float) - marker size</span>
+
+<span class="sd">            alpha (float) - transparency of markers</span>
+
+<span class="sd">            fraction (bool) - if True, annotate fraction above midline</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot) - if None, create figure</span>
 
 <span class="sd">        Returns:</span>
+
 <span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># create figure</span>
@@ -289,7 +334,18 @@
 
 <div class="viewcode-block" id="Cells.annotate_fraction"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.cells.Cells.annotate_fraction">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">annotate_fraction</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Add fraction of cells above midline. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add fraction of cells above midline.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
+<span class="sd">            ratio (array like) - vector of ratios</span>
+
+<span class="sd">            p (float) - text position relative to center line</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fraction</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ratio</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{:2.1%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fraction</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{:2.1%}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">fraction</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></div>
@@ -303,11 +359,21 @@
 <span class="sd">        Plot Lomb Scargle periodogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        channel (str) - expression channel</span>
-<span class="sd">        periods (array like) - spectral frequencies to be tested</span>
-<span class="sd">        ymax (float) - max spectral power</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot)</span>
-<span class="sd">        kwargs: spectrogram visualization keywords</span>
+
+<span class="sd">            channel (str) - expression channel</span>
+
+<span class="sd">            periods (array like) - spectral frequencies to be tested</span>
+
+<span class="sd">            ymax (float) - max spectral power</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
+<span class="sd">            kwargs: spectrogram visualization keywords</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># compile spectrogram</span>

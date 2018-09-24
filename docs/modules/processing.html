@@ -45,9 +45,11 @@
 <em class="property">class </em><code class="descclassname">flyeye.processing.triangulation.</code><code class="descname">ExperimentTriangulation</code><span class="sig-paren">(</span><em>experiment</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#ExperimentTriangulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.processing.triangulation.ExperimentTriangulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object for estimating the median distance between adjacent columns of R8 cells for each disc within an experiment. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</p>
 <p>The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</p>
-<p>Attributes:
-experiment (data.experiments.Experiment)
-tri (dict) - {disc ID: Triangulation} pairs</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>experiment (data.experiments.Experiment)</p>
+<p>tri (dict) - {disc ID: Triangulation} pairs</p>
+</div></blockquote>
 <dl class="method">
 <dt id="flyeye.processing.triangulation.ExperimentTriangulation.plot_expression">
 <code class="descname">plot_expression</code><span class="sig-paren">(</span><em>ax</em>, <em>channel='green'</em>, <em>color='black'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#ExperimentTriangulation.plot_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.processing.triangulation.ExperimentTriangulation.plot_expression" title="Permalink to this definition">¶</a></dt>
@@ -73,14 +75,16 @@ tri (dict) - {disc ID: Triangulation} pairs</p>
 <em class="property">class </em><code class="descclassname">flyeye.processing.triangulation.</code><code class="descname">Triangulation</code><span class="sig-paren">(</span><em>disc</em>, <em>furrow_velocity=2</em>, <em>threshold=None</em>, <em>min_angle=30</em>, <em>max_angle=60</em>, <em>include_x=True</em>, <em>include_y=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.processing.triangulation.Triangulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object for estimating the median distance between adjacent columns of R8 cells within an individual eye disc. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</p>
 <p>The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</p>
-<p>Attributes:
-params (dict) - triangulation parameters, {name: value}
-xycoords (np.ndarray) - R8 cell positions
-delaunay (scipy.spatial.tri) - Delaunay triangulation
-distances (np.ndarray) - distances between adjacent R8 cells
-edges (np.ndarray) - edge vertices
-hours_per_pixel (float) - distance to time scaling factor
-disc (data.discs.Disc)</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>params (dict) - triangulation parameters, {name: value}</p>
+<p>xycoords (np.ndarray) - R8 cell positions</p>
+<p>delaunay (scipy.spatial.tri) - Delaunay triangulation</p>
+<p>distances (np.ndarray) - distances between adjacent R8 cells</p>
+<p>edges (np.ndarray) - edge vertices</p>
+<p>hours_per_pixel (float) - distance to time scaling factor</p>
+<p>disc (data.discs.Disc)</p>
+</div></blockquote>
 <dl class="method">
 <dt id="flyeye.processing.triangulation.Triangulation.add_edges_to_plot">
 <code class="descname">add_edges_to_plot</code><span class="sig-paren">(</span><em>ax</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation.add_edges_to_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.processing.triangulation.Triangulation.add_edges_to_plot" title="Permalink to this definition">¶</a></dt>
@@ -121,13 +125,15 @@ disc (data.discs.Disc)</p>
 <dt id="flyeye.processing.triangulation.Triangulation.triangulate">
 <code class="descname">triangulate</code><span class="sig-paren">(</span><em>disc</em>, <em>furrow_velocity=2</em>, <em>threshold=None</em>, <em>min_angle=30</em>, <em>max_angle=60</em>, <em>include_x=True</em>, <em>include_y=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation.triangulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.processing.triangulation.Triangulation.triangulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run triangulation.</p>
-<p>Args:
-disc (data.discs.Disc)
-furrow_velocity (float) - furrow inverse-velocity (hours per column)
-threshold (float) - max. quantile of included distances, 0 to 100
-min_angle, max_angle (float) - min. and max. angle of included edges
-include_x (bool) - if True, include x-distance
-include_y (bool) - if True, include y-distance</p>
+<p>Args:</p>
+<blockquote>
+<div><p>disc (data.discs.Disc)</p>
+<p>furrow_velocity (float) - furrow inverse-velocity (hr/column)</p>
+<p>threshold (float) - max quantile of included distances, 0 to 100</p>
+<p>min_angle, max_angle (float) - min/max angle of included edges</p>
+<p>include_x (bool) - if True, include x-distance</p>
+<p>include_y (bool) - if True, include y-distance</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
@@ -141,9 +147,11 @@ include_y (bool) - if True, include y-distance</p>
 <em class="property">class </em><code class="descclassname">flyeye.processing.triangulation.</code><code class="descname">ExperimentTriangulation</code><span class="sig-paren">(</span><em>experiment</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#ExperimentTriangulation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Object for estimating the median distance between adjacent columns of R8 cells for each disc within an experiment. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</p>
 <p>The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</p>
-<p>Attributes:
-experiment (data.experiments.Experiment)
-tri (dict) - {disc ID: Triangulation} pairs</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>experiment (data.experiments.Experiment)</p>
+<p>tri (dict) - {disc ID: Triangulation} pairs</p>
+</div></blockquote>
 <dl class="method">
 <dt>
 <code class="descname">plot_expression</code><span class="sig-paren">(</span><em>ax</em>, <em>channel='green'</em>, <em>color='black'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#ExperimentTriangulation.plot_expression"><span class="viewcode-link">[source]</span></a></dt>
@@ -169,14 +177,16 @@ tri (dict) - {disc ID: Triangulation} pairs</p>
 <em class="property">class </em><code class="descclassname">flyeye.processing.triangulation.</code><code class="descname">Triangulation</code><span class="sig-paren">(</span><em>disc</em>, <em>furrow_velocity=2</em>, <em>threshold=None</em>, <em>min_angle=30</em>, <em>max_angle=60</em>, <em>include_x=True</em>, <em>include_y=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Object for estimating the median distance between adjacent columns of R8 cells within an individual eye disc. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</p>
 <p>The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</p>
-<p>Attributes:
-params (dict) - triangulation parameters, {name: value}
-xycoords (np.ndarray) - R8 cell positions
-delaunay (scipy.spatial.tri) - Delaunay triangulation
-distances (np.ndarray) - distances between adjacent R8 cells
-edges (np.ndarray) - edge vertices
-hours_per_pixel (float) - distance to time scaling factor
-disc (data.discs.Disc)</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>params (dict) - triangulation parameters, {name: value}</p>
+<p>xycoords (np.ndarray) - R8 cell positions</p>
+<p>delaunay (scipy.spatial.tri) - Delaunay triangulation</p>
+<p>distances (np.ndarray) - distances between adjacent R8 cells</p>
+<p>edges (np.ndarray) - edge vertices</p>
+<p>hours_per_pixel (float) - distance to time scaling factor</p>
+<p>disc (data.discs.Disc)</p>
+</div></blockquote>
 <dl class="method">
 <dt>
 <code class="descname">add_edges_to_plot</code><span class="sig-paren">(</span><em>ax</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation.add_edges_to_plot"><span class="viewcode-link">[source]</span></a></dt>
@@ -217,13 +227,15 @@ disc (data.discs.Disc)</p>
 <dt>
 <code class="descname">triangulate</code><span class="sig-paren">(</span><em>disc</em>, <em>furrow_velocity=2</em>, <em>threshold=None</em>, <em>min_angle=30</em>, <em>max_angle=60</em>, <em>include_x=True</em>, <em>include_y=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/processing/triangulation.html#Triangulation.triangulate"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Run triangulation.</p>
-<p>Args:
-disc (data.discs.Disc)
-furrow_velocity (float) - furrow inverse-velocity (hours per column)
-threshold (float) - max. quantile of included distances, 0 to 100
-min_angle, max_angle (float) - min. and max. angle of included edges
-include_x (bool) - if True, include x-distance
-include_y (bool) - if True, include y-distance</p>
+<p>Args:</p>
+<blockquote>
+<div><p>disc (data.discs.Disc)</p>
+<p>furrow_velocity (float) - furrow inverse-velocity (hr/column)</p>
+<p>threshold (float) - max quantile of included distances, 0 to 100</p>
+<p>min_angle, max_angle (float) - min/max angle of included edges</p>
+<p>include_x (bool) - if True, include x-distance</p>
+<p>include_y (bool) - if True, include y-distance</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>

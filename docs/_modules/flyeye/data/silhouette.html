@@ -1,0 +1,353 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>flyeye.data.silhouette &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.data.silhouette</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">exists</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="Silhouette"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette">[docs]</a><span class="k">class</span> <span class="nc">Silhouette</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface to a FlyEye Silhouette file.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        path (str) - path to Silhouette file</span>
+
+<span class="sd">        feed (dict) - feed file containing layer IDs</span>
+
+<span class="sd">        feud (dict) - feud file containing cell type labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate interface to silhouette file.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            path (str) - path to silhouette file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># load feed and feud files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;feed.json&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;feud.json&#39;</span><span class="p">)</span>
+
+        <span class="c1"># read suggested disc orientation from feed file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_orientation</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Silhouette.read_json"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.read_json">[docs]</a>    <span class="k">def</span> <span class="nf">read_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read contents of specified JSON file.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            filename (str) - filename</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            out (dict) - file contents</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Silhouette.load_orientation"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.load_orientation">[docs]</a>    <span class="k">def</span> <span class="nf">load_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load suggested disc orientation from feed file. &quot;&quot;&quot;</span>
+
+        <span class="c1"># read orientation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="SilhouetteData"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData">[docs]</a><span class="k">class</span> <span class="nc">SilhouetteData</span><span class="p">(</span><span class="n">Silhouette</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface to data within a FlyEye Silhouette file.</span>
+
+<span class="sd">    Upon instantiation, individual cell measurements are aggregated into a data.cells.Cells compatible DataFrame.</span>
+
+<span class="sd">    Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">        flip_about_yz (bool) - if True, invert about YZ plane</span>
+
+<span class="sd">        flip_about_xy (bool) - if True, invert about XY plane</span>
+
+<span class="sd">    Inherited attributes:</span>
+
+<span class="sd">        path (str) - path to Silhouette file</span>
+
+<span class="sd">        feed (dict) - feed file containing layer IDs</span>
+
+<span class="sd">        feud (dict) - feud file containing cell type labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">recompile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate interface to silhouette file data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            path (str) - path to silhouette file</span>
+
+<span class="sd">            recompile (bool) - if True, recompile measurements from all layers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">recompile</span><span class="o">=</span><span class="n">recompile</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SilhouetteData.compile_measurements"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.compile_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">compile_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compile measurements from all layers (slow access). &quot;&quot;&quot;</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_labels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_contours</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.save_measurements"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.save_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">save_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Save serialized measurements for fast access. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;measurements.json&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.load_measurements"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.load_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">load_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load serialized measurements (fast access). &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;measurements.json&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.load"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recompile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read all contour and orientation data from silhouette file.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            recompile (bool) - if True, recompile measurements from all layers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check whether measurements are available</span>
+        <span class="n">measurements_available</span> <span class="o">=</span> <span class="n">exists</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;measurements.json&#39;</span><span class="p">))</span>
+
+        <span class="c1"># load available measurements if recompile flag is false</span>
+        <span class="k">if</span> <span class="n">measurements_available</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_measurements</span><span class="p">()</span>
+
+        <span class="c1"># otherwise, recompile and save measurements</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compile_measurements</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_measurements</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.read_labels"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.read_labels">[docs]</a>    <span class="k">def</span> <span class="nf">read_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load segment labels from silhouette file.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            labels (dict) - {layer_id: {contour_id: label}} entries for each layer</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># compile labels for all layers</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feud</span><span class="p">[</span><span class="s1">&#39;layers&#39;</span><span class="p">]:</span>
+
+            <span class="c1"># compile {contour_id: contour_label} dictionary for current layer</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">contour</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;contours&#39;</span><span class="p">]:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">contour</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">label</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">annotations</span><span class="p">[</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+
+            <span class="c1"># store labels for current layer</span>
+            <span class="n">labels</span><span class="p">[</span><span class="n">layer</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">annotations</span>
+
+        <span class="k">return</span> <span class="n">labels</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.parse_contour"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.parse_contour">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_contour</span><span class="p">(</span><span class="n">contour</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert contour to list format.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            contour (dict) - contour from silhouette file</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            ctr_list (list) - values in data.cells.Cells compatible list format</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># extract values</span>
+        <span class="n">centroid</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;centroid&#39;</span><span class="p">]</span>
+        <span class="n">pixel_count</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;pixel_count&#39;</span><span class="p">]</span>
+        <span class="n">color_avg</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;color_avg&#39;</span><span class="p">]</span>
+        <span class="n">color_std</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;color_std&#39;</span><span class="p">]</span>
+
+        <span class="c1"># reorganize values</span>
+        <span class="n">ctr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">pixel_count</span><span class="p">,</span>
+                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span>
+                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">ctr_list</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.read_contours"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.read_contours">[docs]</a>    <span class="k">def</span> <span class="nf">read_contours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_labels</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read contours from silhouette file.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            all_labels (dict) - {layer_id: {contour_id: label}} for each layer</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># read contours from all layers</span>
+        <span class="n">contours</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;layer_ids&#39;</span><span class="p">]:</span>
+
+            <span class="c1"># load labels for current layer</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">all_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="c1"># skip layers without any labels</span>
+            <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># read layer from silhouette file</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:d}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer_id</span><span class="p">))</span>
+
+            <span class="c1"># read all contours within layer</span>
+            <span class="k">for</span> <span class="n">contour</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;contours&#39;</span><span class="p">]:</span>
+
+                <span class="c1"># get label for current contour</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="c1"># skip unlabeled contours</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># convert to list format</span>
+                <span class="n">ctr_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_contour</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
+                <span class="n">ctr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">layer_id</span><span class="p">,</span> <span class="n">label</span><span class="p">])</span>
+
+                <span class="c1"># store contours from current layer</span>
+                <span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctr_list</span><span class="p">)</span>
+
+        <span class="c1"># compile dataframe</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;centroid_y&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;pixel_count&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;green_std&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;red_std&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;blue_std&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">contours</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">API DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT US</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sebastian Bernasek.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

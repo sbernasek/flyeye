@@ -54,8 +54,11 @@
 <span class="sd">    Object representing multiple eye discs obtained under a single set of conditions.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    discs (dict) - {disc ID: data.discs.Disc} pairs</span>
-<span class="sd">    num_discs (int) - number of discs within experiment</span>
+
+<span class="sd">        discs (dict) - {disc ID: data.discs.Disc} pairs</span>
+
+<span class="sd">        num_discs (int) - number of discs within experiment</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">,</span>
@@ -66,10 +69,15 @@
 <span class="sd">        Instantiate object representing all discs obtained under a single set of conditions.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        dirpath (str) - path to directory containing silhouette files</span>
-<span class="sd">        normalization (str) - normalization channel</span>
-<span class="sd">        auto_alignment (bool) - if True, align discs</span>
-<span class="sd">        kwargs: keyword arguments for disc instantiation</span>
+
+<span class="sd">            dirpath (str) - path to directory containing silhouette files</span>
+
+<span class="sd">            normalization (str) - normalization channel</span>
+
+<span class="sd">            auto_alignment (bool) - if True, align discs</span>
+
+<span class="sd">            kwargs: keyword arguments for disc instantiation</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">discs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -92,12 +100,17 @@
 <span class="sd">        Load discs from silhouette files.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        dirpath (str) - path to directory containing silhouette files</span>
-<span class="sd">        normalization (str) - normalization channel</span>
-<span class="sd">        kwargs: keyword arguments for disc instantiation, e.g. furrow_velocity</span>
+
+<span class="sd">            dirpath (str) - path to directory containing silhouette files</span>
+
+<span class="sd">            normalization (str) - normalization channel</span>
+
+<span class="sd">            kwargs: keyword arguments for disc instantiation</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        discs (dict) - {disc_id: data.discs.Disc} pairs</span>
+
+<span class="sd">            discs (dict) - {disc_id: data.discs.Disc} pairs</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># identify silhouette files</span>
@@ -117,7 +130,9 @@
 <span class="sd">        Align all discs within experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        channel (str) - expression channel by which discs are aligned</span>
+
+<span class="sd">            channel (str) - expression channel by which discs are aligned</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">al</span> <span class="o">=</span> <span class="n">ExperimentAlignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discs</span> <span class="o">=</span> <span class="n">al</span><span class="o">.</span><span class="n">get_aligned_experiment</span><span class="p">()</span><span class="o">.</span><span class="n">discs</span></div>
@@ -127,11 +142,15 @@
 <span class="sd">        Compute pairwise quality of alignment between each disc.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        window_size (int) - number of cells for smoothing</span>
-<span class="sd">        kw: keyword arguments for DiscAlignment</span>
+
+<span class="sd">            window_size (int) - number of cells for smoothing</span>
+
+<span class="sd">            kw: keyword arguments for DiscAlignment</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        scores (np.ndarray) - mean quality of alignment for each disc</span>
+
+<span class="sd">            scores (np.ndarray) - mean quality of alignment for each disc</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># compute pairwise alignment between discs</span>
@@ -153,7 +172,9 @@
 <span class="sd">        Apply time shift to all discs in experiment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        lag (float) - time shift applied to each disc</span>
+
+<span class="sd">            lag (float) - time shift applied to each disc</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">disc</span><span class="o">.</span><span class="n">apply_lag</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">lag</span><span class="p">)</span> <span class="k">for</span> <span class="n">disc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discs</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
@@ -162,7 +183,9 @@
 <span class="sd">        Shift all discs s.t. t=0 is the first R8 in the reference disc.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        disc_id (int) - index of disc used as reference</span>
+
+<span class="sd">            disc_id (int) - index of disc used as reference</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get time of first R8</span>
@@ -177,11 +200,15 @@
 <span class="sd">        Return Cells object for all specified cells.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        cell_type (str or list) - type of cells to select</span>
-<span class="sd">        selection_kw: keyword arguments for cell position selection</span>
+
+<span class="sd">            cell_type (str or list) - type of cells to select</span>
+
+<span class="sd">            selection_kw: keyword arguments for cell position selection</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        cells (data.cells.Cells)</span>
+
+<span class="sd">            cells (data.cells.Cells)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># assign disc_id</span>
@@ -209,13 +236,19 @@
 <span class="sd">        Select cells concurrent with first N identified cells of reference cell type.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        reference_types (array like) - reference cell type(s)</span>
-<span class="sd">        N (int) - number of early neurons defining time window for each disc</span>
-<span class="sd">        lower_slip (float) - window extension (hours) prior to first neuron</span>
-<span class="sd">        upper_slip (int) - index of first neuron used (excludes early outliers)</span>
+
+<span class="sd">            reference_types (array like) - reference cell type(s)</span>
+
+<span class="sd">            N (int) - number of reference cells defining time window</span>
+
+<span class="sd">            lower_slip (float) - extension before first reference cell, hours</span>
+
+<span class="sd">            upper_slip (int) - reference cells skipped (excludes outliers)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        df (DataFrame) - cells concurrent with reference cell type</span>
+
+<span class="sd">            df (DataFrame) - cells concurrent with reference cell type</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># aggregate cells from just before/after their identification</span>
@@ -270,12 +303,17 @@
 <span class="sd">        Compile Dataframe of early R cells and concurrent progenitors.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        N (int) - number of early neurons defining time window for each disc</span>
-<span class="sd">        lower_slip (float) - window extension (hours) prior to first neuron</span>
-<span class="sd">        upper_slip (int) - index of first neuron used (excludes early outliers)</span>
+
+<span class="sd">            N (int) - number of reference cells defining time window</span>
+
+<span class="sd">            lower_slip (float) - extension before first reference cell, hours</span>
+
+<span class="sd">            upper_slip (int) - reference cells skipped (excludes outliers)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        df (DataFrame) - measurements for early R cells and conc. progenitors</span>
+
+<span class="sd">            df (DataFrame) - measurement data for early R cells and concurrent progenitors</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">cell_types</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;r8&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;r2&#39;</span><span class="p">,</span> <span class="s1">&#39;r5&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;r3&#39;</span><span class="p">,</span> <span class="s1">&#39;r4&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;r1&#39;</span><span class="p">,</span> <span class="s1">&#39;r6&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;r7&#39;</span><span class="p">]]</span>
@@ -297,15 +335,23 @@
 <span class="sd">        Compile SpatialCorrelation instance for all specified cells.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        cell_type (str) - type of cells to select</span>
-<span class="sd">        channel (str) - expression channel for which correlations are desired</span>
-<span class="sd">        y_only (bool) - if True, only use y-component of data</span>
-<span class="sd">        raw (bool) - if True, removes normalization</span>
-<span class="sd">        discs_included (list or str) - included discs, defaults to all</span>
-<span class="sd">        selection_kw: keyword arguments for cell position selection</span>
+
+<span class="sd">            cell_type (str) - type of cells to select</span>
+
+<span class="sd">            channel (str) - expression channel for which correlations are desired</span>
+
+<span class="sd">            y_only (bool) - if True, only use y-component of data</span>
+
+<span class="sd">            raw (bool) - if True, removes normalization</span>
+
+<span class="sd">            discs_included (list or str) - included discs, defaults to all</span>
+
+<span class="sd">            selection_kw: keyword arguments for cell position selection</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        corr (analysis.correlation.SpatialCorrelation)</span>
+
+<span class="sd">           corr (analysis.correlation.SpatialCorrelation)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># instantiate empty SpatialCorrelation object</span>

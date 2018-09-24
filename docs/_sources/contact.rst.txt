@@ -7,6 +7,6 @@ Contact Us
 ==========
 
 
-**NU FlyEye:** *Analysis* is co-developed by the `Amaral <https://amaral.northwestern.edu/>`_ and `Bagheri <http://bagheri.northwestern.edu/>`_ labs in the Department of Chemical and Biological Engineering at Northwestern University.
+**NU FlyEye: Analysis** is co-developed by the `Amaral <https://amaral.northwestern.edu/>`_ and `Bagheri <http://bagheri.northwestern.edu/>`_ labs in the Department of Chemical and Biological Engineering at Northwestern University.
 
-For questions regarding **NU FlyEye:** *Analysis* or any other component of the **NU FlyEye** platform, please feel free to contact us via email.
+For questions regarding **NU FlyEye: Analysis** or any other component of the **NU FlyEye** platform, please feel free to contact us via email.

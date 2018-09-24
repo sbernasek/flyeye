@@ -55,11 +55,15 @@
 <span class="sd">    Object representing all cells in a single eye disc.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    path (str) - unique silhouette filepath</span>
-<span class="sd">    triangulation (processing.triangulation.Triangulation)</span>
+
+<span class="sd">        path (str) - unique silhouette filepath</span>
+
+<span class="sd">        triangulation (processing.triangulation.Triangulation)</span>
 
 <span class="sd">    Inherited Attributes:</span>
-<span class="sd">    df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -74,13 +78,21 @@
 <span class="sd">        Instantiate object representing all cells in a single eye disc.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
-<span class="sd">        normalization (str) - normalization channel</span>
-<span class="sd">        flip_about_yz (bool) - if True, invert about YZ plane</span>
-<span class="sd">        flip_about_xy (bool) - if True, invert about XY plane</span>
-<span class="sd">        path (str) - silhouette filepath</span>
-<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
-<span class="sd">        offset (float) - time by which disc is shifted from first R8</span>
+
+<span class="sd">            df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">            normalization (str) - normalization channel</span>
+
+<span class="sd">            flip_about_yz (bool) - if True, invert about YZ plane</span>
+
+<span class="sd">            flip_about_xy (bool) - if True, invert about XY plane</span>
+
+<span class="sd">            path (str) - silhouette filepath</span>
+
+<span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+
+<span class="sd">            offset (float) - time by which disc is shifted from first R8</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">Cells</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
@@ -131,14 +143,21 @@
 <span class="sd">        Instantiate disc from silhouette file.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        path (str) - silhouette filepath</span>
-<span class="sd">        normalization (str) - normalization channel</span>
-<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
-<span class="sd">        recompile (bool) - if True, recompile measurements from all layers</span>
-<span class="sd">        kwargs: keyword arguments for disc instantiation</span>
+
+<span class="sd">            path (str) - silhouette filepath</span>
+
+<span class="sd">            normalization (str) - normalization channel</span>
+
+<span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+
+<span class="sd">            recompile (bool) - if True, recompile measurements from all layers</span>
+
+<span class="sd">            kwargs: keyword arguments for disc instantiation</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        disc (data.discs.Disc)</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># load silhouette file data</span>
@@ -160,14 +179,14 @@
 <span class="sd">        Load image stack from silhouette file.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        stack (data.image.ImageStack)</span>
+
+<span class="sd">            stack (data.image.ImageStack)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ImageStack</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Disc.standardize_labels"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.standardize_labels">[docs]</a>    <span class="k">def</span> <span class="nf">standardize_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Convert all alternate precursor labels to &#39;pre&#39; &quot;&quot;&quot;</span>
-        <span class="c1"># for alternate in [&#39;p&#39;, &#39;prepre&#39;, &#39;v&#39;]:</span>
-        <span class="c1">#     self.df.ix[self.df.label==alternate, &#39;label&#39;] = &#39;pre&#39;</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;prepre&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pre&#39;</span></div>
 
@@ -193,7 +212,9 @@
 <span class="sd">        Shift disc in time.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        offset (str or float) - position of new origin, if &#39;first_r8&#39; shift such that first R8 occurs at time zero</span>
+
+<span class="sd">            offset (str or float) - position of new origin, if &#39;first_r8&#39; shift such that first R8 occurs at time zero</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -214,7 +235,9 @@
 <span class="sd">        Convert each channel&#39;s fluorescence to a 0-1 scale.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        base (float) - maximum fluorescence</span>
+
+<span class="sd">            base (float) - maximum fluorescence</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">base</span>
@@ -225,7 +248,9 @@
 <span class="sd">        Normalize expression levels by the reference channel.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        reference_channel (str) - channel used for normalization</span>
+
+<span class="sd">            reference_channel (str) - channel used for normalization</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">normalization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">reference_channel</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]:</span>
@@ -251,7 +276,9 @@
 <span class="sd">        Add detrended fluctuations for each fluorescence channel within each cell type to disc dataframe.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        order (int) - polyorder for local trendfitting</span>
+
+<span class="sd">            order (int) - polyorder for local trendfitting</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">fluctuations</span> <span class="o">=</span> <span class="p">[]</span>
@@ -307,10 +334,13 @@
 <span class="sd">        Determine which layers span multipotent cells. Bounds correspond to lower and upper quantiles taken from a normal fit to all progenitor layers.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        q (float) - width parameter (interquantile range), 0 to 1</span>
+
+<span class="sd">            q (float) - width parameter (interquantile range), 0 to 1</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        bounds (np.ndarray, length 2) - lower and upper bounds</span>
+
+<span class="sd">            bounds (np.ndarray, length 2) - lower and upper bounds</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">progenitors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span>
         <span class="n">layers</span> <span class="o">=</span> <span class="n">progenitors</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">values</span>

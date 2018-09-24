@@ -1,0 +1,685 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>flyeye.data.image &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.data.image</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
+
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">patches</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">rotate</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">grey_closing</span><span class="p">,</span> <span class="n">median_filter</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">.silhouette</span> <span class="k">import</span> <span class="n">Silhouette</span>
+
+
+<div class="viewcode-block" id="Smoothing"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Smoothing">[docs]</a><span class="k">class</span> <span class="nc">Smoothing</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Smoothing operation applied to images.</span>
+
+<span class="sd">    Default behavior entails three iterations of grey closing followed by a 3-pixel wide median filter.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        niters (int) - number of grey closing iterations</span>
+
+<span class="sd">        size (int) - pixel size of median filter in XY dimensions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">niters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate smoothing filter.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            niters (int) - number of grey closing iterations</span>
+
+<span class="sd">            size (int) - pixel size of median filter in XY dimensions</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">niters</span> <span class="o">=</span> <span class="n">niters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply smoothing to image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            im (np.ndarray(np.float32))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grey_closing</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">niters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">niters</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">median_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im</span>
+
+<div class="viewcode-block" id="Smoothing.grey_closing"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Smoothing.grey_closing">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">grey_closing</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">niters</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply grey closing operation to image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.</span>
+
+<span class="sd">            niters (int) - number of grey closing iterations</span>
+
+<span class="sd">        Returns</span>
+
+<span class="sd">            im (np.ndarray(np.float32))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get filter size</span>
+        <span class="n">shape_to_size</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)}</span>
+        <span class="n">filter_size</span> <span class="o">=</span> <span class="n">shape_to_size</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)]</span>
+
+        <span class="c1"># apply grey closing</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">niters</span><span class="p">):</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">grey_closing</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">filter_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">im</span></div>
+
+<div class="viewcode-block" id="Smoothing.median_filter"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Smoothing.median_filter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">median_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply grey closing operation to image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.</span>
+
+<span class="sd">            size (int) - pixel size of median filter in XY dimensions</span>
+
+<span class="sd">        Returns</span>
+
+<span class="sd">            im (np.ndarray(np.float32))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get filter size</span>
+        <span class="n">shape_to_size</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="mi">1</span><span class="p">)}</span>
+        <span class="n">filter_size</span> <span class="o">=</span> <span class="n">shape_to_size</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">median_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">filter_size</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ScalarField"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField">[docs]</a><span class="k">class</span> <span class="nc">ScalarField</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a floating-point 2D scalar field that can take on positive or negative values.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        im (np.ndarray[float32]) - scalar values, (X,Y)</span>
+
+<span class="sd">        fig (matplotlib.figure.Figure) - image rendering</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate scalar field.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray[float32]) - scalar values, (X,Y)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return pixelwise sum. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">+</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return pixelwise difference. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return pixelwise product. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">*</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return pixelwise ratio. &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">/</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScalarField.from_8bit"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.from_8bit">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_8bit</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Instantiate from 8-bit image. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.uint8_to_float32"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.uint8_to_float32">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">uint8_to_float32</span><span class="p">(</span><span class="n">im_uint8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert 8-bit array to floating point values on a 0-1 interval.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im_uint8 (np.ndarray[uint8])</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            im_float32 (np.ndarray[float32])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">im_uint8</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_fliplr</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Flip image array about Y axis. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScalarField.fliplr"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.fliplr">[docs]</a>    <span class="k">def</span> <span class="nf">fliplr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Flip image about Y axis. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fliplr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_rotate</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Rotate image array. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">rotate</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScalarField.rotate"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Apply rotation to image. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="n">angle</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_crop_indices</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">xlow</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xhigh</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ylow</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yhigh</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute image index boundaries from fractional bounds. &quot;&quot;&quot;</span>
+        <span class="n">im_shape</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">ylow</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">im_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">yhigh</span><span class="p">)</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xlow</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">im_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">xhigh</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span>
+
+<div class="viewcode-block" id="ScalarField.get_crop_indices"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.get_crop_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_crop_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute image index boundaries from fractional bounds. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_crop_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.apply_filter"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.apply_filter">[docs]</a>    <span class="k">def</span> <span class="nf">apply_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply filter to image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            func (function) - function operating on image array</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.smooth"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.smooth">[docs]</a>    <span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Smooth image.</span>
+
+<span class="sd">        kwargs: keyword arguments for smoothing operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># instantiate smoothing operation</span>
+        <span class="n">smoothing</span> <span class="o">=</span> <span class="n">Smoothing</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># apply smoothing operation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_filter</span><span class="p">(</span><span class="n">smoothing</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.save"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+             <span class="n">directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+             <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+             <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">,</span>
+             <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save rendered image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            name (str) - file name</span>
+
+<span class="sd">            directory (str) - target directory</span>
+
+<span class="sd">            dpi (int) - resolution</span>
+
+<span class="sd">            fmt (str) - image format</span>
+
+<span class="sd">            transparent (bool) - if True, remove background</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="n">transparent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.render"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+               <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+               <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+               <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            size (tuple) - figure size</span>
+
+<span class="sd">            cmap (matplotlib.cm.ColorMap) - colormap, defaults to Greys</span>
+
+<span class="sd">            vmin, vmax (float) - colorscale bounds</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot) - if None, create figure</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create figure</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
+
+        <span class="c1"># set colormap</span>
+        <span class="k">if</span> <span class="n">cmap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Greys</span>
+
+        <span class="c1"># visualize image</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([]),</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span></div></div>
+
+
+<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Image">[docs]</a><span class="k">class</span> <span class="nc">Image</span><span class="p">(</span><span class="n">ScalarField</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object contains a floating point three channel image.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return scalar field of a single color channel.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            channel (str) - channel to extract, one of &#39;r&#39;, &#39;g&#39;, or &#39;b&#39;</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            image (ScalarField)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="s1">&#39;rgb&#39;</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">channel</span><span class="p">)])</span>
+
+<div class="viewcode-block" id="Image.from_tiff"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Image.from_tiff">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_tiff</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read image file using matplotlib.image.imread.</span>
+
+<span class="sd">        All formats except PNG require pillow or PIL. PNG images are converted from 8-bit to floating point format by default, while other image formats must be manually converted.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            path (str) - image path</span>
+
+<span class="sd">            kwargs: keyword arguments for Image instantiation</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            im (data.image.Image)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># read image (non-PNG formats require pillow library)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># convert to floating point format (float32)</span>
+        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">uint8_to_float32</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Image</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Image.build_colorfilter"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Image.build_colorfilter">[docs]</a>    <span class="k">def</span> <span class="nf">build_colorfilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">scheme</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
+                          <span class="n">channels</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
+                          <span class="n">reference</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build filter for converting between RGB and MG colorschemes.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            scheme (str) - colorscheme, &#39;rgb&#39; or &#39;mg&#39;</span>
+
+<span class="sd">            channels (str) - included channels, one or more of &#39;rgbmg&#39;</span>
+
+<span class="sd">            reference (str) - reference channel (used for rgb to mg conversion)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">colorfilter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># MG schemes</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">&#39;mg&#39;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">reference</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+                <span class="c1"># channel blue to red</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># channel red to blue</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="s1">&#39;m&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="s1">&#39;g&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">colorfilter</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># RGB schemes</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scheme</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                    <span class="n">colorfilter</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">colorfilter</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_colorfilter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">colorfilter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply colorfilter to image array.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</span>
+
+<span class="sd">            colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            im_filtered (np.ndarray[float32]) - new color values, (X,Y,3)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">colorfilter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Image.render"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.Image.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+               <span class="n">scheme</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
+               <span class="n">channels</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
+               <span class="n">reference</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render image.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot) - if None, create figure</span>
+
+<span class="sd">            size (tuple) - image size, used if no axis provided</span>
+
+<span class="sd">            scheme (str) - colorscheme, &#39;rgb&#39; or &#39;mg&#39;</span>
+
+<span class="sd">            channels (str) - included channels, one or more of &#39;rgbmg&#39;</span>
+
+<span class="sd">            reference (str) - reference channel (used for rgb to mg conversion)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># apply colorfilter</span>
+        <span class="n">colorfilter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_colorfilter</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">reference</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_colorfilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">colorfilter</span><span class="p">)</span>
+
+        <span class="c1"># create axes and render image</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># render image</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([]),</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+        <span class="k">return</span> <span class="n">ax</span></div></div>
+
+
+<div class="viewcode-block" id="ImageStack"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ImageStack">[docs]</a><span class="k">class</span> <span class="nc">ImageStack</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object representing a 3D stack of RGB image layers. Stack is compiled from sequentially numbered images of each layer within a silhouette file.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        im (np.ndarray[float32]) - RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and (X,Y) are the dimensions of a single cross section.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate image stack.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            im (np.ndarray[float32]) - RGB pixel values, (N,X,Y,3)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns RGB image of individual layer. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_layer</span><span class="p">(</span><span class="n">layer_id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ImageStack.from_silhouette"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ImageStack.from_silhouette">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_silhouette</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load imagestack from sequentially numbered images of each layer.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            path (str) - path to silhouette file</span>
+
+<span class="sd">            fmt (str) - image format for all layers</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            stack (data.image.ImageStack)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># load feed file containing layer indices</span>
+        <span class="n">silhouette</span> <span class="o">=</span> <span class="n">Silhouette</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># iterate across layer</span>
+        <span class="n">ims</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">silhouette</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;layer_ids&#39;</span><span class="p">]):</span>
+
+            <span class="n">im_path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{:d}</span><span class="s1">.</span><span class="si">{:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">fmt</span><span class="p">))</span>
+
+            <span class="c1"># read image (non-PNG formats require pillow library)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">im_path</span><span class="p">)</span>
+
+            <span class="c1"># convert to floating point format (float32)</span>
+            <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">uint8_to_float32</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+            <span class="c1"># append to imagestack</span>
+            <span class="n">ims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+        <span class="c1"># compile image stack</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">ims</span><span class="p">)</span>
+
+        <span class="c1"># flip about yz</span>
+        <span class="k">if</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_yz</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="c1"># flip about xy</span>
+        <span class="k">if</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_xy</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">ImageStack</span><span class="p">(</span><span class="n">im</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageStack.get_layer"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ImageStack.get_layer">[docs]</a>    <span class="k">def</span> <span class="nf">get_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return RGB image of individual layer.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            layer_id (int) - layer number</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            image (data.image.Image)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">[</span><span class="n">layer_id</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ImageStack.project_max"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ImageStack.project_max">[docs]</a>    <span class="k">def</span> <span class="nf">project_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_layer</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return maximum intensity projection across specified layers.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            min_layer (int) - lower layer bound</span>
+
+<span class="sd">            max_layer (int) - upper layer bound</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            image (data.image.Image)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">[</span><span class="n">min_layer</span><span class="p">:</span> <span class="n">max_layer</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageStack.project_mean"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ImageStack.project_mean">[docs]</a>    <span class="k">def</span> <span class="nf">project_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_layer</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return mean intensity projection across specified layers.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            min_layer (int) - lower layer bound</span>
+
+<span class="sd">            max_layer (int) - upper layer bound</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            image (data.image.Image)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">[</span><span class="n">min_layer</span><span class="p">:</span> <span class="n">max_layer</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">API DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT US</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sebastian Bernasek.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

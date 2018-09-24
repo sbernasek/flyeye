@@ -52,13 +52,21 @@
 <span class="sd">    The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    params (dict) - triangulation parameters, {name: value}</span>
-<span class="sd">    xycoords (np.ndarray) - R8 cell positions</span>
-<span class="sd">    delaunay (scipy.spatial.tri) - Delaunay triangulation</span>
-<span class="sd">    distances (np.ndarray) - distances between adjacent R8 cells</span>
-<span class="sd">    edges (np.ndarray) - edge vertices</span>
-<span class="sd">    hours_per_pixel (float) - distance to time scaling factor</span>
-<span class="sd">    disc (data.discs.Disc)</span>
+
+<span class="sd">        params (dict) - triangulation parameters, {name: value}</span>
+
+<span class="sd">        xycoords (np.ndarray) - R8 cell positions</span>
+
+<span class="sd">        delaunay (scipy.spatial.tri) - Delaunay triangulation</span>
+
+<span class="sd">        distances (np.ndarray) - distances between adjacent R8 cells</span>
+
+<span class="sd">        edges (np.ndarray) - edge vertices</span>
+
+<span class="sd">        hours_per_pixel (float) - distance to time scaling factor</span>
+
+<span class="sd">        disc (data.discs.Disc)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span>
@@ -72,12 +80,19 @@
 <span class="sd">        Instantiate object for estimating the median distance between adjacent columns of R8 cells.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        disc (data.discs.Disc)</span>
-<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
-<span class="sd">        threshold (float) - max. quantile of included distances, 0 to 100</span>
-<span class="sd">        min_angle, max_angle (float) - min. and max. angle of included edges</span>
-<span class="sd">        include_x (bool) - if True, include x-distance</span>
-<span class="sd">        include_y (bool) - if True, include y-distance</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
+
+<span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+
+<span class="sd">            threshold (float) - max. quantile of included distances, 0 to 100</span>
+
+<span class="sd">            min_angle, max_angle (float) - min/max angle of included edges</span>
+
+<span class="sd">            include_x (bool) - if True, include x-distance</span>
+
+<span class="sd">            include_y (bool) - if True, include y-distance</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="n">furrow_velocity</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">min_angle</span><span class="o">=</span><span class="n">min_angle</span><span class="p">,</span> <span class="n">max_angle</span><span class="o">=</span><span class="n">max_angle</span><span class="p">,</span> <span class="n">include_x</span><span class="o">=</span><span class="n">include_x</span><span class="p">,</span> <span class="n">include_y</span><span class="o">=</span><span class="n">include_y</span><span class="p">)</span>
@@ -94,10 +109,13 @@
 <span class="sd">        Apply distance to time scaling to a disc.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        disc (data.discs.Disc)</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        disc (data.discs.Disc) - disc with estimated developmental times</span>
+
+<span class="sd">            disc (data.discs.Disc) - disc with estimated developmental times</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">disc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_time_scaling</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">disc</span>
@@ -112,11 +130,15 @@
 <span class="sd">        Update developmental times.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        disc (data.discs.Disc)</span>
-<span class="sd">        hours_per_pixel (float) - distance to time scaling factor</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
+
+<span class="sd">            hours_per_pixel (float) - distance to time scaling factor</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        disc (data.discs.Disc) - disc with estimated developmental times</span>
+
+<span class="sd">            disc (data.discs.Disc) - disc with estimated developmental times</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">*</span> <span class="n">hours_per_pixel</span>
         <span class="k">return</span> <span class="n">disc</span>
@@ -161,13 +183,19 @@
 <span class="sd">        Filter edges by length. Length threshold is computed as a multiple of the median edge length.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        distances (np.ndarray) - edge lengths</span>
-<span class="sd">        edges (np.ndarray) - edges</span>
-<span class="sd">        threshold (float) - maximum multiple of median length</span>
+
+<span class="sd">            distances (np.ndarray) - edge lengths</span>
+
+<span class="sd">            edges (np.ndarray) - edges</span>
+
+<span class="sd">            threshold (float) - maximum multiple of median length</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        distances (np.ndarray) - filtered edge lengths</span>
-<span class="sd">        edges (np.ndarray) - filtered edges</span>
+
+<span class="sd">            distances (np.ndarray) - filtered edge lengths</span>
+
+<span class="sd">            edges (np.ndarray) - filtered edges</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">distances</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">distances</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">distances</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
@@ -183,12 +211,19 @@
 <span class="sd">        Run triangulation.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        disc (data.discs.Disc)</span>
-<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
-<span class="sd">        threshold (float) - max. quantile of included distances, 0 to 100</span>
-<span class="sd">        min_angle, max_angle (float) - min. and max. angle of included edges</span>
-<span class="sd">        include_x (bool) - if True, include x-distance</span>
-<span class="sd">        include_y (bool) - if True, include y-distance</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
+
+<span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hr/column)</span>
+
+<span class="sd">            threshold (float) - max quantile of included distances, 0 to 100</span>
+
+<span class="sd">            min_angle, max_angle (float) - min/max angle of included edges</span>
+
+<span class="sd">            include_x (bool) - if True, include x-distance</span>
+
+<span class="sd">            include_y (bool) - if True, include y-distance</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get coordinates</span>
@@ -216,7 +251,12 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">values</span><span class="o">/</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_add_edges_to_plot</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">hours_per_pixel</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_edges_to_plot</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                           <span class="n">distances</span><span class="p">,</span>
+                           <span class="n">edges</span><span class="p">,</span>
+                           <span class="n">ax</span><span class="p">,</span>
+                           <span class="n">hours_per_pixel</span><span class="p">,</span>
+                           <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add delaunay edges to existing axes. &quot;&quot;&quot;</span>
 
         <span class="c1"># get scores for colormap</span>
@@ -297,7 +337,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_expression</span><span class="p">(</span><span class="n">ax_alt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Triangulation.show"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gs_parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_expression</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Plot inter-R8 distance distribution, Delaunay triangulation, and expression. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot inter-R8 distance distribution, Delaunay triangulation, and expression.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># retriangulate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disc</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
@@ -349,8 +391,11 @@
 <span class="sd">    The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    experiment (data.experiments.Experiment)</span>
-<span class="sd">    tri (dict) - {disc ID: Triangulation} pairs</span>
+
+<span class="sd">        experiment (data.experiments.Experiment)</span>
+
+<span class="sd">        tri (dict) - {disc ID: Triangulation} pairs</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -358,8 +403,11 @@
 <span class="sd">        Instantiate triangulation objects for all discs in an experiment.discs</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        experiment (data.experiments.Experiment)</span>
-<span class="sd">        kwargs: triangulation keyword arguments</span>
+
+<span class="sd">            experiment (data.experiments.Experiment)</span>
+
+<span class="sd">            kwargs: triangulation keyword arguments</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">discs</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_triangulations</span><span class="p">(</span><span class="n">discs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -375,11 +423,15 @@
 <span class="sd">        Return experiment with updated developmental times.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        experiment (data.experiments.Experiment) - experiment to be updated</span>
-<span class="sd">        tri (dict) - {disc ID: Triangulation} pairs</span>
+
+<span class="sd">            experiment (data.experiments.Experiment) - experiment to be updated</span>
+
+<span class="sd">            tri (dict) - {disc ID: Triangulation} pairs</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        experiment (data.experiments.Experiment) - updated experiment</span>
+
+<span class="sd">            experiment (data.experiments.Experiment) - updated experiment</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">get_disc</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tri</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">return</span> <span class="n">experiment</span>
@@ -390,11 +442,15 @@
 <span class="sd">        Return dictionary of Triangulation objects.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        discs (dict) - {disc ID: Disc} pairs</span>
-<span class="sd">        kwargs: keyword arguments for Triangulation</span>
+
+<span class="sd">            discs (dict) - {disc ID: Disc} pairs</span>
+
+<span class="sd">            kwargs: keyword arguments for Triangulation</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        tri (dict) - {disc ID: Triangulation} pairs</span>
+
+<span class="sd">            tri (dict) - {disc ID: Triangulation} pairs</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">Triangulation</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">disc</span> <span class="ow">in</span> <span class="n">discs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 

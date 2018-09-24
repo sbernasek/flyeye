@@ -36,11 +36,11 @@
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>The fastest way to gain familiarity with <strong>NU FlyEye:</strong> <em>Analysis</em> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
+<p>The fastest way to gain familiarity with <strong>NU FlyEye: Analysis</strong> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
 <p>To analyze your own segmented microscopy data, please read on!</p>
 <div class="section" id="input-file-structure">
 <h2>Input File Structure<a class="headerlink" href="#input-file-structure" title="Permalink to this headline">¶</a></h2>
-<p><strong>NU FlyEye:</strong> <em>Analysis</em> is only compatible with <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> format expression data measured via <strong>NU FlyEye:</strong> <em>Silhouette</em>. Each of these files corresponds to a single <em>Drosophila</em> eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype follows a standardized structure:</p>
+<p><strong>NU FlyEye: Analysis</strong> is only compatible with <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> format expression data measured via <strong>NU FlyEye: Analysis</strong>. Each of these files corresponds to a single <em>Drosophila</em> eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype follows a standardized structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
 ├── feud.json        <span class="c1"># stack dimensionality</span>
 ├── feed.json        <span class="c1"># measurement annotations</span>
@@ -53,12 +53,12 @@
 └── N.png            <span class="c1"># Nth layer image</span>
 </pre></div>
 </div>
-<p><strong>NU FlyEye:</strong> <em>Analysis</em> supports analysis of individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files, as well as collections of eye discs collected under similar experimental conditions.</p>
+<p><strong>NU FlyEye: Analysis</strong> supports analysis of individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files, as well as collections of eye discs collected under similar experimental conditions.</p>
 <p>** NOTE ** that the layer images contained in a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file are compressed versions of the full resolution microscopy data, and are not suitable as a basis for repeated expression quantification.</p>
 </div>
 <div class="section" id="data-requirements">
 <h2>Data Requirements<a class="headerlink" href="#data-requirements" title="Permalink to this headline">¶</a></h2>
-<p><strong>NU FlyEye:</strong> <em>Analysis</em> requires that cell type annotation be complete, as unlabeled measurements are ignored upon import.</p>
+<p><strong>NU FlyEye: Analysis</strong> requires that cell type annotation be complete. Unlabeled measurements are ignored upon import.</p>
 </div>
 </div>
 

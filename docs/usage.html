@@ -47,28 +47,32 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="selecting-a-disc">
-<h2>Selecting a disc<a class="headerlink" href="#selecting-a-disc" title="Permalink to this headline">¶</a></h2>
-<p>Select a specific disc:</p>
+<div class="section" id="querying-measurements">
+<h2>Querying measurements<a class="headerlink" href="#querying-measurements" title="Permalink to this headline">¶</a></h2>
+<p>Select by disc ID:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">disc_id</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">disc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">disc_id</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="querying-by-cell-type">
-<h2>Querying by cell type<a class="headerlink" href="#querying-by-cell-type" title="Permalink to this headline">¶</a></h2>
-<p>Select a specific cell type:</p>
+<p>Select by cell type:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cell_type</span> <span class="o">=</span> <span class="s1">&#39;pre&#39;</span>
 <span class="n">cells</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="n">cell_type</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Select by developmental time:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tmin</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">tmax</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">cells</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_by_position</span><span class="p">(</span><span class="n">tmin</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="n">tmax</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="timeseries-visualization">
-<h2>Timeseries Visualization<a class="headerlink" href="#timeseries-visualization" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="visualizing-dynamics">
+<h2>Visualizing Dynamics<a class="headerlink" href="#visualizing-dynamics" title="Permalink to this headline">¶</a></h2>
 <p>Plot expression dynamics:</p>
-<blockquote>
-<div>fluorescence_channel = ‘green’
-cells.plot_dynamics(fluorescence_channel)</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fluorescence_channel</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>
+<span class="n">cells</span><span class="o">.</span><span class="n">plot_dynamics</span><span class="p">(</span><span class="n">fluorescence_channel</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="additional-examples">
 <h2>Additional Examples<a class="headerlink" href="#additional-examples" title="Permalink to this headline">¶</a></h2>
@@ -99,9 +103,8 @@ cells.plot_dynamics(fluorescence_channel)</div></blockquote>
 <li class="toctree-l1"><a class="reference internal" href="start.html">GETTING STARTED</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">EXAMPLE USAGE</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#loading-an-experiment">Loading an experiment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#selecting-a-disc">Selecting a disc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#querying-by-cell-type">Querying by cell type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#timeseries-visualization">Timeseries Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#querying-measurements">Querying measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualizing-dynamics">Visualizing Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#additional-examples">Additional Examples</a></li>
 </ul>
 </li>

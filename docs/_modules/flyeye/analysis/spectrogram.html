@@ -45,15 +45,25 @@
 <span class="sd">    Object for spectral decomposition of a 1-D timeseries via Lomb-Scargle periodogram. Internal functions are based on AstroML library.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    t (np.ndarray) - timepoints</span>
-<span class="sd">    y (np.ndarray) - values</span>
-<span class="sd">    dy (np.ndarray) - estimated measurement error</span>
-<span class="sd">    periods (np.ndarray) - oscillation periods tested (same units as t)</span>
-<span class="sd">    omegas (np.ndarray) - oscillation frequencies tested</span>
-<span class="sd">    PS (np.ndarray) - spectral power of each frequency</span>
-<span class="sd">    power (np.ndarray) - max. spectral power</span>
-<span class="sd">    dominant_period (float) - oscillation period of max. spectral power</span>
-<span class="sd">    dominant_frequency (float) - oscillation frequency of max. spectral power</span>
+
+<span class="sd">        t (np.ndarray) - timepoints</span>
+
+<span class="sd">        y (np.ndarray) - values</span>
+
+<span class="sd">        dy (np.ndarray) - estimated measurement error</span>
+
+<span class="sd">        periods (np.ndarray) - oscillation periods tested (same units as t)</span>
+
+<span class="sd">        omegas (np.ndarray) - oscillation frequencies tested</span>
+
+<span class="sd">        PS (np.ndarray) - spectral power of each frequency</span>
+
+<span class="sd">        power (np.ndarray) - max. spectral power</span>
+
+<span class="sd">        dominant_period (float) - oscillation period of max. spectral power</span>
+
+<span class="sd">        dominant_frequency (float) - oscillation frequency of max. spectral power</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
@@ -63,10 +73,15 @@
 <span class="sd">        Instantiate object for spectral decomposition of a 1-D timeseries via Lomb-Scargle periodogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        t (np.ndarray) - timepoints</span>
-<span class="sd">        y (np.ndarray) - values</span>
-<span class="sd">        dy (np.ndarray) - estimated measurement error</span>
-<span class="sd">        periods (np.ndarray) - oscillation periods tested (same units as t)</span>
+
+<span class="sd">            t (np.ndarray) - timepoints</span>
+
+<span class="sd">            y (np.ndarray) - values</span>
+
+<span class="sd">            dy (np.ndarray) - estimated measurement error</span>
+
+<span class="sd">            periods (np.ndarray) - oscillation periods tested (same units as t)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># order timeseries by time</span>
@@ -98,13 +113,19 @@
 <span class="sd">        Evaluate periodogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        t (np.ndarray) - timepoints</span>
-<span class="sd">        y (np.ndarray) - values</span>
-<span class="sd">        dy (np.ndarray) - estimated measurement error</span>
-<span class="sd">        omega (np.ndarray) - spectral frequencies tests</span>
+
+<span class="sd">            t (np.ndarray) - timepoints</span>
+
+<span class="sd">            y (np.ndarray) - values</span>
+
+<span class="sd">            dy (np.ndarray) - estimated measurement error</span>
+
+<span class="sd">            omega (np.ndarray) - spectral frequencies tests</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        PS (np.ndarray) - normalized power spectrum</span>
+
+<span class="sd">            PS (np.ndarray) - normalized power spectrum</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">generalized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subtract_mean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">PS</span> <span class="o">=</span> <span class="n">lomb_scargle</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">omegas</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
@@ -122,15 +143,23 @@
 <span class="sd">        Determine periodicity significance thresholds. Thresholds are obtained by repeatedly subsampling data, then compiling a distribution of maximum power levels detected in each sample.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        t (np.ndarray) - timepoints</span>
-<span class="sd">        y (np.ndarray) - values</span>
-<span class="sd">        dy (np.ndarray) - estimated measurement error</span>
-<span class="sd">        omega (np.ndarray) - spectral frequencies tests</span>
-<span class="sd">        confidence (array like) - confidence levels to assess, length C</span>
-<span class="sd">        nbootstraps (int) - number of boostrap samples</span>
+
+<span class="sd">            t (np.ndarray) - timepoints</span>
+
+<span class="sd">            y (np.ndarray) - values</span>
+
+<span class="sd">            dy (np.ndarray) - estimated measurement error</span>
+
+<span class="sd">            omega (np.ndarray) - spectral frequencies tests</span>
+
+<span class="sd">            confidence (array like) - confidence levels to assess, length C</span>
+
+<span class="sd">            nbootstraps (int) - number of boostrap samples</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        thresholds (np.ndarray) - spectral power thresholds, length C</span>
+
+<span class="sd">            thresholds (np.ndarray) - spectral power thresholds, length C</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">confidence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -152,17 +181,38 @@
 <span class="sd">        Determine significance thresholds.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        confidence (array like) - confidence levels to assess, length C</span>
-<span class="sd">        nbootstraps (int) - number of boostrap samples</span>
+
+<span class="sd">            confidence (array like) - confidence levels to assess, length C</span>
+
+<span class="sd">            nbootstraps (int) - number of boostrap samples</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        thresholds (np.ndarray) - spectral power thresholds, length C</span>
+
+<span class="sd">            thresholds (np.ndarray) - spectral power thresholds, length C</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">omegas</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">,</span> <span class="n">nbootstraps</span><span class="o">=</span><span class="n">nbootstraps</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Plot timeseries samples. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot timeseries samples.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">            t (array like) - timeponts</span>
+
+<span class="sd">            y (array like) - values</span>
+
+<span class="sd">            dy (array like) - value uncertainties</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;samples&#39;</span><span class="p">)</span>
@@ -174,7 +224,9 @@
 <span class="sd">        Plot timeseries samples.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_samples</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span></div>
 
@@ -190,18 +242,29 @@
 <span class="sd">        Plot spectrogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
-<span class="sd">        xvals (np.ndarray) - x values (periods or frequencies)</span>
-<span class="sd">        PS (np.ndarray) - normalized spectral powers</span>
-<span class="sd">        thresholds (dict) - keys are confidence levels, values are thresholds</span>
-<span class="sd">        xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
-<span class="sd">        xunits (str) - units for x-axis label</span>
-<span class="sd">        ymax (float) - upper limit for y axis (max spectral power)</span>
-<span class="sd">        color (str) - line color</span>
-<span class="sd">        labelsize (int) - axis labelsize</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            xvals (np.ndarray) - x values (periods or frequencies)</span>
+
+<span class="sd">            PS (np.ndarray) - normalized spectral powers</span>
+
+<span class="sd">            thresholds (dict) - keys are confidence levels, values are thresholds</span>
+
+<span class="sd">            xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
+<span class="sd">            xunits (str) - units for x-axis label</span>
+
+<span class="sd">            ymax (float) - upper limit for y axis (max spectral power)</span>
+
+<span class="sd">            color (str) - line color</span>
+
+<span class="sd">            labelsize (int) - axis labelsize</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># plot spectral powers</span>
@@ -236,15 +299,23 @@
 <span class="sd">        Plot spectrogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
-<span class="sd">        confidence (array like) - confidence levels to be added</span>
-<span class="sd">        nbootstraps (int) - number of bootstrap samples</span>
-<span class="sd">        xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
-<span class="sd">        annotate (bool) - if True, label peak spectral power</span>
-<span class="sd">        kwargs: plot formatting keyword arguments</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            confidence (array like) - confidence levels to be added</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstrap samples</span>
+
+<span class="sd">            xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
+<span class="sd">            annotate (bool) - if True, label peak spectral power</span>
+
+<span class="sd">            kwargs: plot formatting keyword arguments</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># compute significance thresholds</span>
@@ -283,8 +354,11 @@
 <span class="sd">        Annotate peak spectral power.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
-<span class="sd">        xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get label position</span>
@@ -314,15 +388,23 @@
 <span class="sd">        Plot spectrogram.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot) - if None, create figure</span>
-<span class="sd">        confidence (array like) - confidence levels to be added</span>
-<span class="sd">        nbootstraps (int) - number of bootstrap samples</span>
-<span class="sd">        xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
-<span class="sd">        annotate (bool) - if True, label peak spectral power</span>
-<span class="sd">        kwargs: plot formatting keyword arguments</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot) - if None, create figure</span>
+
+<span class="sd">            confidence (array like) - confidence levels to be added</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstrap samples</span>
+
+<span class="sd">            xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
+<span class="sd">            annotate (bool) - if True, label peak spectral power</span>
+
+<span class="sd">            kwargs: plot formatting keyword arguments</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        ax (mpl.axes.AxesSublot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSublot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># define axes</span>
@@ -344,9 +426,13 @@
 <span class="sd">        Plot spectrogram and corresponding signal on adjacent axes.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        confidence (array like) - confidence levels to be added</span>
-<span class="sd">        nbootstraps (int) - number of bootstrap samples</span>
-<span class="sd">        xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
+<span class="sd">            confidence (array like) - confidence levels to be added</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstrap samples</span>
+
+<span class="sd">            xaxis (str) - quantity for x axis, either &#39;period&#39; or &#39;frequency&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Create figure</span>

@@ -47,8 +47,11 @@
 <span class="sd">    Container for correlations between 1-D timeseries.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    d_ij (np array) - pairwise separation distances between measurements</span>
-<span class="sd">    C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+
+<span class="sd">        d_ij (np array) - pairwise separation distances between measurements</span>
+
+<span class="sd">        C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_ij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">C_ij</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -56,8 +59,11 @@
 <span class="sd">        Instantiate container for correlations between 1-D timeseries.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        d_ij (np.ndarray) - pairwise separation distances</span>
-<span class="sd">        C_ij (np.ndarray) - normalized pairwise fluctuations</span>
+
+<span class="sd">            d_ij (np.ndarray) - pairwise separation distances</span>
+
+<span class="sd">            C_ij (np.ndarray) - normalized pairwise fluctuations</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">d_ij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -74,10 +80,13 @@
 <span class="sd">        Concatenate current instance with a second CorrelationData instance.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        correlation (analysis.correlation.CorrelationData)</span>
+
+<span class="sd">            correlation (analysis.correlation.CorrelationData)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        self (analysis.correlation.CorrelationData) - updated correlations</span>
+
+<span class="sd">            self (analysis.correlation.CorrelationData) - updated correlations</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># concatenate distanced and fluctuations</span>
@@ -97,14 +106,21 @@
 <span class="sd">        Group samples into x-bins and evaluate aggregate statistic of y-values.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        x (np array) - values upon which samples are grouped</span>
-<span class="sd">        y (np array) - values upon which aggregate statistics are evaluated</span>
-<span class="sd">        bins (np array) - bin edges</span>
-<span class="sd">        statistic (str) - aggregation statistic applied to each bin</span>
+
+<span class="sd">            x (np array) - values upon which samples are grouped</span>
+
+<span class="sd">            y (np array) - values upon which aggregate statistics are evaluated</span>
+
+<span class="sd">            bins (np array) - bin edges</span>
+
+<span class="sd">            statistic (str) - aggregation statistic applied to each bin</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        centers (np array) - bin centers</span>
-<span class="sd">        stats (np array) - aggregate statistic for each bin</span>
+
+<span class="sd">            centers (np array) - bin centers</span>
+
+<span class="sd">            stats (np array) - aggregate statistic for each bin</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if None, break into 10 intervals</span>
@@ -128,15 +144,23 @@
 <span class="sd">        Evaluate confidence interval for aggregation statistic.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        x (np array) - values upon which samples are grouped</span>
-<span class="sd">        y (np array) - values upon which aggregate statistics are evaluated</span>
-<span class="sd">        N (int) - number of repeated samples</span>
-<span class="sd">        confidence (int) - confidence interval, between 0 and 100</span>
-<span class="sd">        bins (np array) - bins within which the statistic is applied</span>
+
+<span class="sd">            x (np array) - values upon which samples are grouped</span>
+
+<span class="sd">            y (np array) - values upon which aggregate statistics are evaluated</span>
+
+<span class="sd">            N (int) - number of repeated samples</span>
+
+<span class="sd">            confidence (int) - confidence interval, between 0 and 100</span>
+
+<span class="sd">            bins (np array) - bins within which the statistic is applied</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        centers (np array) - centers of distance bins</span>
-<span class="sd">        uppers, lowers (np array) - statistic confidence interval bounds</span>
+
+<span class="sd">            centers (np array) - centers of distance bins</span>
+
+<span class="sd">            uppers, lowers (np array) - statistic confidence interval bounds</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get indices for bootstrap resampling</span>
@@ -169,19 +193,31 @@
 <span class="sd">        Plot pairwise normalized fluctuations versus pairwise distances.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot) - if None, create figure</span>
-<span class="sd">        null_model (bool) - if True, shuffle d_ij vector</span>
-<span class="sd">        scatter (bool) - if True, show individual markers</span>
-<span class="sd">        confidence (bool) - if True, include confidence interval</span>
-<span class="sd">        zero (bool) - if True, include zero correlation line for reference</span>
-<span class="sd">        interval_kw (dict) - keyword arguments for interval formatting</span>
-<span class="sd">        ma_kw (dict) - keyword arguments for moving average smoothing</span>
-<span class="sd">        nbootstraps (int) - number of bootstrap samples for confidence interval</span>
-<span class="sd">        color (str) - color used for confidence interval</span>
-<span class="sd">        max_distance (float) - largest pairwise distance included</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot) - if None, create figure</span>
+
+<span class="sd">            null_model (bool) - if True, shuffle d_ij vector</span>
+
+<span class="sd">            scatter (bool) - if True, show individual markers</span>
+
+<span class="sd">            confidence (bool) - if True, include confidence interval</span>
+
+<span class="sd">            zero (bool) - if True, include zero correlation line for reference</span>
+
+<span class="sd">            interval_kw (dict) - keyword arguments for interval formatting</span>
+
+<span class="sd">            ma_kw (dict) - keyword arguments for moving average smoothing</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstrap samples for confidence interval</span>
+
+<span class="sd">            color (str) - color used for confidence interval</span>
+
+<span class="sd">            max_distance (float) - largest pairwise distance included</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        ax (mpl.axes.AxesSubplot)</span>
+
+<span class="sd">            ax (mpl.axes.AxesSubplot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># create figure/axis</span>
@@ -253,13 +289,19 @@
 <span class="sd">    Object for evaluating spatial correlation of expression between cells.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    channel (str) - expression channel for which correlations are desired</span>
-<span class="sd">    y_only (bool) - if True, only use y-component of pairwise distances</span>
-<span class="sd">    raw (bool) - if True, use raw fluorescence intensities</span>
+
+<span class="sd">        channel (str) - expression channel for which correlations are desired</span>
+
+<span class="sd">        y_only (bool) - if True, only use y-component of pairwise distances</span>
+
+<span class="sd">        raw (bool) - if True, use raw fluorescence intensities</span>
 
 <span class="sd">    Inherited attributes:</span>
-<span class="sd">    d_ij (np array) - pairwise separation distances between measurements</span>
-<span class="sd">    C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+
+<span class="sd">        d_ij (np array) - pairwise separation distances between measurements</span>
+
+<span class="sd">        C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -271,10 +313,15 @@
 <span class="sd">        Instantiate object for evaluating spatial correlation of expression between cells.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        df (pd.Dataframe) - cell measurement data</span>
-<span class="sd">        channel (str) - expression channel for which correlations are desired</span>
-<span class="sd">        y_only (bool) - if True, only use y-component of pairwise distances</span>
-<span class="sd">        raw (bool) - if True, use raw fluorescence intensities</span>
+
+<span class="sd">            df (pd.Dataframe) - cell measurement data</span>
+
+<span class="sd">            channel (str) - expression channel for which correlations are desired</span>
+
+<span class="sd">            y_only (bool) - if True, only use y-component of pairwise distances</span>
+
+<span class="sd">            raw (bool) - if True, use raw fluorescence intensities</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># store parameters</span>
@@ -305,10 +352,13 @@
 <span class="sd">        Return upper triangular portion of a 2-D matrix.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">        matrix (2D np.ndarray)</span>
+
+<span class="sd">            matrix (2D np.ndarray)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        upper (1D np.ndarray) - upper triangle, ordered row then column</span>
+
+<span class="sd">            upper (1D np.ndarray) - upper triangle, ordered row then column</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span></div>
 
@@ -318,11 +368,15 @@
 <span class="sd">        Get upper triangular portion of pairwise distance matrix.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        df (pd.Dataframe) - cell measurements including position data</span>
-<span class="sd">        y_only (bool) - if True, only use y-component of cell positions</span>
+
+<span class="sd">            df (pd.Dataframe) - cell measurements including position data</span>
+
+<span class="sd">            y_only (bool) - if True, only use y-component of cell positions</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        distances (1D np.ndarray) - pairwise distances, ordered row then column</span>
+
+<span class="sd">            distances (1D np.ndarray) - pairwise distances, ordered row then column</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if no measurements are included, return None</span>
@@ -348,10 +402,13 @@
 <span class="sd">        Get upper triangular portion of pairwise expression covariance matrix.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        vector (1D np.ndarray) - expression levels for each cell</span>
+
+<span class="sd">            vector (1D np.ndarray) - expression levels for each cell</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column</span>
+
+<span class="sd">            covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if vector is of length zero, return None</span>

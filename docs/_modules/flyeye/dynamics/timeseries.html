@@ -44,9 +44,13 @@
 <span class="sd">    Object describes a 1D timeseries.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">    x (np.ndarray) - independent variable</span>
-<span class="sd">    y (np.ndarray) - dependent variable</span>
-<span class="sd">    ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">        x (np.ndarray) - independent variable</span>
+
+<span class="sd">        y (np.ndarray) - dependent variable</span>
+
+<span class="sd">        ax (matplotlib.axes.AxesSubplot)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -54,9 +58,13 @@
 <span class="sd">        Instantiate a 1D timeseries.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        x (np.ndarray) - independent variable</span>
-<span class="sd">        y (np.ndarray) - dependent variable</span>
-<span class="sd">        ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">            x (np.ndarray) - independent variable</span>
+
+<span class="sd">            y (np.ndarray) - dependent variable</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
@@ -85,10 +93,15 @@
 <span class="sd">        Scatterplot markers for x and y data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        color (str) - marker color</span>
-<span class="sd">        alpha (float) - marker alpha</span>
-<span class="sd">        s (float) - marker size</span>
-<span class="sd">        rasterized (bool) - if True, rasterize markers</span>
+
+<span class="sd">            color (str) - marker color</span>
+
+<span class="sd">            alpha (float) - marker alpha</span>
+
+<span class="sd">            s (float) - marker size</span>
+
+<span class="sd">            rasterized (bool) - if True, rasterize markers</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">marker_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="n">rasterized</span><span class="p">)</span>
         <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">marker_kw</span><span class="p">)</span></div>
@@ -106,11 +119,17 @@
 <span class="sd">        Plot moving average of x and y data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ma_type (str) - type of average, &#39;savgol&#39;, &#39;sliding&#39;, or &#39;binned&#39;</span>
-<span class="sd">        window_size (int) - size of sliding window or bin (num of cells)</span>
-<span class="sd">        resolution (int) - sampling resolution for confidence interval</span>
-<span class="sd">        smooth (bool) - if True, apply secondary savgol filter</span>
-<span class="sd">        color, alpha, lw, linestyle - formatting parameters</span>
+
+<span class="sd">            ma_type (str) - type of average, &#39;savgol&#39;, &#39;sliding&#39;, or &#39;binned&#39;</span>
+
+<span class="sd">            window_size (int) - size of sliding window or bin (num of cells)</span>
+
+<span class="sd">            resolution (int) - sampling resolution for confidence interval</span>
+
+<span class="sd">            smooth (bool) - if True, apply secondary savgol filter</span>
+
+<span class="sd">            color, alpha, lw, linestyle - formatting parameters</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">ma_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ma_type</span><span class="o">=</span><span class="n">ma_type</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
@@ -132,12 +151,19 @@
 <span class="sd">        Plot confidence interval for moving average of x and y data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        ma_type (str) - type of moving average, &#39;sliding&#39; or &#39;binned&#39;</span>
-<span class="sd">        window_size (int) - size of sliding window or bin (num of cells)</span>
-<span class="sd">        resolution (int) - sampling resolution for confidence interval</span>
-<span class="sd">        nbootstraps (int) - number of bootstraps</span>
-<span class="sd">        confidence (float) - confidence interval, between 0 and 100</span>
-<span class="sd">        color, alpha - formatting parameters</span>
+
+<span class="sd">            ma_type (str) - type of moving average, &#39;sliding&#39; or &#39;binned&#39;</span>
+
+<span class="sd">            window_size (int) - size of sliding window or bin (num of cells)</span>
+
+<span class="sd">            resolution (int) - sampling resolution for confidence interval</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstraps</span>
+
+<span class="sd">            confidence (float) - confidence interval, between 0 and 100</span>
+
+<span class="sd">            color, alpha - formatting parameters</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># define moving average keyword arguments</span>
@@ -170,13 +196,21 @@
 <span class="sd">        Plot timeseries data.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        scatter (bool) - if True, add datapoints</span>
-<span class="sd">        average (bool) - if True, add moving average</span>
-<span class="sd">        interval (bool) - if True, add moving average interval</span>
-<span class="sd">        marker_kw (dict) - keyword arguments for marker formatting</span>
-<span class="sd">        line_kw (dict) - keyword arguments for line formatting</span>
-<span class="sd">        interval_kw (dict) - keyword arguments for interval formatting</span>
-<span class="sd">        ma_kw (dict) - keyword arguments for moving average</span>
+
+<span class="sd">            scatter (bool) - if True, add datapoints</span>
+
+<span class="sd">            average (bool) - if True, add moving average</span>
+
+<span class="sd">            interval (bool) - if True, add moving average interval</span>
+
+<span class="sd">            marker_kw (dict) - keyword arguments for marker formatting</span>
+
+<span class="sd">            line_kw (dict) - keyword arguments for line formatting</span>
+
+<span class="sd">            interval_kw (dict) - keyword arguments for interval formatting</span>
+
+<span class="sd">            ma_kw (dict) - keyword arguments for moving average</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># add scattered data</span>
