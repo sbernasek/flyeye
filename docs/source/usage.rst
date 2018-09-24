@@ -19,33 +19,38 @@ Import an experiment from a directory containing ``.silhouette`` files:
    experiment = experiments.Experiment(path)
 
 
-Selecting a disc
-----------------
+Querying measurements
+---------------------
 
-Select a specific disc:
+Select by disc ID:
 
 .. code-block:: python
 
    disc_id = 2
    disc = experiment.discs[disc_id]
 
-
-
-Querying by cell type
----------------------
-
-Select a specific cell type:
+Select by cell type:
 
 .. code-block:: python
 
    cell_type = 'pre'
    cells = disc.select_cell_type(cell_type)
 
+Select by developmental time:
 
-Timeseries Visualization
-------------------------
+.. code-block:: python
+
+   tmin = 5
+   tmax = 15
+   cells = disc.select_by_position(tmin=tmin, tmax=tmax)
+
+
+Visualizing Dynamics
+--------------------
 
 Plot expression dynamics:
+
+.. code-block:: python
 
    fluorescence_channel = 'green'
    cells.plot_dynamics(fluorescence_channel)
