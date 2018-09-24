@@ -1,0 +1,534 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>flyeye.processing.triangulation &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.processing.triangulation</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
+
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="k">import</span> <span class="n">Delaunay</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cmaps</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">colors</span>
+<span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gs</span>
+
+<span class="kn">from</span> <span class="nn">..dynamics.averages</span> <span class="k">import</span> <span class="n">get_rolling_mean</span><span class="p">,</span> <span class="n">plot_mean</span>
+
+
+<div class="viewcode-block" id="Triangulation"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation">[docs]</a><span class="k">class</span> <span class="nc">Triangulation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for estimating the median distance between adjacent columns of R8 cells within an individual eye disc. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</span>
+
+<span class="sd">    The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    params (dict) - triangulation parameters, {name: value}</span>
+<span class="sd">    xycoords (np.ndarray) - R8 cell positions</span>
+<span class="sd">    delaunay (scipy.spatial.tri) - Delaunay triangulation</span>
+<span class="sd">    distances (np.ndarray) - distances between adjacent R8 cells</span>
+<span class="sd">    edges (np.ndarray) - edge vertices</span>
+<span class="sd">    hours_per_pixel (float) - distance to time scaling factor</span>
+<span class="sd">    disc (data.discs.Disc)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span>
+                 <span class="n">furrow_velocity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">min_angle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                 <span class="n">max_angle</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                 <span class="n">include_x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">include_y</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for estimating the median distance between adjacent columns of R8 cells.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        disc (data.discs.Disc)</span>
+<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+<span class="sd">        threshold (float) - max. quantile of included distances, 0 to 100</span>
+<span class="sd">        min_angle, max_angle (float) - min. and max. angle of included edges</span>
+<span class="sd">        include_x (bool) - if True, include x-distance</span>
+<span class="sd">        include_y (bool) - if True, include y-distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="n">furrow_velocity</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">min_angle</span><span class="o">=</span><span class="n">min_angle</span><span class="p">,</span> <span class="n">max_angle</span><span class="o">=</span><span class="n">max_angle</span><span class="p">,</span> <span class="n">include_x</span><span class="o">=</span><span class="n">include_x</span><span class="p">,</span> <span class="n">include_y</span><span class="o">=</span><span class="n">include_y</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;furrow_velocity&#39;</span><span class="p">:</span> <span class="n">furrow_velocity</span><span class="p">,</span>
+                        <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
+                        <span class="s1">&#39;min_angle&#39;</span><span class="p">:</span> <span class="n">min_angle</span><span class="p">,</span>
+                        <span class="s1">&#39;max_angle&#39;</span><span class="p">:</span> <span class="n">max_angle</span><span class="p">,</span>
+                        <span class="s1">&#39;include_x&#39;</span><span class="p">:</span> <span class="n">include_x</span><span class="p">,</span>
+                        <span class="s1">&#39;include_y&#39;</span><span class="p">:</span> <span class="n">include_y</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply distance to time scaling to a disc.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        disc (data.discs.Disc)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        disc (data.discs.Disc) - disc with estimated developmental times</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">disc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_time_scaling</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disc</span>
+
+<div class="viewcode-block" id="Triangulation.get_disc"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.get_disc">[docs]</a>    <span class="k">def</span> <span class="nf">get_disc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return disc. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">disc</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_time_scaling</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="n">hours_per_pixel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update developmental times.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        disc (data.discs.Disc)</span>
+<span class="sd">        hours_per_pixel (float) - distance to time scaling factor</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        disc (data.discs.Disc) - disc with estimated developmental times</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">*</span> <span class="n">hours_per_pixel</span>
+        <span class="k">return</span> <span class="n">disc</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_delaunay</span><span class="p">(</span><span class="n">xycoords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return Delaunay triangulation for xy points. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Delaunay</span><span class="p">(</span><span class="n">xycoords</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_edges</span><span class="p">(</span><span class="n">delaunay</span><span class="p">,</span>
+                   <span class="n">min_angle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                   <span class="n">max_angle</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                   <span class="n">include_x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">include_y</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get distances between adjacent R8 neurons. &quot;&quot;&quot;</span>
+
+        <span class="c1"># get indices of vertex neighbors</span>
+        <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span> <span class="o">=</span> <span class="n">delaunay</span><span class="o">.</span><span class="n">vertex_neighbor_vertices</span>
+
+        <span class="c1"># iterate through all R8 cells</span>
+        <span class="n">distances</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">delaunay</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+
+            <span class="c1"># get all neighbors of current R8</span>
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="n">delaunay</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span><span class="n">indices</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]]]</span>
+
+            <span class="c1"># if neighbor is within a 30-60 degree angle from horizontal, include x-coordinate of its distance</span>
+            <span class="k">for</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)))</span>
+
+                <span class="c1"># if neighbor is within the specified angle from horizontal, include distance</span>
+                <span class="k">if</span> <span class="n">theta</span> <span class="o">&gt;=</span> <span class="n">min_angle</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span> <span class="ow">and</span> <span class="n">theta</span> <span class="o">&lt;=</span> <span class="n">max_angle</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">:</span>
+                    <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">include_x</span> <span class="o">+</span> <span class="p">((</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">include_y</span><span class="p">))</span>
+                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">([[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_filter_edges_by_length</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.75</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter edges by length. Length threshold is computed as a multiple of the median edge length.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        distances (np.ndarray) - edge lengths</span>
+<span class="sd">        edges (np.ndarray) - edges</span>
+<span class="sd">        threshold (float) - maximum multiple of median length</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        distances (np.ndarray) - filtered edge lengths</span>
+<span class="sd">        edges (np.ndarray) - filtered edges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">distances</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">distances</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">distances</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Triangulation.triangulate"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.triangulate">[docs]</a>    <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span>
+                    <span class="n">furrow_velocity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">min_angle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                    <span class="n">max_angle</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                    <span class="n">include_x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">include_y</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run triangulation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        disc (data.discs.Disc)</span>
+<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+<span class="sd">        threshold (float) - max. quantile of included distances, 0 to 100</span>
+<span class="sd">        min_angle, max_angle (float) - min. and max. angle of included edges</span>
+<span class="sd">        include_x (bool) - if True, include x-distance</span>
+<span class="sd">        include_y (bool) - if True, include y-distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get coordinates</span>
+        <span class="n">xycoords</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">disc</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">==</span><span class="s1">&#39;r8&#39;</span><span class="p">][[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">,</span> <span class="s1">&#39;centroid_y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xycoords</span> <span class="o">=</span> <span class="n">xycoords</span>
+
+        <span class="c1"># get triangulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delaunay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_delaunay</span><span class="p">(</span><span class="n">xycoords</span><span class="p">)</span>
+
+        <span class="c1"># get edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delaunay</span><span class="p">,</span> <span class="n">min_angle</span><span class="o">=</span><span class="n">min_angle</span><span class="p">,</span> <span class="n">max_angle</span><span class="o">=</span><span class="n">max_angle</span><span class="p">,</span> <span class="n">include_x</span><span class="o">=</span><span class="n">include_x</span><span class="p">,</span> <span class="n">include_y</span><span class="o">=</span><span class="n">include_y</span><span class="p">)</span>
+
+        <span class="c1"># filter edges</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_edges_by_length</span><span class="p">(</span><span class="n">distances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="c1"># compute mean distance to time scaling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span> <span class="o">=</span> <span class="n">furrow_velocity</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">)</span>
+
+        <span class="c1"># update time vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_time_scaling</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_log2_fold_change</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">values</span><span class="o">/</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_add_edges_to_plot</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">hours_per_pixel</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add delaunay edges to existing axes. &quot;&quot;&quot;</span>
+
+        <span class="c1"># get scores for colormap</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_log2_fold_change</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+        <span class="c1"># plot lines</span>
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+            <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="n">hours_per_pixel</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">score</span><span class="p">),</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time (hr)&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Triangulation.add_edges_to_plot"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.add_edges_to_plot">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add delaunay edges to existing axes. &quot;&quot;&quot;</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_edges_to_plot</span><span class="p">(</span><span class="n">distances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                                <span class="n">hours_per_pixel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xycoords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xycoords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">):</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">cmaps</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">colormap</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_plot_histogram</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dist_type</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot colored histogram for a set of values. &quot;&quot;&quot;</span>
+
+        <span class="c1"># get colormap</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">)</span>
+
+        <span class="c1"># histogram values</span>
+        <span class="n">counts</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">[(</span><span class="n">edge</span><span class="o">+</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">bin_centers</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+        <span class="n">patches</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">counts</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">bin_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="n">cmap</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">])</span>
+
+        <span class="c1"># format plot</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="s1">&#39; Mean: </span><span class="si">{:0.1f}</span><span class="s1"> px&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Med.: </span><span class="si">{:0.1f}</span><span class="s1"> px&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">values</span><span class="p">)),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1"> N = </span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">dist_type</span><span class="o">+</span><span class="s1">&#39;-distance&#39;</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;edges&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">counts</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">patches</span>
+
+<div class="viewcode-block" id="Triangulation.plot_histogram"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.plot_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Histogram inter-R8 distances. &quot;&quot;&quot;</span>
+        <span class="n">dist_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_x&#39;</span><span class="p">]</span><span class="o">*</span><span class="s1">&#39;x&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;include_y&#39;</span><span class="p">]</span><span class="o">*</span><span class="s1">&#39;y&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_histogram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">dist_type</span><span class="o">=</span><span class="n">dist_type</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_plot_expression</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span> <span class="n">hours_per_pixel</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot expression trajectories. &quot;&quot;&quot;</span>
+
+        <span class="n">cells</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span>
+        <span class="n">cells</span><span class="o">.</span><span class="n">plot_expression_time_series</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">line_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">raw_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ma</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># format x axis</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()])</span>
+
+<div class="viewcode-block" id="Triangulation.plot_expression"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.plot_expression">[docs]</a>    <span class="k">def</span> <span class="nf">plot_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot expression trajectory. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_expression</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Triangulation.overlay_epression"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.overlay_epression">[docs]</a>    <span class="k">def</span> <span class="nf">overlay_epression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot expression trajectory on twin y-axis. &quot;&quot;&quot;</span>
+        <span class="n">ax_alt</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_expression</span><span class="p">(</span><span class="n">ax_alt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Triangulation.show"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.Triangulation.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gs_parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_expression</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot inter-R8 distance distribution, Delaunay triangulation, and expression. &quot;&quot;&quot;</span>
+
+        <span class="c1"># retriangulate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disc</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># create axes</span>
+        <span class="k">if</span> <span class="n">gs_parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gs_child</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">GridSpecFromSubplotSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="n">subplot_spec</span><span class="o">=</span><span class="n">gs_parent</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ax0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs_child</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs_child</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">is_subplot</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># add colorbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_colorbar</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">is_subplot</span><span class="o">=</span><span class="n">is_subplot</span><span class="p">)</span>
+
+        <span class="c1"># plot edges, expression, and histogram</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edges_to_plot</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">include_expression</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">overlay_epression</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax0</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_colorbar</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">is_subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="n">mappable</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">)</span>
+        <span class="n">cbar</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mappable</span><span class="o">=</span><span class="n">mappable</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="n">fraction</span><span class="p">)</span>
+
+        <span class="c1"># simplify colorbar for subplots</span>
+        <span class="k">if</span> <span class="n">is_subplot</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">])</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;compressed&#39;</span><span class="p">,</span> <span class="s1">&#39;stretched&#39;</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;Log2(F.C. wrt mean)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;Log2(F.C. wrt mean)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ExperimentTriangulation"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.ExperimentTriangulation">[docs]</a><span class="k">class</span> <span class="nc">ExperimentTriangulation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for estimating the median distance between adjacent columns of R8 cells for each disc within an experiment. Distance estimate is obtained by constructing a Delaunay graph connecting all annotated R8 neurons, filtering the edges by length and angle relative to the horizontal axis, then evaluating the median x-component of remaining edges.</span>
+
+<span class="sd">    The median inter-column distance is multiplied by the estimated MF velocity (0.5 columns/hr) to generate a distance-to-time scaling factor.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    experiment (data.experiments.Experiment)</span>
+<span class="sd">    tri (dict) - {disc ID: Triangulation} pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate triangulation objects for all discs in an experiment.discs</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        experiment (data.experiments.Experiment)</span>
+<span class="sd">        kwargs: triangulation keyword arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">discs</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_triangulations</span><span class="p">(</span><span class="n">discs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_triangulations</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return experiment with updated developmental times. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_triangulations</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="n">tri</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return experiment with updated developmental times.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        experiment (data.experiments.Experiment) - experiment to be updated</span>
+<span class="sd">        tri (dict) - {disc ID: Triangulation} pairs</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        experiment (data.experiments.Experiment) - updated experiment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">get_disc</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tri</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">experiment</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_triangulations</span><span class="p">(</span><span class="n">discs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return dictionary of Triangulation objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        discs (dict) - {disc ID: Disc} pairs</span>
+<span class="sd">        kwargs: keyword arguments for Triangulation</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        tri (dict) - {disc ID: Triangulation} pairs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">Triangulation</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">disc</span> <span class="ow">in</span> <span class="n">discs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<div class="viewcode-block" id="ExperimentTriangulation.plot_expression"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.ExperimentTriangulation.plot_expression">[docs]</a>    <span class="k">def</span> <span class="nf">plot_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                        <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Plot expression for all triangulations. &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">triangulation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">triangulation</span><span class="o">.</span><span class="n">plot_expression</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExperimentTriangulation.show_triangulations"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.ExperimentTriangulation.show_triangulations">[docs]</a>    <span class="k">def</span> <span class="nf">show_triangulations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Visualize all triangulations. &quot;&quot;&quot;</span>
+        <span class="n">gs_parent</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="p">),</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">1.5</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">triangulation</span><span class="p">,</span> <span class="n">gs0</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">gs_parent</span><span class="p">)):</span>
+            <span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">gs_parent</span><span class="o">=</span><span class="n">gs0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">ax0</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([]),</span> <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([]),</span> <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="ExperimentTriangulation.show_alignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.triangulation.ExperimentTriangulation.show_alignment">[docs]</a>    <span class="k">def</span> <span class="nf">show_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                       <span class="n">xoffsets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">scatter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;sliding&#39;</span><span class="p">,</span>
+                       <span class="n">color_wheel</span><span class="o">=</span><span class="s1">&#39;cmyk&#39;</span><span class="p">,</span>
+                       <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot; Plot alignment of all discs. &quot;&quot;&quot;</span>
+
+        <span class="c1"># assume zero offset for each channel</span>
+        <span class="k">if</span> <span class="n">xoffsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xoffsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="p">))</span>
+
+        <span class="c1"># create axes if none provided</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+
+        <span class="c1"># add reference lines</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;--k&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span> <span class="s1">&#39;--k&#39;</span><span class="p">)</span>
+
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">triangulation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># get line color for disc</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">color_wheel</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_wheel</span><span class="p">)]</span>
+
+            <span class="c1"># get cells</span>
+            <span class="n">disc_cells_df</span> <span class="o">=</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">triangulation</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">==</span><span class="s1">&#39;pre&#39;</span><span class="p">,</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">==</span><span class="s1">&#39;p&#39;</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">scatter</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">disc_cells_df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">xoffsets</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">disc_cells_df</span><span class="p">[</span><span class="n">channel</span><span class="p">],</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+            <span class="c1"># add line average</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">plot_mean</span><span class="p">(</span><span class="n">disc_cells_df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">xoffsets</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">(</span><span class="n">disc_cells_df</span><span class="p">[</span><span class="n">channel</span><span class="p">]),</span>
+                                   <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Disc </span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">ma_type</span><span class="o">=</span><span class="n">ma_type</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span>
+                                   <span class="n">line_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">line_alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Disc </span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Fluorescence (a.u.)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (hr)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">API DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT US</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sebastian Bernasek.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

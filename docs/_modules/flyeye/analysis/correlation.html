@@ -1,0 +1,431 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>flyeye.analysis.correlation &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.analysis.correlation</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">binned_statistic</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">..dynamics.averages</span> <span class="k">import</span> <span class="n">plot_mean</span><span class="p">,</span> <span class="n">plot_mean_interval</span>
+
+
+<div class="viewcode-block" id="CorrelationData"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.CorrelationData">[docs]</a><span class="k">class</span> <span class="nc">CorrelationData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container for correlations between 1-D timeseries.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    d_ij (np array) - pairwise separation distances between measurements</span>
+<span class="sd">    C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_ij</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">C_ij</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate container for correlations between 1-D timeseries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        d_ij (np.ndarray) - pairwise separation distances</span>
+<span class="sd">        C_ij (np.ndarray) - normalized pairwise fluctuations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">d_ij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">C_ij</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d_ij</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span> <span class="o">=</span> <span class="n">d_ij</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_ij</span> <span class="o">=</span> <span class="n">C_ij</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">correlation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenate current instance with a second CorrelationData instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        correlation (analysis.correlation.CorrelationData)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        self (analysis.correlation.CorrelationData) - updated correlations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># concatenate distanced and fluctuations</span>
+        <span class="n">d_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span><span class="p">,</span> <span class="n">correlation</span><span class="o">.</span><span class="n">d_ij</span><span class="p">))</span>
+        <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">C_ij</span><span class="p">,</span> <span class="n">correlation</span><span class="o">.</span><span class="n">C_ij</span><span class="p">))</span>
+
+        <span class="c1"># sort by distance</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d_ij</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_ij</span> <span class="o">=</span> <span class="n">C_ij</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="CorrelationData.get_binned_stats"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.CorrelationData.get_binned_stats">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_binned_stats</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Group samples into x-bins and evaluate aggregate statistic of y-values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        x (np array) - values upon which samples are grouped</span>
+<span class="sd">        y (np array) - values upon which aggregate statistics are evaluated</span>
+<span class="sd">        bins (np array) - bin edges</span>
+<span class="sd">        statistic (str) - aggregation statistic applied to each bin</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        centers (np array) - bin centers</span>
+<span class="sd">        stats (np array) - aggregate statistic for each bin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if None, break into 10 intervals</span>
+        <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># evaluate statistic</span>
+        <span class="n">stats</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">binned_statistic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="n">statistic</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+
+        <span class="c1"># compute bin centers</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="p">[</span><span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">centers</span><span class="p">,</span> <span class="n">stats</span></div>
+
+<div class="viewcode-block" id="CorrelationData.bootstrap"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.CorrelationData.bootstrap">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">bootstrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                  <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
+                  <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                  <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate confidence interval for aggregation statistic.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        x (np array) - values upon which samples are grouped</span>
+<span class="sd">        y (np array) - values upon which aggregate statistics are evaluated</span>
+<span class="sd">        N (int) - number of repeated samples</span>
+<span class="sd">        confidence (int) - confidence interval, between 0 and 100</span>
+<span class="sd">        bins (np array) - bins within which the statistic is applied</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        centers (np array) - centers of distance bins</span>
+<span class="sd">        uppers, lowers (np array) - statistic confidence interval bounds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get indices for bootstrap resampling</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+        <span class="c1"># evaluate aggregation statistic</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="n">centers</span><span class="p">,</span> <span class="n">stat</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_binned_stats</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+        <span class="c1"># evaluate confidence interval</span>
+        <span class="n">uppers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="o">+</span><span class="n">confidence</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">lowers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="o">-</span><span class="n">confidence</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">centers</span><span class="p">,</span> <span class="n">uppers</span><span class="p">,</span> <span class="n">lowers</span></div>
+
+<div class="viewcode-block" id="CorrelationData.visualize"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.CorrelationData.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">null_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">scatter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">confidence</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">zero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">ma_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">nbootstraps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                  <span class="n">max_distance</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot pairwise normalized fluctuations versus pairwise distances.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ax (mpl.axes.AxesSubplot) - if None, create figure</span>
+<span class="sd">        null_model (bool) - if True, shuffle d_ij vector</span>
+<span class="sd">        scatter (bool) - if True, show individual markers</span>
+<span class="sd">        confidence (bool) - if True, include confidence interval</span>
+<span class="sd">        zero (bool) - if True, include zero correlation line for reference</span>
+<span class="sd">        interval_kw (dict) - keyword arguments for interval formatting</span>
+<span class="sd">        ma_kw (dict) - keyword arguments for moving average smoothing</span>
+<span class="sd">        nbootstraps (int) - number of bootstrap samples for confidence interval</span>
+<span class="sd">        color (str) - color used for confidence interval</span>
+<span class="sd">        max_distance (float) - largest pairwise distance included</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        ax (mpl.axes.AxesSubplot)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create figure/axis</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># get number of pairwise fluctuations</span>
+        <span class="n">number_of_pairs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span><span class="p">)</span>
+
+        <span class="c1"># if null_model is True, randomly shuffle d_ij vector</span>
+        <span class="k">if</span> <span class="n">null_model</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span><span class="p">,</span> <span class="n">number_of_pairs</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_ij</span>
+
+        <span class="c1"># filter by max_distance</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_distance</span><span class="o">//</span><span class="mi">100</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span><span class="o">&lt;=</span><span class="n">max_distance</span><span class="p">)</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_ij</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+        <span class="c1"># sort by distance</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+        <span class="c1"># get smoothing arguments</span>
+        <span class="k">if</span> <span class="n">ma_kw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ma_kw</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;savgol&#39;</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+        <span class="c1"># plot moving average</span>
+        <span class="n">plot_mean</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                  <span class="n">line_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                  <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">line_alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">ma_kw</span><span class="p">)</span>
+
+        <span class="c1"># plot confidence interval for moving average</span>
+        <span class="k">if</span> <span class="n">confidence</span><span class="p">:</span>
+            <span class="n">plot_mean_interval</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                               <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
+                               <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                               <span class="n">alpha</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span>
+                               <span class="n">nbootstraps</span><span class="o">=</span><span class="n">nbootstraps</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">ma_kw</span><span class="p">)</span>
+
+        <span class="c1"># plot markers</span>
+        <span class="k">if</span> <span class="n">scatter</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># plot zero reference line</span>
+        <span class="k">if</span> <span class="n">zero</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+        <span class="c1"># format</span>
+        <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">),</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;mean corr.&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;y-distance between cells $i, j$ (px)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ax</span></div></div>
+
+
+<div class="viewcode-block" id="SpatialCorrelation"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.SpatialCorrelation">[docs]</a><span class="k">class</span> <span class="nc">SpatialCorrelation</span><span class="p">(</span><span class="n">CorrelationData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for evaluating spatial correlation of expression between cells.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    channel (str) - expression channel for which correlations are desired</span>
+<span class="sd">    y_only (bool) - if True, only use y-component of pairwise distances</span>
+<span class="sd">    raw (bool) - if True, use raw fluorescence intensities</span>
+
+<span class="sd">    Inherited attributes:</span>
+<span class="sd">    d_ij (np array) - pairwise separation distances between measurements</span>
+<span class="sd">    C_ij (np array) - normalized pairwise fluctuations between measurements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
+                 <span class="n">y_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">raw</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for evaluating spatial correlation of expression between cells.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        df (pd.Dataframe) - cell measurement data</span>
+<span class="sd">        channel (str) - expression channel for which correlations are desired</span>
+<span class="sd">        y_only (bool) - if True, only use y-component of pairwise distances</span>
+<span class="sd">        raw (bool) - if True, use raw fluorescence intensities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># store parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_only</span> <span class="o">=</span> <span class="n">y_only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span>
+
+        <span class="c1"># get pairwise distances and fluctuations</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d_ij</span><span class="p">,</span> <span class="n">C_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([]),</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([])</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># get distances vector</span>
+            <span class="n">d_ij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_distances_vector</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">y_only</span><span class="o">=</span><span class="n">y_only</span><span class="p">)</span>
+
+            <span class="c1"># get covariance vector</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">channel</span> <span class="o">!=</span> <span class="s1">&#39;ratio&#39;</span><span class="p">:</span>
+                <span class="n">expression</span> <span class="o">*=</span> <span class="n">df</span><span class="p">[</span><span class="n">cells</span><span class="o">.</span><span class="n">normalization</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">C_ij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_covariance_vector</span><span class="p">(</span><span class="n">expression</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># instantiate parent object</span>
+        <span class="n">CorrelationData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_ij</span><span class="p">,</span> <span class="n">C_ij</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SpatialCorrelation.get_matrix_upper"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.SpatialCorrelation.get_matrix_upper">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_matrix_upper</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return upper triangular portion of a 2-D matrix.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        matrix (2D np.ndarray)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        upper (1D np.ndarray) - upper triangle, ordered row then column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="SpatialCorrelation.get_distances_vector"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.SpatialCorrelation.get_distances_vector">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_distances_vector</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get upper triangular portion of pairwise distance matrix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        df (pd.Dataframe) - cell measurements including position data</span>
+<span class="sd">        y_only (bool) - if True, only use y-component of cell positions</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        distances (1D np.ndarray) - pairwise distances, ordered row then column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if no measurements are included, return None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># compute pairwise distances between cells</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">x_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y_only</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">x_component</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="n">y_component</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># get upper triangular portion (excludes self edges and duplicates)</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_matrix_upper</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_component</span> <span class="o">+</span> <span class="n">y_component</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">distances</span></div>
+
+<div class="viewcode-block" id="SpatialCorrelation.get_covariance_vector"><a class="viewcode-back" href="../../../modules/analysis.html#flyeye.analysis.correlation.SpatialCorrelation.get_covariance_vector">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_covariance_vector</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get upper triangular portion of pairwise expression covariance matrix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        vector (1D np.ndarray) - expression levels for each cell</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if vector is of length zero, return None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># compute correlation matrix and return upper triangular portion</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">vector</span> <span class="o">-</span> <span class="n">vector</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+        <span class="n">covariance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">covariance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_matrix_upper</span><span class="p">(</span><span class="n">covariance_matrix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">covariance</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">API DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT US</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sebastian Bernasek.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
