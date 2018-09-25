@@ -31,6 +31,7 @@ The initial release is primarily limited to basic tools required to replicate `o
 .. toctree::
    :hidden:
    :maxdepth: 2
+   :contents: Table of Contents
 
    INSTALLATION <installation>
    GETTING STARTED <start>
