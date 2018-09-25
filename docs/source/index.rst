@@ -18,10 +18,13 @@ NU FlyEye: Analysis
 
 Given one or more ``.silhouette`` files, **NU FlyEye: Analysis** facilitates:
 
-   - **Timeseries Construction:** convert measurements to timepoints
-   - **Data Management:** query cells by developmental age and cell type
-   - **Dynamic Analysis:** analyze and visualize expression dynamics
-   - **Spatial Analysis:** detect and quantify spatial expression patterns
+   - **Timeseries Construction.** Convert measurements to timepoints
+
+   - **Data Management.** Query cells by developmental age and cell type
+
+   - **Dynamic Analysis.** Analyze and visualize expression dynamics
+
+   - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
 The initial release is primarily limited to basic tools required to replicate `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during retinal patterning in *Drosophila*. We intend to expand this functionality in later releases.
 
