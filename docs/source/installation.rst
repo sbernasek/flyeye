@@ -9,7 +9,8 @@ Installation |NULOGO|
 =====================
 
 .. |NULOGO| image:: graphics/Northwestern_purple_RGB.png
-   :align: bottom
+   :width: 30%
+   :align: middle
 
 
 After downloading the `latest distribution <https://github.com/sebastianbernasek/flyeye/archive/v0.1.0-beta.tar.gz>`_, the simplest method is to install via ``pip``:
