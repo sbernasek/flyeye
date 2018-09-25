@@ -8,11 +8,6 @@
 Example Usage
 =============
 
-.. image:: graphics/header-01.png
-   :width: 100%
-   :align: center
-   :alt: header
-
 **NU FlyEye: Analysis** provides a wide range of functionality for analyzing the expression data contained in ``.silhouette`` files. A very brief survey of some basic operations is provided below. For detailed usage instructions please see the :ref:`documentation <documentation>`.
 
 

@@ -8,11 +8,6 @@
 Documentation
 =============
 
-.. image:: graphics/header-01.png
-   :width: 100%
-   :align: center
-   :alt: header
-
 **NU FlyEye: Analysis** is organized into several complementary submodules:
 
 #. :ref:`Data <data>`. Organize and query expression data
@@ -20,13 +15,13 @@ Documentation
 #. :ref:`Dynamics <dynamics>`. Analyze and visualize expression dynamics
 #. :ref:`Analysis <analysis>`. Detect and quantify spatial expression patterns
 
-Please select a submodule from the sidebar for a detailed descriptions of its implementation.
+Please select a submodule for a detailed descriptions of its implementation.
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
+.. .. toctree::
+..    :maxdepth: 1
+..    :hidden:
 
-   Data <modules/data>
-   Processing <modules/processing>
-   Dynamics <modules/dynamics>
-   Analysis <modules/analysis>
+..    Data <modules/data>
+..    Processing <modules/processing>
+..    Dynamics <modules/dynamics>
+..    Analysis <modules/analysis>
