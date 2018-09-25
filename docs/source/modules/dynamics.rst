@@ -6,8 +6,8 @@
    :alt: nulogo
 
 
-DYNAMICS
-========
+Dynamics Module
+===============
 
 ``flyeye.dynamics`` provides methods for analyzing and visualizing protein expression dynamics in the developing *Drosophila* eye field.
 

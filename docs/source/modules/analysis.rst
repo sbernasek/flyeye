@@ -6,8 +6,8 @@
    :alt: nulogo
 
 
-ANALYSIS
-========
+Analysis Module
+===============
 
 ``flyeye.analysis`` provides tools for detecting periodic spatial patterns of expression in the developing *Drosophila* eye field.
 

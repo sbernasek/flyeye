@@ -6,8 +6,8 @@
    :alt: nulogo
 
 
-PROCESSING
-==========
+Processing Module
+=================
 
 ``flyeye.processing`` provides tools for converting raw fluorescence measurements into developmental timepoints.
 
