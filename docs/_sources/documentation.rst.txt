@@ -17,11 +17,11 @@ Documentation
 
 Please select a submodule for a detailed descriptions of its implementation.
 
-.. .. toctree::
-..    :maxdepth: 1
-..    :hidden:
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-..    Data <modules/data>
-..    Processing <modules/processing>
-..    Dynamics <modules/dynamics>
-..    Analysis <modules/analysis>
+   Data Module <modules/data>
+   Processing Module <modules/processing>
+   Dynamics Module <modules/dynamics>
+   Analysis Module <modules/analysis>
