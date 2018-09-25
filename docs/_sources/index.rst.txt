@@ -7,7 +7,7 @@
 NU FlyEye: Analysis
 ===================
 
-.. image:: graphics/header2.png
+.. image:: graphics/header3.png
    :width: 100%
    :align: center
    :alt: header
