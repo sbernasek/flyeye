@@ -13,10 +13,10 @@ NU FlyEye: Analysis
    :alt: header
 
 
-**NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured *in vivo* using **NU FlyEye: Silhouette**.
+**NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured in vivo using **NU FlyEye: Silhouette**.
 
 
-Given one or more ``.silhouette`` files, **NU FlyEye: Analysis** facilitates:
+Given one or more ``.silhouette`` files, the analysis package facilitates:
 
    - **Timeseries Construction.** Convert measurements to timepoints
 
