@@ -34,7 +34,7 @@
 
           <div class="body" role="main">
             
-  <a class="reference external image-reference" href="https://amaral.northwestern.edu/"><img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" /></a>
+  <img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" />
 <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>The fastest way to gain familiarity with <strong>NU FlyEye: Analysis</strong> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
@@ -62,7 +62,7 @@
 <blockquote>
 <div><ul class="simple">
 <li>All measurements of interest must be labeled. Unlabeled measurements are ignored upon import.</li>
-<li>Progenitors must be labeled ‘p’ or ‘pre’. Other names are possible but would require manual modification of the <span class="xref std std-ref">flyeye.data</span> source code.</li>
+<li>Progenitors must be labeled ‘p’ or ‘pre’. Other names are possible but would require manual modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</li>
 <li>R8 cells must be fully annotated within a contiguous region. The automated conversion of measurements to developmental timepoints is dependent upon regularly spaced R8 measurements.</li>
 </ul>
 </div></blockquote>
@@ -76,7 +76,12 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">analysis</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/img/logo2-01.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
@@ -93,8 +98,20 @@
 <li class="toctree-l2"><a class="reference internal" href="#data-requirements">Data Requirements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/processing.html">Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/analysis.html">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#loading-an-experiment">Loading an experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#querying-measurements">Querying measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#visualizing-dynamics">Visualizing Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#additional-examples">Additional Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contact.html">CONTACT</a></li>
 </ul>
 
@@ -125,10 +142,6 @@
     </div>
     <div class="footer">
       &copy;2018, Sebastian Bernasek.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/start.rst.txt"

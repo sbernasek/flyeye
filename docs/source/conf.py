@@ -87,7 +87,25 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+
+    # logo
+    'logo': 'img/logo2-01.png',
+    #'logo_name': False,
+    #'logo_text_align': 'center',
+
+    # sidebar
+    'sidebar_collapse': False,
+
+    # powered by note
+    'show_powered_by': False,
+
+
+}
+
+# remove default scaled image link
+html_scaled_image_link = False
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

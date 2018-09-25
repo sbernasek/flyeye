@@ -34,7 +34,7 @@
 
           <div class="body" role="main">
             
-  <a class="reference external image-reference" href="https://amaral.northwestern.edu/"><img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" /></a>
+  <img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" />
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>After downloading the <a class="reference external" href="https://github.com/sebastianbernasek/flyeye/archive/v0.1.0-beta.tar.gz">latest distribution</a>, the simplest method is to install via <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
@@ -50,7 +50,12 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">analysis</a></h1>
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/img/logo2-01.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
@@ -62,9 +67,25 @@
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">INSTALLATION</a></li>
-<li class="toctree-l1"><a class="reference internal" href="start.html">GETTING STARTED</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="start.html">GETTING STARTED</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="start.html#input-file-structure">Input File Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start.html#data-requirements">Data Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/processing.html">Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/dynamics.html">Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/analysis.html">Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#loading-an-experiment">Loading an experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#querying-measurements">Querying measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#visualizing-dynamics">Visualizing Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#additional-examples">Additional Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contact.html">CONTACT</a></li>
 </ul>
 
@@ -95,10 +116,6 @@
     </div>
     <div class="footer">
       &copy;2018, Sebastian Bernasek.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/installation.rst.txt"
