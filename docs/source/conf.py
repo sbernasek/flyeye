@@ -96,8 +96,6 @@ html_theme_options = {
 
     # sidebar
     'sidebar_collapse': True,
-    'sidebar_width': 220,
-    'page_width': 940,
 
     # powered by note
     'show_powered_by': False,
