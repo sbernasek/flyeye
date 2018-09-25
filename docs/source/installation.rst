@@ -12,3 +12,4 @@ After downloading the `latest distribution <https://github.com/sebastianbernasek
 .. code-block:: bash
 
    pip install flyeye-0.1.0-beta.tar.gz
+

@@ -9,7 +9,7 @@
 Data Module
 ===========
 
-**NU FlyEye: Analysis** is built upon quantitative expression measurements read from ``.silhouette`` files using the  ``flyeye.data.silhouette`` submodule. Each labeled cell measurement becomes a record in a `Pandas dataframe <https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_.
+*FlyEye Analysis* is built upon quantitative expression measurements read from ``.silhouette`` files using the  ``flyeye.data.silhouette`` submodule. Each labeled cell measurement becomes a record in a `Pandas dataframe <https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html>`_.
 
 Cell measurement data are subject to three levels of organization:
 

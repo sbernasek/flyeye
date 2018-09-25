@@ -3,19 +3,19 @@
    :align: right
    :alt: nulogo
 
-===================
-NU FlyEye: Analysis
-===================
+===============
+FlyEye Analysis
+===============
 
 .. image:: graphics/header-01.png
    :width: 100%
    :align: center
    :alt: header
 
-**NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured in vivo using **NU FlyEye: Silhouette**.
+*FlyEye Analysis* is part of the **NU FlyEye** platform for studying gene expression in the developing fruit fly eye. The analysis package provides methods for analyzing expression data measured in vivo using *FlyEye Silhouette*.
 
 
-Given one or more ``.silhouette`` files, the analysis package facilitates:
+Given one or more ``.silhouette`` files, the package enables:
 
    - **Timeseries Construction.** Convert measurements to timepoints
 

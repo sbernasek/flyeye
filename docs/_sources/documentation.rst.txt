@@ -8,7 +8,7 @@
 Documentation
 =============
 
-**NU FlyEye: Analysis** is organized into several complementary submodules:
+*FlyEye Analysis* is organized into several complementary submodules:
 
 #. :ref:`Data <data>`. Organize and query expression data
 #. :ref:`Processing <processing>`. Convert measurements to timepoints

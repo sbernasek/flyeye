@@ -7,7 +7,7 @@
 Getting Started
 ===============
 
-The fastest way to gain familiarity with **NU FlyEye: Analysis** is to start with a working example. Please feel free to use the data from `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during eye development.
+The fastest way to gain familiarity with *FlyEye Analysis* is to start with a working example. Please feel free to use the data from `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during eye development.
 
 To analyze your own segmented microscopy data, please read on!
 
@@ -15,7 +15,7 @@ To analyze your own segmented microscopy data, please read on!
 Input File Structure
 --------------------
 
-**NU FlyEye: Analysis** supports analysis of expression data contained in ``.silhouette`` files. Each of these files corresponds to a single *Drosophila* eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The ``.silhouette`` filetype follows a standardized structure:
+*FlyEye Analysis* supports analysis of expression data contained in ``.silhouette`` files. Each of these files corresponds to a single *Drosophila* eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The ``.silhouette`` filetype follows a standardized structure:
 
 .. code-block:: bash
 
@@ -36,7 +36,7 @@ The layer images contained in a ``.silhouette`` file are compressed versions of 
 Data Requirements
 -----------------
 
-**NU FlyEye: Analysis** requires:
+*NU FlyEye Analysis* requires:
 
  - All measurements of interest must be labeled. Unlabeled measurements are ignored upon import.
 
