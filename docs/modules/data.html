@@ -36,7 +36,8 @@
             
   <div class="section" id="data">
 <span id="id1"></span><h1>DATA<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h1>
-<p><strong>NU FlyEye: Analysis</strong> is built upon quantitative expression data measured using <strong>NU FlyEye: Silhouette</strong>. These measurements are obtained from <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files using the <code class="docutils literal notranslate"><span class="pre">flyeye.data.silhouette</span></code> submodule. The data may then be queried at three levels:</p>
+<p><strong>NU FlyEye: Analysis</strong> is built upon quantitative expression measurements read from <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files using the  <code class="docutils literal notranslate"><span class="pre">flyeye.data.silhouette</span></code> submodule. Each labeled cell measurement becomes a record in a <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">Pandas dataframe</a>.</p>
+<p>Cell measurement data are subject to three levels of organization:</p>
 <blockquote>
 <div><ol class="arabic simple">
 <li><code class="docutils literal notranslate"><span class="pre">Cells</span></code> objects contain one or more expression level measurements</li>
