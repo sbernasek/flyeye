@@ -4,6 +4,7 @@
    :width: 30%
    :align: right
    :alt: nulogo
+   :target: https://amaral.northwestern.edu/
 
 
 PROCESSING

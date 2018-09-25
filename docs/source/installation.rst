@@ -2,15 +2,11 @@
    :width: 30%
    :align: right
    :alt: nulogo
+   :target: https://amaral.northwestern.edu/
 
 
-
-Installation |NULOGO|
-=====================
-
-.. |NULOGO| image:: graphics/Northwestern_purple_RGB.png
-   :width: 30%
-   :align: middle
+Installation
+============
 
 
 After downloading the `latest distribution <https://github.com/sebastianbernasek/flyeye/archive/v0.1.0-beta.tar.gz>`_, the simplest method is to install via ``pip``:
