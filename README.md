@@ -4,7 +4,7 @@ NU FlyEye: Analysis
 
 **NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured *in vivo* using **NU FlyEye: Silhouette**.
 
-The initial release is limited to basic tools required to replicate [our study](https://github.com/sebastianbernasek/pnt_yan_ratio) of Pnt and Yan expression during retinal patterning in *Drosophila*. Given one or more ``.silhouette`` files, **NU FlyEye: Analysis** facilitates:
+The initial release is limited to basic tools required to replicate [our study](https://github.com/sebastianbernasek/pnt_yan_ratio) of Pnt and Yan expression during retinal patterning in *Drosophila*. Given one or more ``.silhouette`` files, analysis package facilitates:
 
    - **Timeseries Construction.** Convert measurements to timepoints
 
