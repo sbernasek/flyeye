@@ -100,7 +100,6 @@ html_theme_options = {
     # powered by note
     'show_powered_by': False,
 
-
 }
 
 # remove default scaled image link
