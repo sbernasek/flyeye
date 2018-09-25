@@ -7,11 +7,10 @@
 NU FlyEye: Analysis
 ===================
 
-.. image:: graphics/header3.png
+.. image:: graphics/header-01.png
    :width: 100%
    :align: center
    :alt: header
-
 
 **NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured in vivo using **NU FlyEye: Silhouette**.
 

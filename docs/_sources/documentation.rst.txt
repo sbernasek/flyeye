@@ -8,6 +8,11 @@
 Documentation
 =============
 
+.. image:: graphics/header-01.png
+   :width: 100%
+   :align: center
+   :alt: header
+
 **NU FlyEye: Analysis** is organized into several complementary submodules:
 
 #. :ref:`Data <data>`. Organize and query expression data
