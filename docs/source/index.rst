@@ -31,7 +31,7 @@ The initial release is primarily limited to basic tools required to replicate `o
    :maxdepth: 2
 
    INSTALLATION <installation>
-   API DOCUMENTATION <documentation>
+   DOCUMENTATION <documentation>
    GETTING STARTED <start>
    EXAMPLE USAGE <usage>
    CONTACT US <contact>
