@@ -1,6 +1,6 @@
 .. _analysis:
 
-.. image:: graphics/Northwestern_purple_RGB.png
+.. image:: ../graphics/Northwestern_purple_RGB.png
    :width: 30%
    :align: right
    :alt: nulogo
