@@ -2,6 +2,7 @@
    :width: 30%
    :align: right
    :alt: nulogo
+   :target: https://amaral.northwestern.edu/
 
 ===================
 NU FlyEye: Analysis
@@ -11,6 +12,7 @@ NU FlyEye: Analysis
    :width: 100%
    :align: center
    :alt: header
+   :target: none
 
 
 **NU FlyEye: Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured in vivo using **NU FlyEye: Silhouette**.
