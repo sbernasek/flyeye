@@ -13,7 +13,7 @@ body {
 
 
 div.document {
-    width: 860;
+    width: 940;
     margin: 30px auto 0 auto;
 }
 
@@ -23,11 +23,11 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 100;
+    margin: 0 0 0 220;
 }
 
 div.sphinxsidebar {
-    width: 100;
+    width: 220;
     font-size: 14px;
     line-height: 1.5;
 }
@@ -47,7 +47,7 @@ div.body > .section {
 }
 
 div.footer {
-    width: 860;
+    width: 940;
     margin: 20px auto 30px auto;
     font-size: 14px;
     color: #888;
