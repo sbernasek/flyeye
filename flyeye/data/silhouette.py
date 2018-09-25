@@ -7,6 +7,7 @@ import pandas as pd
 
 class Silhouette:
     """
+
     Interface to a FlyEye Silhouette file.
 
     Attributes:
@@ -64,6 +65,7 @@ class Silhouette:
 
 class SilhouetteData(Silhouette):
     """
+
     Interface to data within a FlyEye Silhouette file.
 
     Upon instantiation, individual cell measurements are aggregated into a data.cells.Cells compatible DataFrame.
@@ -250,4 +252,3 @@ class SilhouetteData(Silhouette):
         df = pd.DataFrame(contours, columns=columns)
 
         return df
-
