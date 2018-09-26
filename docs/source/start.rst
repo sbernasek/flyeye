@@ -13,16 +13,14 @@ The fastest way to gain familiarity with **FlyEye Analysis** is to start with a 
 
 We recommend reading the sections below before working with your own data.
 
+.. Note::
+   The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
 
 
 Data Format
 -----------
 
 **FlyEye Analysis** supports analysis of expression data contained in ``.silhouette`` files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the **FlyEye Silhouette** documentation for tips on generating ``.silhouette`` files from your microscopy data.
-
-.. Note::
-   The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
-
 
 The ``.silhouette`` filetype includes reporter level measurements and an image for each layer in a 3D image stack. A single file containing all measurement annotations is also included. The contents are structured as:
 
@@ -41,14 +39,15 @@ Each ``<layer_number>.json`` file contains all reporter levels measured during s
 
 The ``feud.json`` file contains all user-assigned contour labels. **FlyEye Analysis** automatically pairs measurements with their corresponding labels upon import of a ``.sihouette`` file. Unlabeled contours are ignored.
 
+The ``<layer_number>.png`` images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.
+
+
 .. warning::
 
  - R8 cells must be fully annotated within a locally contiguous region. [*]_
- - Only one measurement should be labeled per cell that appears in the 3-D image stack.
+ - Only one contour should be labeled per cell that appears in the 3-D image stack.
  - Progenitors must be labeled 'p' or 'pre'. [*]_
  - R8 cells must be labeled 'r8' or 'R8'.
-
-The ``<layer_number>.png`` images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.
 
 
 .. [*] Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.
