@@ -44,7 +44,7 @@ The ``<layer_number>.png`` images are compressed versions of the original micros
 
 
 .. Note::
-   The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to 'red', 'green', and 'blue'. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
+   The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
 
 
 Data Requirements
@@ -52,11 +52,11 @@ Data Requirements
 
 To analyze a ``.silhouette`` file:
 
- - R8 cells must be fully annotated within a locally contiguous region.[*]_
+ - R8 cells must be fully annotated within a locally contiguous region. [*]_
 
  - Only one measurement should be labeled per cell that appears in the 3-D image stack.
 
- - Progenitors must be labeled 'p' or 'pre'.[*]_
+ - Progenitors must be labeled 'p' or 'pre'. [*]_
 
  - R8 cells must be labeled 'r8' or 'R8'.
 
@@ -73,7 +73,7 @@ Data Management
 
 .. code-block:: bash
 
-   data/
+   data
    ├── experiment_A
    |   ├── eye0.silhouette
    |   | ...
@@ -89,15 +89,15 @@ Loading Data
 
 Measurement data must be loaded as ``data.discs.Disc`` instances prior to analysis. Several important operations are automatically triggered upon instantiation of a ``Disc``:
 
- # Each cell is assigned a developmental age based on its relative distance from the youngest R8 cell
- # Expression levels are normalized against the level of the reporter used to mark cell nuclei
- # The expression ratio between the two remaining reporters is evaluated
- # Moving average expression trends are evaluated for each labeled cell type
+#. Each cell is assigned a developmental age based on its relative distance from the youngest R8 cell
+#. Expression levels are normalized against the level of the reporter used to mark cell nuclei
+#. The expression ratio between the two remaining reporters is evaluated
+#. Moving average expression trends are evaluated for each labeled cell type
 
 These operations are governed by a handful of user-specified parameters such as furrow velocity and the reporter color used to mark cell nuclei. These parameters must be specified in accordance with your particular dataset.
 
 .. Note::
-   The initial release of **FlyEye Analysis** assumes that one of the three available reporter colors was reserved for a nuclear marker. The expression ratio assigned to each cell is evaluated using the two remaining reporter colors.
+   **FlyEye Analysis** assumes that one of the three available reporter colors was reserved for a nuclear marker. The expression ratio assigned to each cell is evaluated using the two remaining reporter colors.
 
 
 To load an individual ``.silhouette`` file:
