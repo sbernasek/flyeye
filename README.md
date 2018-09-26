@@ -1,8 +1,5 @@
-# <img alt="FlyEye Analysis" src="docs/source/graphics/analysis_header.png" height="150">
+# [<img alt="FlyEye Analysis" src="docs/source/graphics/analysis_header.png" height="150">](file:///Users/Sebi/Documents/grad_school/research/flyeye/flyeye/docs/index.html#)
 
-
-Overview
-========
 
 **FlyEye Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing *Drosophila* eye. The analysis package provides methods for analyzing expression data measured *in vivo* using **FlyEye Silhouette**.
 
