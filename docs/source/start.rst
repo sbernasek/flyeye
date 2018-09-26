@@ -78,10 +78,9 @@ Data Management
    |   ├── eye0.silhouette
    |   | ...
    |   └── eyeN.silhouette
-   |
+   |...
    |
    └── experiment_Z
-       └── ...
 
 
 Loading Data
@@ -89,7 +88,7 @@ Loading Data
 
 Measurement data must be loaded as ``data.discs.Disc`` instances prior to analysis. Several important operations are automatically triggered upon instantiation of a ``Disc``:
 
-#. Each cell is assigned a developmental age based on its relative distance from the youngest R8 cell
+#. Each cell is assigned a developmental age based on its proximity to the furrow
 #. Expression levels are normalized against the level of the reporter used to mark cell nuclei
 #. The expression ratio between the two remaining reporters is evaluated
 #. Moving average expression trends are evaluated for each labeled cell type
@@ -122,4 +121,4 @@ Alternatively, the ``experiments.Experiment`` constructor will automatically loa
    experiment = experiments.Experiment(path_to_experiment)
 
 
-Your data are now ready for analysis.
+**Your data are now ready for analysis!**
