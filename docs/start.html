@@ -49,10 +49,8 @@
 ├── <span class="m">0</span>.json           <span class="c1"># first layer measurements</span>
 ├── <span class="m">0</span>.png            <span class="c1"># first layer image</span>
 <span class="p">|</span>
-<span class="p">|</span> ...
-<span class="p">|</span>
-├── N.json           <span class="c1"># Nth layer reporter levels (measurements)</span>
-└── N.png            <span class="c1"># Nth layer image</span>
+├── ... N.json       <span class="c1"># Nth layer reporter levels (measurements)</span>
+└── ... N.png        <span class="c1"># Nth layer image</span>
 </pre></div>
 </div>
 <p>Each <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.json</span></code> file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by <strong>FlyEye Analysis</strong> are performed in local memory.</p>
@@ -68,24 +66,22 @@
 <p>To analyze a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
 <blockquote>
 <div><ul class="simple">
-<li>R8 cells must be fully annotated within a locally contiguous region. <a class="footnote-reference" href="#id3" id="id1">[*]</a></li>
+<li>R8 cells must be fully annotated within a locally contiguous region. <a class="footnote-reference" href="#id2" id="id1">[*]</a></li>
 <li>Only one measurement should be labeled per cell that appears in the 3-D image stack.</li>
-<li>Progenitors must be labeled ‘p’ or ‘pre’. <a class="footnote-reference" href="#id4" id="id2">[†]</a></li>
+<li>Progenitors must be labeled ‘p’ or ‘pre’.</li>
 <li>R8 cells must be labeled ‘r8’ or ‘R8’.</li>
 </ul>
 </div></blockquote>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[*]</a></td><td>Timeseries construction relies upon regularly spaced R8 measurements.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[*]</a></td><td>Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[†]</a></td><td>Custom labels require modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</td></tr>
-</tbody>
-</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Custom labels for cell types other than progenitors and R8 cells are possible without any modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</p>
+</div>
 </div>
 <div class="section" id="data-management">
 <h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
@@ -93,11 +89,10 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data
 ├── experiment_A
 <span class="p">|</span>   ├── eye0.silhouette
-<span class="p">|</span>   <span class="p">|</span> ...
-<span class="p">|</span>   └── eyeN.silhouette
-<span class="p">|</span>...
+<span class="p">|</span>   <span class="p">|</span>
+<span class="p">|</span>   └── ... eyeN.silhouette
 <span class="p">|</span>
-└── experiment_Z
+└── ... experiment_Z
 </pre></div>
 </div>
 </div>

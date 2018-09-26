@@ -31,10 +31,8 @@ The ``.silhouette`` filetype includes image, measurement (reporter levels), and 
    ├── 0.json           # first layer measurements
    ├── 0.png            # first layer image
    |
-   | ...
-   |
-   ├── N.json           # Nth layer reporter levels (measurements)
-   └── N.png            # Nth layer image
+   ├── ... N.json       # Nth layer reporter levels (measurements)
+   └── ... N.png        # Nth layer image
 
 Each ``<layer_number>.json`` file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by **FlyEye Analysis** are performed in local memory.
 
@@ -56,13 +54,16 @@ To analyze a ``.silhouette`` file:
 
  - Only one measurement should be labeled per cell that appears in the 3-D image stack.
 
- - Progenitors must be labeled 'p' or 'pre'. [*]_
+ - Progenitors must be labeled 'p' or 'pre'.
 
  - R8 cells must be labeled 'r8' or 'R8'.
 
 
-.. [*] Timeseries construction relies upon regularly spaced R8 measurements.
-.. [*] Custom labels require modification of the :ref:`flyeye.data <data>` source code.
+.. [*] Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.
+
+
+.. Note::
+   Custom labels for cell types other than progenitors and R8 cells are possible without any modification of the :ref:`flyeye.data <data>` source code.
 
 
 
@@ -76,11 +77,10 @@ Data Management
    data
    ├── experiment_A
    |   ├── eye0.silhouette
-   |   | ...
-   |   └── eyeN.silhouette
-   |...
+   |   |
+   |   └── ... eyeN.silhouette
    |
-   └── experiment_Z
+   └── ... experiment_Z
 
 
 Loading Data
