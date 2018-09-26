@@ -35,9 +35,9 @@ Required:
 Installation
 ============
 
-After downloading the [latest distribution](https://github.com/sebastianbernasek/flyeye/archive/v0.1.0-beta.tar.gz), the simplest method is to install via ``pip``:
+After downloading the [latest distribution](https://github.com/sebastianbernasek/flyeye/archive/v0.2-beta.tar.gz), the simplest method is to install via ``pip``:
 
-    pip install flyeye-0.1.0-beta.tar.gz
+    pip install flyeye-0.2-beta.tar.gz
 
 
 Examples
