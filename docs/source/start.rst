@@ -92,11 +92,9 @@ To load an individual ``.silhouette`` file:
 
 .. code-block:: python
 
-   from flyeye.data import discs
-
-   path_to_disc = './data/experiment_A/eye0.silhouette'
-
-   disc = discs.Disc.from_silhouette(path_to_disc)
+   >>> from flyeye.data import discs
+   >>> path_to_disc = './data/experiment_A/eye0.silhouette'
+   >>> disc = discs.Disc.from_silhouette(path_to_disc)
 
 
 Alternatively, the ``experiments.Experiment`` constructor will automatically load and combine all discs within a specified directory:

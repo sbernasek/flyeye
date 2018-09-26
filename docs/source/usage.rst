@@ -21,18 +21,16 @@ To load an individual eye disc:
 
 .. code-block:: python
 
-   from flyeye.data import discs
-
-   disc = discs.Disc.from_silhouette(path_to_silhouette_file)
+   >>> from flyeye.data import discs
+   >>> disc = discs.Disc.from_silhouette(path_to_silhouette_file)
 
 
 To load an entire experiment:
 
 .. code-block:: python
 
-   from flyeye.data import experiments
-
-   experiment = experiments.Experiment(path_to_experiment)
+   >>> from flyeye.data import experiments
+   >>> experiment = experiments.Experiment(path_to_experiment)
 
 
 
@@ -44,23 +42,22 @@ Select by disc ID:
 
 .. code-block:: python
 
-   disc_id = 2
-   disc = experiment.discs[disc_id]
+   >>> disc_id = 2
+   >>> disc = experiment.discs[disc_id]
 
 Select by cell type:
 
 .. code-block:: python
 
-   cell_type = 'pre'
-   cells = disc.select_cell_type(cell_type)
+   >>> cell_type = 'pre'
+   >>> cells = disc.select_cell_type(cell_type)
 
 Select by developmental time:
 
 .. code-block:: python
 
-   tmin = 5
-   tmax = 15
-   cells = disc.select_by_position(tmin=tmin, tmax=tmax)
+   >>> tmin, tmax = 5, 15
+   >>> cells = disc.select_by_position(tmin=tmin, tmax=tmax)
 
 
 Visualizing Dynamics
@@ -70,20 +67,17 @@ Plot expression dynamics:
 
 .. code-block:: python
 
-   reporter_channel = 'green'
-
-   cells.plot_dynamics(reporter_channel)
+   >>> reporter_channel = 'green'
+   >>> cells.plot_dynamics(reporter_channel)
 
 
 Plot expression heterogeneity dynamics:
 
 .. code-block:: python
 
-   reporter_channel = 'green'
-
-   fluctuations_channel = reporter_channel + '_flux'
-
-   cells.plot_dynamics(fluctuations_channel)
+   >>> reporter_channel = 'green'
+   >>> fluctuations_channel = reporter_channel + '_flux'
+   >>> cells.plot_dynamics(fluctuations_channel)
 
 
 Additional Examples

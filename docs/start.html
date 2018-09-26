@@ -110,11 +110,9 @@
 <p class="last"><strong>FlyEye Analysis</strong> assumes that one of the three available reporter colors was reserved for a nuclear marker. The expression ratio assigned to each cell is evaluated using the two remaining reporter colors.</p>
 </div>
 <p>To load an individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">discs</span>
-
-<span class="n">path_to_disc</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A/eye0.silhouette&#39;</span>
-
-<span class="n">disc</span> <span class="o">=</span> <span class="n">discs</span><span class="o">.</span><span class="n">Disc</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="n">path_to_disc</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">discs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_to_disc</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A/eye0.silhouette&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">disc</span> <span class="o">=</span> <span class="n">discs</span><span class="o">.</span><span class="n">Disc</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="n">path_to_disc</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Alternatively, the <code class="docutils literal notranslate"><span class="pre">experiments.Experiment</span></code> constructor will automatically load and combine all discs within a specified directory:</p>
