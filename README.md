@@ -18,6 +18,20 @@ The initial release is limited to basic tools required to replicate [our study](
 Please refer to the [documentation](https://sebastianbernasek.github.io/flyeye/index.html#) page for tips on getting started with analyzing your data.
 
 
+Dependencies
+============
+
+ - Python 3.6+
+
+Required:
+
+ - [Scipy](https://www.scipy.org/)
+ - [Pandas](https://pandas.pydata.org/)
+ - [PIL](https://pillow.readthedocs.io/en/5.2.x/)
+ - [Matplotlib](https://matplotlib.org/)
+ - [AstroML](https://pypi.org/project/astroML/)
+ - [AstroML Addons](https://github.com/astroML/astroML_addons)
+
 
 Installation
 ============
@@ -27,8 +41,13 @@ After downloading the [latest distribution](https://github.com/sebastianbernasek
     pip install flyeye-0.1.0-beta.tar.gz
 
 
-
 Examples
 ========
 
 For an example of a complete project utilizing the entire **NU FlyEye** platform, please refer to the [code](https://github.com/sebastianbernasek/pnt_yan_ratio) used to generate the figures in our manuscript.
+
+
+Authors
+=======
+
+[Sebastian Bernasek](https://github.com/sebastianbernasek)
