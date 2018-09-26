@@ -5,16 +5,15 @@
 
 .. _start:
 
-
 Getting Started
 ===============
 
 The fastest way to gain familiarity with **FlyEye Analysis** is to start with a working example. Please feel free to use the data from `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during eye development.
 
-We recommend reading the sections below before working with your own data.
+We recommend reading the sections below before working with your own microscopy data.
 
 .. Note::
-   The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
+   The initial release of the **NU FlyEye** platform only supports three-channel RGB microscopy data. The available reporter colors are thus nominally limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
 
 
 Data Format
