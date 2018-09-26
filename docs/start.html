@@ -42,28 +42,25 @@
 <div class="section" id="data-format">
 <h2>Data Format<a class="headerlink" href="#data-format" title="Permalink to this headline">¶</a></h2>
 <p><strong>FlyEye Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the <strong>FlyEye Silhouette</strong> documentation for tips on generating <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files from your microscopy data.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype includes image, measurement (reporter levels), and annotation data for each layer in a 3D image stack. The contents are structured as:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
-├── feud.json        <span class="c1"># stack dimensionality</span>
-├── feed.json        <span class="c1"># measurement annotations</span>
-├── <span class="m">0</span>.json           <span class="c1"># first layer measurements</span>
-├── <span class="m">0</span>.png            <span class="c1"># first layer image</span>
-<span class="p">|</span>
-├── ... N.json       <span class="c1"># Nth layer reporter levels (measurements)</span>
-└── ... N.png        <span class="c1"># Nth layer image</span>
-</pre></div>
-</div>
-<p>Each <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.json</span></code> file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by <strong>FlyEye Analysis</strong> are performed in local memory.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">feud.json</span></code> file contains all user-assigned contour labels. <strong>FlyEye Analysis</strong> automatically pairs measurements with their corresponding labels upon import of a <code class="docutils literal notranslate"><span class="pre">.sihouette</span></code> file. Unlabeled contours are ignored.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.png</span></code> images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The initial release of the <strong>NU FlyEye</strong> platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via <strong>FlyEye Silhouette</strong>. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.</p>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype includes reporter level measurements and an image for each layer in a 3D image stack. A single file containing all measurement annotations is also included. The contents are structured as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
+├── feud.json        <span class="c1"># stack metadata</span>
+├── feed.json        <span class="c1"># measurement annotations</span>
+├── <span class="m">0</span>.json           <span class="c1"># reporter level measurements for first layer</span>
+├── <span class="m">0</span>.png            <span class="c1"># image of first layer</span>
+<span class="p">|</span>
+├── ... N.json       <span class="c1"># reporter level measurements for Nth layer</span>
+└── ... N.png        <span class="c1"># image of Nth layer</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.json</span></code> file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by <strong>FlyEye Analysis</strong> are performed in local memory.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">feud.json</span></code> file contains all user-assigned contour labels. <strong>FlyEye Analysis</strong> automatically pairs measurements with their corresponding labels upon import of a <code class="docutils literal notranslate"><span class="pre">.sihouette</span></code> file. Unlabeled contours are ignored.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<blockquote>
-<div>To analyze a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</div></blockquote>
 <ul class="last simple">
 <li>R8 cells must be fully annotated within a locally contiguous region. <a class="footnote-reference" href="#id3" id="id1">[*]</a></li>
 <li>Only one measurement should be labeled per cell that appears in the 3-D image stack.</li>
@@ -71,18 +68,7 @@
 <li>R8 cells must be labeled ‘r8’ or ‘R8’.</li>
 </ul>
 </div>
-</div>
-<div class="section" id="data-requirements">
-<h2>Data Requirements<a class="headerlink" href="#data-requirements" title="Permalink to this headline">¶</a></h2>
-<p>To analyze a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
-<blockquote>
-<div><ul class="simple">
-<li>R8 cells must be fully annotated within a locally contiguous region.</li>
-<li>Only one measurement should be labeled per cell that appears in the 3-D image stack.</li>
-<li>Progenitors must be labeled ‘p’ or ‘pre’.</li>
-<li>R8 cells must be labeled ‘r8’ or ‘R8’.</li>
-</ul>
-</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.png</span></code> images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.</p>
 <table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -169,7 +155,6 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">INSTALLATION</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">GETTING STARTED</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#data-format">Data Format</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-requirements">Data Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-management">Data Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#loading-data">Loading Data</a></li>
 </ul>
