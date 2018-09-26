@@ -11,18 +11,30 @@ Example Usage
 **FlyEye Analysis** provides a wide range of functionality for analyzing the expression data contained in ``.silhouette`` files. A very brief survey of some basic operations is provided below. For detailed usage instructions please see the :ref:`documentation <documentation>`.
 
 
-Loading an experiment
----------------------
+Loading Silhouette Data
+-----------------------
 
-Import an experiment from a directory containing ``.silhouette`` files:
+See :ref:`Getting Started <start>` for input data requirements.
 
+
+To load an individual eye disc:
+
+.. code-block:: python
+
+   from flyeye.data import discs
+
+   disc = discs.Disc.from_silhouette(path_to_silhouette_file)
+
+
+To load an entire experiment:
 
 .. code-block:: python
 
    from flyeye.data import experiments
 
-   path = './data'
-   experiment = experiments.Experiment(path)
+   experiment = experiments.Experiment(path_to_experiment)
+
+
 
 
 Querying measurements
@@ -58,8 +70,20 @@ Plot expression dynamics:
 
 .. code-block:: python
 
-   fluorescence_channel = 'green'
-   cells.plot_dynamics(fluorescence_channel)
+   reporter_channel = 'green'
+
+   cells.plot_dynamics(reporter_channel)
+
+
+Plot expression heterogeneity dynamics:
+
+.. code-block:: python
+
+   reporter_channel = 'green'
+
+   fluctuations_channel = reporter_channel + '_flux'
+
+   cells.plot_dynamics(fluctuations_channel)
 
 
 Additional Examples

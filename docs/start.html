@@ -36,12 +36,13 @@
             
   <img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" />
 <div class="section" id="getting-started">
-<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<span id="start"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>The fastest way to gain familiarity with <strong>FlyEye Analysis</strong> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
-<p>To analyze your own segmented microscopy data, please read on!</p>
-<div class="section" id="input-file-structure">
-<h2>Input File Structure<a class="headerlink" href="#input-file-structure" title="Permalink to this headline">¶</a></h2>
-<p><strong>FlyEye Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single <em>Drosophila</em> eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype follows a standardized structure:</p>
+<p>We recommend reading the sections below before working with your own data.</p>
+<div class="section" id="data-format">
+<h2>Data Format<a class="headerlink" href="#data-format" title="Permalink to this headline">¶</a></h2>
+<p><strong>FlyEye Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the <strong>FlyEye Silhouette</strong> documentation for tips on generating <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files from your microscopy data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype includes image, measurement (reporter levels), and annotation data for each layer in a 3D image stack. The contents are structured as:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
 ├── feud.json        <span class="c1"># stack dimensionality</span>
 ├── feed.json        <span class="c1"># measurement annotations</span>
@@ -50,22 +51,87 @@
 <span class="p">|</span>
 <span class="p">|</span> ...
 <span class="p">|</span>
-├── N.json           <span class="c1"># Nth layer measurements</span>
+├── N.json           <span class="c1"># Nth layer reporter levels (measurements)</span>
 └── N.png            <span class="c1"># Nth layer image</span>
 </pre></div>
 </div>
-<p>The layer images contained in a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file are compressed versions of the original full resolution microscopy. They provide a clear visual impression of the original images while maintaining a manageable filesize. However, they are not suitable as a basis for further expression quantification.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.json</span></code> file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by <strong>FlyEye Analysis</strong> are performed in local memory.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">feud.json</span></code> file contains all user-assigned contour labels. <strong>FlyEye Analysis*</strong> automatically pairs measurements with their corresponding labels upon import of a <code class="docutils literal notranslate"><span class="pre">.sihouette</span></code> file. Unlabeled contours are ignored.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.png</span></code> images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The initial release of the <strong>NU FlyEye</strong> platform only supports RGB image stacks. The available reporter colors are thus limited to ‘red’, ‘green’, and ‘blue’. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via <strong>FlyEye Silhouette</strong>. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.</p>
+</div>
 </div>
 <div class="section" id="data-requirements">
 <h2>Data Requirements<a class="headerlink" href="#data-requirements" title="Permalink to this headline">¶</a></h2>
-<p><strong>FlyEye Analysis</strong> requires:</p>
+<p>To analyze a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
 <blockquote>
 <div><ul class="simple">
-<li>All measurements of interest must be labeled. Unlabeled measurements are ignored upon import.</li>
-<li>Progenitors must be labeled ‘p’ or ‘pre’. Other names are possible but would require manual modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</li>
-<li>R8 cells must be fully annotated within a contiguous region. The automated conversion of measurements to developmental timepoints is dependent upon regularly spaced R8 measurements.</li>
+<li>R8 cells must be fully annotated within a locally contiguous region.[*]_</li>
+<li>Only one measurement should be labeled per cell that appears in the 3-D image stack.</li>
+<li>Progenitors must be labeled ‘p’ or ‘pre’.[*]_</li>
+<li>R8 cells must be labeled ‘r8’ or ‘R8’.</li>
 </ul>
 </div></blockquote>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[*]</td><td>Timeseries construction relies upon regularly spaced R8 measurements.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[†]</td><td>Custom labels require modification of the <a class="reference internal" href="modules/data.html#data"><span class="std std-ref">flyeye.data</span></a> source code.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-management">
+<h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
+<p><strong>FlyEye Analysis</strong> offers three levels of organization for managing cell measurement data. At the highest level, measurements are combined between eye discs collected under similar experimental conditions. We recommend organizing your <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files in an equivalent manner by creating a separate directory for each experiment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data/
+├── experiment_A
+<span class="p">|</span>   ├── eye0.silhouette
+<span class="p">|</span>   <span class="p">|</span> ...
+<span class="p">|</span>   └── eyeN.silhouette
+<span class="p">|</span>
+<span class="p">|</span>
+└── experiment_Z
+    └── ...
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-data">
+<h2>Loading Data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h2>
+<p>Measurement data must be loaded as <code class="docutils literal notranslate"><span class="pre">data.discs.Disc</span></code> instances prior to analysis. Several important operations are automatically triggered upon instantiation of a <code class="docutils literal notranslate"><span class="pre">Disc</span></code>:</p>
+<blockquote>
+<div># Each cell is assigned a developmental age based on its relative distance from the youngest R8 cell
+# Expression levels are normalized against the level of the reporter used to mark cell nuclei
+# The expression ratio between the two remaining reporters is evaluated
+# Moving average expression trends are evaluated for each labeled cell type</div></blockquote>
+<p>These operations are governed by a handful of user-specified parameters such as furrow velocity and the reporter color used to mark cell nuclei. These parameters must be specified in accordance with your particular dataset.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The initial release of <strong>FlyEye Analysis</strong> assumes that one of the three available reporter colors was reserved for a nuclear marker. The expression ratio assigned to each cell is evaluated using the two remaining reporter colors.</p>
+</div>
+<p>To load an individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">discs</span>
+
+<span class="n">path_to_disc</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A/eye0.silhouette&#39;</span>
+
+<span class="n">disc</span> <span class="o">=</span> <span class="n">discs</span><span class="o">.</span><span class="n">Disc</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="n">path_to_disc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, the <code class="docutils literal notranslate"><span class="pre">experiments.Experiment</span></code> constructor will automatically load and combine all discs within a specified directory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">experiments</span>
+
+<span class="n">path_to_experiment</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A&#39;</span>
+
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">path_to_experiment</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Your data are now ready for analysis.</p>
 </div>
 </div>
 
@@ -94,8 +160,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">INSTALLATION</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">GETTING STARTED</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#input-file-structure">Input File Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-format">Data Format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-requirements">Data Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-management">Data Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-data">Loading Data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>

@@ -38,13 +38,19 @@
 <div class="section" id="example-usage">
 <h1>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h1>
 <p><strong>FlyEye Analysis</strong> provides a wide range of functionality for analyzing the expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. A very brief survey of some basic operations is provided below. For detailed usage instructions please see the <a class="reference internal" href="documentation.html#documentation"><span class="std std-ref">documentation</span></a>.</p>
-<div class="section" id="loading-an-experiment">
-<h2>Loading an experiment<a class="headerlink" href="#loading-an-experiment" title="Permalink to this headline">¶</a></h2>
-<p>Import an experiment from a directory containing <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files:</p>
+<div class="section" id="loading-silhouette-data">
+<h2>Loading Silhouette Data<a class="headerlink" href="#loading-silhouette-data" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="start.html#start"><span class="std std-ref">Getting Started</span></a> for input data requirements.</p>
+<p>To load an individual eye disc:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">discs</span>
+
+<span class="n">disc</span> <span class="o">=</span> <span class="n">discs</span><span class="o">.</span><span class="n">Disc</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="n">path_to_silhouette_file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To load an entire experiment:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">experiments</span>
 
-<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./data&#39;</span>
-<span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="o">.</span><span class="n">Experiment</span><span class="p">(</span><span class="n">path_to_experiment</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -70,8 +76,17 @@
 <div class="section" id="visualizing-dynamics">
 <h2>Visualizing Dynamics<a class="headerlink" href="#visualizing-dynamics" title="Permalink to this headline">¶</a></h2>
 <p>Plot expression dynamics:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fluorescence_channel</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>
-<span class="n">cells</span><span class="o">.</span><span class="n">plot_dynamics</span><span class="p">(</span><span class="n">fluorescence_channel</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reporter_channel</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>
+
+<span class="n">cells</span><span class="o">.</span><span class="n">plot_dynamics</span><span class="p">(</span><span class="n">reporter_channel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot expression heterogeneity dynamics:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reporter_channel</span> <span class="o">=</span> <span class="s1">&#39;green&#39;</span>
+
+<span class="n">fluctuations_channel</span> <span class="o">=</span> <span class="n">reporter_channel</span> <span class="o">+</span> <span class="s1">&#39;_flux&#39;</span>
+
+<span class="n">cells</span><span class="o">.</span><span class="n">plot_dynamics</span><span class="p">(</span><span class="n">fluctuations_channel</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -108,7 +123,7 @@
 <li class="toctree-l1"><a class="reference internal" href="start.html">GETTING STARTED</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">EXAMPLE USAGE</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#loading-an-experiment">Loading an experiment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-silhouette-data">Loading Silhouette Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#querying-measurements">Querying measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualizing-dynamics">Visualizing Dynamics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#additional-examples">Additional Examples</a></li>
