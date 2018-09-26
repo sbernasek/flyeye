@@ -1,4 +1,4 @@
-# <img alt="FlyEye Analysis" src="docs/_static/img/analysis_logo.png" height="50">
+# <img alt="FlyEye Analysis" src="docs/source/graphics/analysis_header.png" height="70">
 
 
 FlyEye Analysis
