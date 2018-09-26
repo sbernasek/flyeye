@@ -36,7 +36,7 @@ The ``.silhouette`` filetype includes image, measurement (reporter levels), and 
 
 Each ``<layer_number>.json`` file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by **FlyEye Analysis** are performed in local memory.
 
-The ``feud.json`` file contains all user-assigned contour labels. **FlyEye Analysis*** automatically pairs measurements with their corresponding labels upon import of a ``.sihouette`` file. Unlabeled contours are ignored.
+The ``feud.json`` file contains all user-assigned contour labels. **FlyEye Analysis** automatically pairs measurements with their corresponding labels upon import of a ``.sihouette`` file. Unlabeled contours are ignored.
 
 The ``<layer_number>.png`` images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.
 
@@ -45,12 +45,26 @@ The ``<layer_number>.png`` images are compressed versions of the original micros
    The initial release of the **NU FlyEye** platform only supports RGB image stacks. The available reporter colors are thus limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
 
 
+.. warning::
+
+  To analyze a ``.silhouette`` file:
+
+ - R8 cells must be fully annotated within a locally contiguous region. [*]_
+
+ - Only one measurement should be labeled per cell that appears in the 3-D image stack.
+
+ - Progenitors must be labeled 'p' or 'pre'. [*]_
+
+ - R8 cells must be labeled 'r8' or 'R8'.
+
+
+
 Data Requirements
 -----------------
 
 To analyze a ``.silhouette`` file:
 
- - R8 cells must be fully annotated within a locally contiguous region. [*]_
+ - R8 cells must be fully annotated within a locally contiguous region.
 
  - Only one measurement should be labeled per cell that appears in the 3-D image stack.
 
@@ -61,9 +75,7 @@ To analyze a ``.silhouette`` file:
 
 .. [*] Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.
 
-
-.. Note::
-   Custom labels for cell types other than progenitors and R8 cells are possible without any modification of the :ref:`flyeye.data <data>` source code.
+.. [*] Custom labels for cell types other than progenitors and R8 cells are possible without any modification of the :ref:`flyeye.data <data>` source code.
 
 
 
