@@ -17,11 +17,11 @@ FlyEye Analysis
 
 Given one or more ``.silhouette`` files, the package enables:
 
-   - **Timeseries Construction.** Convert measurements to timepoints
+   - **Dynamic Measurements.** Infer dynamics from static expression data
 
    - **Data Management.** Query cells by developmental age and cell type
 
-   - **Dynamic Analysis.** Analyze and visualize expression dynamics
+   - **Timeseries Analysis.** Analyze and visualize expression dynamics
 
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
