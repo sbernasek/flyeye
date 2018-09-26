@@ -25,7 +25,7 @@ Given one or more ``.silhouette`` files, the package enables:
 
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
-The initial release is primarily limited to basic tools required to replicate `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during retinal patterning in *Drosophila*. We intend to expand this functionality in later releases.
+The initial release is limited to basic tools required to replicate `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during retinal patterning in *Drosophila*. We intend to expand this functionality in later releases.
 
 
 .. toctree::
