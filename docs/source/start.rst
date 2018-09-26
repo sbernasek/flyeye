@@ -101,13 +101,11 @@ To load an individual ``.silhouette`` file:
 
 Alternatively, the ``experiments.Experiment`` constructor will automatically load and combine all discs within a specified directory:
 
-.. .. code-block:: python
+.. code-block:: python
 
->>> from flyeye.data import experiments
-
->>> path_to_experiment = './data/experiment_A'
-
->>> experiment = experiments.Experiment(path_to_experiment)
+   >>> from flyeye.data import experiments
+   >>> path_to_experiment = './data/experiment_A'
+   >>> experiment = experiments.Experiment(path_to_experiment)
 
 
 **Your data are now ready for analysis!**
