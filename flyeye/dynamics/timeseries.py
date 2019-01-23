@@ -190,3 +190,111 @@ class TimeseriesPlot:
         if interval:
             self.interval(**ma_kw, **interval_kw)
 
+
+class IntervalPlot(TimeseriesPlot):
+    """
+    Object describes the 95% confidence interval for a 1D timeseries.
+
+    Attributes:
+
+        x (np.ndarray) - independent variable
+
+        y_lower (np.ndarray) - lower bound for dependent variable
+
+        y_upper (np.ndarray) - upper bound for dependence variable
+
+        y (np.ndarray) - mean or median value for dependent variable
+
+        ax (matplotlib.axes.AxesSubplot)
+
+    """
+
+    def __init__(self, x, y_lower, y_upper, y=None, ax=None):
+        """
+        Instantiate a 1D timeseries.
+
+        Args:
+
+            x (np.ndarray) - independent variable
+
+            y_lower (np.ndarray) - lower bound for dependent variable
+
+            y_upper (np.ndarray) - upper bound for dependence variable
+
+            y (np.ndarray) - median value for dependent variable
+
+            ax (matplotlib.axes.AxesSubplot)
+
+        """
+
+        self.x = x
+        self.y = y
+        self.y_lower = y_lower
+        self.y_upper = y_upper
+
+        # set axis
+        if ax is None:
+            ax = self.create_figure()
+        self.ax = ax
+
+    def average(self,
+            smooth=True,
+            color='k',
+            alpha=1,
+            lw=1,
+            linestyle=None, **addtl):
+        """
+        Plot moving average of x and y data.
+
+        Args:
+
+            smooth (bool) - if True, apply first-order savgol filter
+
+            color, alpha, lw, linestyle - formatting parameters
+
+        """
+        line_kw = dict(color=color, lw=lw, alpha=alpha, linestyle=linestyle)
+        self.ax.plot(self.x, self.y, **line_kw)
+
+    def interval(self,
+            color='k',
+            alpha=0.5,
+            **additional):
+        """
+        Plot confidence interval for moving average of x and y data.
+
+        Args:
+
+            color, alpha - formatting parameters
+
+        """
+        shade_kw = dict(color=color, alpha=alpha)
+        self.ax.fill_between(self.x, self.y_lower, self.y_upper, **shade_kw)
+
+    def plot(self,
+             average=True,
+             interval=False,
+             line_kw={},
+             interval_kw={}):
+        """
+        Plot timeseries data.
+
+        Args:
+
+            average (bool) - if True, add moving average
+
+            interval (bool) - if True, add moving average interval
+
+            line_kw (dict) - keyword arguments for line formatting
+
+            interval_kw (dict) - keyword arguments for interval formatting
+
+        """
+
+        # add moving average
+        if average:
+            self.average(**line_kw)
+
+        # add confidence interval for moving average
+        if interval:
+            self.interval(**interval_kw)

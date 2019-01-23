@@ -1,5 +1,6 @@
 __author__ = 'Sebastian Bernasek'
 
+import warnings
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
@@ -269,7 +270,10 @@ class Disc(Cells):
                     residuals, trend = detrend_signal(x, window_size, order)
                 else:
                     trend = x.mean() * np.ones(x.size)
-                    residuals = x - trend
+
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        residuals = x - trend
 
                 # normalize residuals
                 if ch == 'ratio':
@@ -291,7 +295,7 @@ class Disc(Cells):
             df = pd.DataFrame(data=data, index=cells.df.index, columns=columns)
             fluctuations.append(df)
 
-        # join measurements with refisuals on measurement index
+        # join measurements with residuals on measurement index
         self.df = self.df.join(pd.concat(fluctuations))
 
     def get_multipotent_layers(self, q=.9):

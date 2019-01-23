@@ -184,11 +184,13 @@ class SilhouetteData(Silhouette):
         # extract values
         centroid = contour['centroid']
         pixel_count = contour['pixel_count']
+        segment = contour['points']
         color_avg = contour['color_avg']
         color_std = contour['color_std']
 
         # reorganize values
         ctr_list = [centroid[0], centroid[1],
+                    segment,
                     pixel_count,
                     color_avg['g'], color_std['g'],
                     color_avg['r'], color_std['r'],
@@ -244,6 +246,7 @@ class SilhouetteData(Silhouette):
         # compile dataframe
         columns = ['centroid_x',
                    'centroid_y',
+                   'segment',
                    'pixel_count',
                    'green', 'green_std',
                    'red', 'red_std',

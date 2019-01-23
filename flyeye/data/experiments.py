@@ -14,6 +14,7 @@ from ..processing.alignment import DiscAlignment, ExperimentAlignment
 from ..analysis.correlation import SpatialCorrelation
 
 
+
 class Experiment:
     """
     Object representing multiple eye discs obtained under a single set of conditions.
@@ -52,12 +53,19 @@ class Experiment:
             self.align_discs()
             self.align_to_first_r8()
 
-        # count discs
-        self.num_discs = len(self.discs)
-
     def __getitem__(self, key):
         """ Return disc. """
         return self.discs[key]
+
+    @property
+    def num_discs(self):
+        """ Number of discs in experiment. """
+        return len(self.discs)
+
+    @property
+    def num_progenitors(self):
+        """ Number of progenitor measurements in experiment. """
+        return len(self.get_cells('pre').df)
 
     @staticmethod
     def load(dirpath, normalization='red', **kwargs):
@@ -220,10 +228,11 @@ class Experiment:
         progenitors = Cells()
         references = Cells()
 
-        for disc in self.discs.values():
+        for disc_id, disc in self.discs.items():
 
             # select reference cells
             ref = disc.select_cell_type(reference_types)
+            ref.df['disc_id'] = disc_id
             n_current = len(ref.df)
             if n_current == 0:
                 continue
@@ -239,6 +248,7 @@ class Experiment:
 
             # select concurrent progenitors and reference cells
             pre = disc.select_cell_type('pre')
+            pre.df['disc_id'] = disc_id
             pre = pre.select_by_position(tmin=tmin, tmax=tmax)
             ref = ref.select_by_position(tmin=tmin, tmax=tmax)
 

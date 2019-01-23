@@ -7,7 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from ..dynamics.timeseries import TimeseriesPlot
+from ..dynamics.timeseries import TimeseriesPlot, IntervalPlot
+from ..dynamics.resampling import DiscResampler
 
 
 class Cells:
@@ -244,6 +245,59 @@ class Cells:
                      ma_kw=ma_kw)
 
         return tsplot.ax
+
+    def plot_resampled_dynamics(self, channel,
+                         ax=None,
+                         average=True,
+                         interval=False,
+                         marker_kw={},
+                         line_kw={},
+                         interval_kw={},
+                         resampling_kw={}):
+        """
+        Plot expression dynamics for specified channel, resampling from discrete subpopulations of cells.
+
+        Args:
+
+            channel (str) - expression channel
+
+            ax (mpl.axes.AxesSubplot) - if None, create axes
+
+            average (bool) - if True, add moving average
+
+            interval - if True, add confidence interval for moving average
+
+            line_kw (dict) - keyword arguments for line formatting
+
+            interval_kw (dict) - keyword arguments for interval formatting
+
+            resampling_kw (dict) - keyword arguments for disc resampler
+
+        Returns:
+
+            ax (mpl.axes.AxesSubplot)
+
+        """
+
+        # sort values inplace
+        self.sort('t')
+
+        # resample discs and cells within them
+        time = DiscResampler(self, 't', **resampling_kw).mean
+        resampler = DiscResampler(self, channel, **resampling_kw)
+        mean = resampler.mean
+        lower, upper = resampler.confidence_interval
+
+        # construct interval plot
+        interval_plot = IntervalPlot(time, lower, upper, mean, ax=ax)
+
+        # plot dynamics
+        interval_plot.plot(average=average,
+                     interval=interval,
+                     line_kw=line_kw,
+                     interval_kw=interval_kw)
+
+        return interval_plot.ax
 
     def scatterplot(self,
                       x='blue',

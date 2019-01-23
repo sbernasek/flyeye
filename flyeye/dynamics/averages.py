@@ -276,8 +276,14 @@ def detrend_signal(x, window_size=99, order=1):
         window_size += 1
     window_size = int(window_size)
 
+    # evaluate trend
     trend = savgol(x, window_size=window_size, polyorder=order)
-    residuals = x - trend
+
+    # evaluate residuals (catch warnings for invalid values)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        residuals = x - trend
+
     return residuals, trend
 
 
