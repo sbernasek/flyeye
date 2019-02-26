@@ -104,6 +104,11 @@ class SilhouetteData(Silhouette):
         super().__init__(path)
         self.load(recompile=recompile)
 
+    @property
+    def labels(self):
+        """ pd.Series of labels keyed by (layer_id, segment_id). """
+        return self.df.set_index(['layer', 'segment_id'])['label']
+
     def compile_measurements(self):
         """ Compile measurements from all layers (slow access). """
         labels = self.read_labels()
@@ -189,7 +194,8 @@ class SilhouetteData(Silhouette):
         color_std = contour['color_std']
 
         # reorganize values
-        ctr_list = [centroid[0], centroid[1],
+        ctr_list = [contour['id'],
+                    centroid[0], centroid[1],
                     segment,
                     pixel_count,
                     color_avg['g'], color_std['g'],
@@ -198,13 +204,15 @@ class SilhouetteData(Silhouette):
 
         return ctr_list
 
-    def read_contours(self, all_labels={}):
+    def read_contours(self, all_labels={}, include_unlabeled=False):
         """
         Read contours from silhouette file.
 
         Args:
 
             all_labels (dict) - {layer_id: {contour_id: label}} for each layer
+
+            include_unlabeled (bool) - if True, include unlabeled segments
 
         Returns:
 
@@ -220,7 +228,7 @@ class SilhouetteData(Silhouette):
             labels = all_labels.get(layer_id, None)
 
             # skip layers without any labels
-            if labels is None:
+            if labels is None and not include_unlabeled:
                 continue
 
             # read layer from silhouette file
@@ -230,10 +238,12 @@ class SilhouetteData(Silhouette):
             for contour in layer['contours']:
 
                 # get label for current contour
-                label = labels.get(contour['id'], None)
+                if labels is None:
+                    label = None
+                else:
+                    label = labels.get(contour['id'], None)
 
-                # skip unlabeled contours
-                if label is None:
+                if label is None and not include_unlabeled:
                     continue
 
                 # convert to list format
@@ -244,7 +254,8 @@ class SilhouetteData(Silhouette):
                 contours.append(ctr_list)
 
         # compile dataframe
-        columns = ['centroid_x',
+        columns = ['segment_id',
+                   'centroid_x',
                    'centroid_y',
                    'segment',
                    'pixel_count',
