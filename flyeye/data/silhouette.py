@@ -59,8 +59,12 @@ class Silhouette:
         """ Load suggested disc orientation from feed file. """
 
         # read orientation
-        self.flip_about_yz = bool(self.feed['orientation']['flip_about_yz'])
-        self.flip_about_xy = bool(self.feed['orientation']['flip_about_xy'])
+        try:
+            self.flip_about_yz = bool(self.feed['orientation']['flip_about_yz'])
+            self.flip_about_xy = bool(self.feed['orientation']['flip_about_xy'])
+        except:
+            self.flip_about_yz = False
+            self.flip_about_xy = False
 
 
 class SilhouetteData(Silhouette):
@@ -197,12 +201,16 @@ class SilhouetteData(Silhouette):
         ctr_list = [contour['id'],
                     centroid[0], centroid[1],
                     segment,
-                    pixel_count,
-                    color_avg['g'], color_std['g'],
-                    color_avg['r'], color_std['r'],
-                    color_avg['b'], color_std['b']]
+                    pixel_count]
 
-        return ctr_list
+        # parse measurements
+        keys1, avgs = list(zip(*color_avg.items()))
+        keys2, stds = list(zip(*color_std.items()))
+        ctr_list.extend(avgs)
+        ctr_list.extend(stds)
+        assert sum([k1!=k2 for k1,k2 in zip(keys1,keys2)])==0, 'Contour keys do not match.'
+
+        return keys1, ctr_list
 
     def read_contours(self, all_labels={}, include_unlabeled=False):
         """
@@ -247,7 +255,7 @@ class SilhouetteData(Silhouette):
                     continue
 
                 # convert to list format
-                ctr_list = self.parse_contour(contour)
+                keys, ctr_list = self.parse_contour(contour)
                 ctr_list.extend([layer_id, label])
 
                 # store contours from current layer
@@ -258,11 +266,15 @@ class SilhouetteData(Silhouette):
                    'centroid_x',
                    'centroid_y',
                    'segment',
-                   'pixel_count',
-                   'green', 'green_std',
-                   'red', 'red_std',
-                   'blue', 'blue_std',
-                   'layer', 'label']
+                   'pixel_count']
+        columns += keys
+        columns += ['{:s}_std'.format(k) for k in keys]
+        columns += ['layer', 'label']
         df = pd.DataFrame(contours, columns=columns)
+
+        # replace color strings for RGB
+        for color in ('red', 'green', 'blue'):
+            df[color] = df[color[0]]
+            df['{:s}_std'.format(color)] = df['{:s}_std'.format(color[0])]
 
         return df

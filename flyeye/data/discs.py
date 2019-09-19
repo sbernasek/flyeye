@@ -163,6 +163,8 @@ class Disc(Cells):
     def flip_about_yz(self):
         """ Flip disc left to right. """
         self.df['centroid_x'] = self.df.centroid_x.max() - self.df.centroid_x + self.df.centroid_x.min()
+        if 't' in self.df.keys():
+            self.df['t'] = self.df.t.max() - self.df.t + self.df.t.min()
 
     def apply_time_scaling(self):
         """ Apply distance-to-time scaling to generate time vector. """
