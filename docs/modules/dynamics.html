@@ -249,6 +249,53 @@
 <h2>Timeseries Visualization<a class="headerlink" href="#timeseries-visualization" title="Permalink to this headline">¶</a></h2>
 <p>Tools for visualizing empirical timeseries data.</p>
 <span class="target" id="module-flyeye.dynamics.timeseries"></span><dl class="class">
+<dt id="flyeye.dynamics.timeseries.IntervalPlot">
+<em class="property">class </em><code class="descclassname">flyeye.dynamics.timeseries.</code><code class="descname">IntervalPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y_lower</em>, <em>y_upper</em>, <em>y=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#IntervalPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.IntervalPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object describes the 95% confidence interval for a 1D timeseries.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>x (np.ndarray) - independent variable</p>
+<p>y_lower (np.ndarray) - lower bound for dependent variable</p>
+<p>y_upper (np.ndarray) - upper bound for dependence variable</p>
+<p>y (np.ndarray) - mean or median value for dependent variable</p>
+<p>ax (matplotlib.axes.AxesSubplot)</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.dynamics.timeseries.IntervalPlot.average">
+<code class="descname">average</code><span class="sig-paren">(</span><em>smooth=True</em>, <em>color='k'</em>, <em>alpha=1</em>, <em>lw=1</em>, <em>linestyle=None</em>, <em>**addtl</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#IntervalPlot.average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.IntervalPlot.average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot moving average of x and y data.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>smooth (bool) - if True, apply first-order savgol filter</p>
+<p>color, alpha, lw, linestyle - formatting parameters</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.dynamics.timeseries.IntervalPlot.interval">
+<code class="descname">interval</code><span class="sig-paren">(</span><em>color='k'</em>, <em>alpha=0.5</em>, <em>**additional</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#IntervalPlot.interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.IntervalPlot.interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot confidence interval for moving average of x and y data.</p>
+<p>Args:</p>
+<blockquote>
+<div>color, alpha - formatting parameters</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.dynamics.timeseries.IntervalPlot.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>average=True</em>, <em>interval=False</em>, <em>line_kw={}</em>, <em>interval_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#IntervalPlot.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.IntervalPlot.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot timeseries data.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>average (bool) - if True, add moving average</p>
+<p>interval (bool) - if True, add moving average interval</p>
+<p>line_kw (dict) - keyword arguments for line formatting</p>
+<p>interval_kw (dict) - keyword arguments for interval formatting</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="flyeye.dynamics.timeseries.TimeseriesPlot">
 <em class="property">class </em><code class="descclassname">flyeye.dynamics.timeseries.</code><code class="descname">TimeseriesPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/timeseries.html#TimeseriesPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.timeseries.TimeseriesPlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object describes a 1D timeseries.</p>

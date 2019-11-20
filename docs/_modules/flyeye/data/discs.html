@@ -35,13 +35,14 @@
   <h1>Source code for flyeye.data.discs</h1><div class="highlight"><pre>
 <span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
 
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
 
 <span class="kn">from</span> <span class="nn">.silhouette</span> <span class="k">import</span> <span class="n">SilhouetteData</span>
 <span class="kn">from</span> <span class="nn">.image</span> <span class="k">import</span> <span class="n">ImageStack</span>
-<span class="kn">from</span> <span class="nn">.cells</span> <span class="k">import</span> <span class="n">Cells</span>
+<span class="kn">from</span> <span class="nn">.cells</span> <span class="k">import</span> <span class="n">Cells</span><span class="p">,</span> <span class="n">format_channel</span>
 <span class="kn">from</span> <span class="nn">..dynamics.averages</span> <span class="k">import</span> <span class="n">detrend_signal</span>
 <span class="kn">from</span> <span class="nn">..processing.triangulation</span> <span class="k">import</span> <span class="n">Triangulation</span>
 
@@ -69,11 +70,12 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
+                 <span class="n">normalization</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">flip_about_yz</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">flip_about_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">furrow_velocity</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span>
-                 <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bit_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate object representing all cells in a single eye disc.</span>
 
@@ -81,7 +83,7 @@
 
 <span class="sd">            df (pd.DataFrame) - cell measurement data</span>
 
-<span class="sd">            normalization (str) - normalization channel</span>
+<span class="sd">            normalization (str or int) - normalization channel</span>
 
 <span class="sd">            flip_about_yz (bool) - if True, invert about YZ plane</span>
 
@@ -92,6 +94,8 @@
 <span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
 
 <span class="sd">            offset (float) - time by which disc is shifted from first R8</span>
+
+<span class="sd">            bit_depth (int) - fluorescence intensity bit depth, log2 scaled</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -112,11 +116,14 @@
         <span class="k">if</span> <span class="n">flip_about_xy</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span><span class="p">()</span>
 
-        <span class="c1"># normalize expression levels</span>
-        <span class="k">if</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">normalize_expression</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">normalize_by_reference</span><span class="p">(</span><span class="n">reference_channel</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_ratio</span><span class="p">()</span>
+        <span class="c1"># normalize fluorescence intensities by bit depth</span>
+        <span class="k">if</span> <span class="n">bit_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bit_depth</span> <span class="o">=</span> <span class="n">bit_depth</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalize_expression</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">bit_depth</span><span class="p">)</span>
+
+        <span class="c1"># normalize fluorescence intensities by reference channel</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalize_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
 
         <span class="c1"># construct triangulation of R8 positions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triangulation</span> <span class="o">=</span> <span class="kc">None</span>
@@ -131,11 +138,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">apply_lag</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
 
         <span class="c1"># detrend</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">detrend</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalized_channels</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Disc.from_silhouette"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.from_silhouette">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_silhouette</span><span class="p">(</span><span class="n">path</span><span class="p">,</span>
-                        <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>
+                        <span class="n">normalization</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">furrow_velocity</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span>
                         <span class="n">recompile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -146,7 +153,7 @@
 
 <span class="sd">            path (str) - silhouette filepath</span>
 
-<span class="sd">            normalization (str) - normalization channel</span>
+<span class="sd">            normalization (str or int) - normalization channel</span>
 
 <span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
 
@@ -192,11 +199,16 @@
 
 <div class="viewcode-block" id="Disc.flip_about_xy"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_xy">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Flip disc bottom to top. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span></div>
+        <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="n">ymin</span></div>
 
 <div class="viewcode-block" id="Disc.flip_about_yz"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_yz">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Flip disc left to right. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span></div>
+        <span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+</span> <span class="n">xmin</span>
+        <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">tmax</span><span class="o">.</span> <span class="n">tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">tmin</span></div>
 
 <div class="viewcode-block" id="Disc.apply_time_scaling"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.apply_time_scaling">[docs]</a>    <span class="k">def</span> <span class="nf">apply_time_scaling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Apply distance-to-time scaling to generate time vector. &quot;&quot;&quot;</span>
@@ -223,59 +235,61 @@
         <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="s1">&#39;first_r8&#39;</span><span class="p">:</span>
             <span class="n">r8_neurons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;r8&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span></div>
 
-<div class="viewcode-block" id="Disc.normalize_expression"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_expression">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">255</span><span class="p">):</span>
+<div class="viewcode-block" id="Disc.normalize_expression"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_expression">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert each channel&#39;s fluorescence to a 0-1 scale.</span>
 
 <span class="sd">        Args:</span>
 
-<span class="sd">            base (float) - maximum fluorescence</span>
+<span class="sd">            max_value (float) - maximum fluorescence intensity</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">base</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_std&#39;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">base</span></div>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_std&#39;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span></div>
 
-<div class="viewcode-block" id="Disc.normalize_by_reference"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_by_reference">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_channel</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Disc.normalize_by_reference"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_by_reference">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalize expression levels by the reference channel.</span>
 
 <span class="sd">        Args:</span>
 
-<span class="sd">            reference_channel (str) - channel used for normalization</span>
+<span class="sd">            reference (str or int) - channel used for normalization</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">normalization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">reference_channel</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="n">reference_channel</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">normalization</span></div>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="n">reference</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">reference</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Disc.set_ratio"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.set_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">set_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Add fluorescence ratio to dataframe. &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Disc.set_ratio"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.set_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">set_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">den</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add fluorescence ratio to dataframe, defined by &lt;num&gt;/&lt;den&gt; channels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;red&#39;</span><span class="p">:</span>
-            <span class="n">den</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">den</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+        <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="n">format_channel</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="n">format_channel</span><span class="p">(</span><span class="n">den</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">green</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;raw_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">green</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;logratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">channels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;logratio&#39;</span><span class="p">,))</span>
 
-<div class="viewcode-block" id="Disc.detrend"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.detrend">[docs]</a>    <span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Denominator channel is empty.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Disc.detrend"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.detrend">[docs]</a>    <span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add detrended fluctuations for each fluorescence channel within each cell type to disc dataframe.</span>
 
 <span class="sd">        Args:</span>
+
+<span class="sd">            channels (iterable) - channels to be detrended</span>
 
 <span class="sd">            order (int) - polyorder for local trendfitting</span>
 
@@ -288,7 +302,11 @@
             <span class="n">cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="n">cell_type</span><span class="p">)</span>
 
             <span class="n">data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;ratio&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+
+                <span class="c1"># skip missing channels</span>
+                <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
                 <span class="c1"># get samples for current cell type and channel</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
@@ -304,10 +322,12 @@
                     <span class="n">residuals</span><span class="p">,</span> <span class="n">trend</span> <span class="o">=</span> <span class="n">detrend_signal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">trend</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-                    <span class="n">residuals</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">trend</span>
+                    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+                        <span class="n">residuals</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">trend</span>
 
                 <span class="c1"># normalize residuals</span>
-                <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s1">&#39;ratio&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s1">&#39;logratio&#39;</span><span class="p">:</span>
                     <span class="n">flux_raw</span> <span class="o">=</span> <span class="n">residuals</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">flux_raw</span> <span class="o">=</span> <span class="n">residuals</span><span class="o">/</span><span class="n">trend</span>
@@ -326,7 +346,7 @@
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">cells</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
             <span class="n">fluctuations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-        <span class="c1"># join measurements with refisuals on measurement index</span>
+        <span class="c1"># join measurements with residuals on measurement index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">fluctuations</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Disc.get_multipotent_layers"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.get_multipotent_layers">[docs]</a>    <span class="k">def</span> <span class="nf">get_multipotent_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=.</span><span class="mi">9</span><span class="p">):</span>

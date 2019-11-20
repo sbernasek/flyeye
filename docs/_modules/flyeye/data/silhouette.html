@@ -94,8 +94,12 @@
         <span class="sd">&quot;&quot;&quot; Load suggested disc orientation from feed file. &quot;&quot;&quot;</span>
 
         <span class="c1"># read orientation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">])</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="kc">False</span></div></div>
 
 
 <div class="viewcode-block" id="SilhouetteData"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData">[docs]</a><span class="k">class</span> <span class="nc">SilhouetteData</span><span class="p">(</span><span class="n">Silhouette</span><span class="p">):</span>
@@ -138,6 +142,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">recompile</span><span class="o">=</span><span class="n">recompile</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; pd.Series of labels keyed by (layer_id, segment_id). &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="s1">&#39;segment_id&#39;</span><span class="p">])[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SilhouetteData.compile_measurements"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.compile_measurements">[docs]</a>    <span class="k">def</span> <span class="nf">compile_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Compile measurements from all layers (slow access). &quot;&quot;&quot;</span>
@@ -219,25 +228,34 @@
         <span class="c1"># extract values</span>
         <span class="n">centroid</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;centroid&#39;</span><span class="p">]</span>
         <span class="n">pixel_count</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;pixel_count&#39;</span><span class="p">]</span>
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;points&#39;</span><span class="p">]</span>
         <span class="n">color_avg</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;color_avg&#39;</span><span class="p">]</span>
         <span class="n">color_std</span> <span class="o">=</span> <span class="n">contour</span><span class="p">[</span><span class="s1">&#39;color_std&#39;</span><span class="p">]</span>
 
         <span class="c1"># reorganize values</span>
-        <span class="n">ctr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">pixel_count</span><span class="p">,</span>
-                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">],</span>
-                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
-                    <span class="n">color_avg</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="n">color_std</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]]</span>
+        <span class="n">ctr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                    <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">segment</span><span class="p">,</span>
+                    <span class="n">pixel_count</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">ctr_list</span></div>
+        <span class="c1"># parse measurements</span>
+        <span class="n">keys1</span><span class="p">,</span> <span class="n">avgs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">color_avg</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">keys2</span><span class="p">,</span> <span class="n">stds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">color_std</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+        <span class="n">ctr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">avgs</span><span class="p">)</span>
+        <span class="n">ctr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">stds</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">sum</span><span class="p">([</span><span class="n">k1</span><span class="o">!=</span><span class="n">k2</span> <span class="k">for</span> <span class="n">k1</span><span class="p">,</span><span class="n">k2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys1</span><span class="p">,</span><span class="n">keys2</span><span class="p">)])</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Contour keys do not match.&#39;</span>
 
-<div class="viewcode-block" id="SilhouetteData.read_contours"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.read_contours">[docs]</a>    <span class="k">def</span> <span class="nf">read_contours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_labels</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">return</span> <span class="n">keys1</span><span class="p">,</span> <span class="n">ctr_list</span></div>
+
+<div class="viewcode-block" id="SilhouetteData.read_contours"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData.read_contours">[docs]</a>    <span class="k">def</span> <span class="nf">read_contours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_labels</span><span class="o">=</span><span class="p">{},</span> <span class="n">include_unlabeled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read contours from silhouette file.</span>
 
 <span class="sd">        Args:</span>
 
 <span class="sd">            all_labels (dict) - {layer_id: {contour_id: label}} for each layer</span>
+
+<span class="sd">            include_unlabeled (bool) - if True, include unlabeled segments</span>
 
 <span class="sd">        Returns:</span>
 
@@ -253,7 +271,7 @@
             <span class="n">labels</span> <span class="o">=</span> <span class="n">all_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
             <span class="c1"># skip layers without any labels</span>
-            <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_unlabeled</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="c1"># read layer from silhouette file</span>
@@ -263,28 +281,37 @@
             <span class="k">for</span> <span class="n">contour</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;contours&#39;</span><span class="p">]:</span>
 
                 <span class="c1"># get label for current contour</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">contour</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
-                <span class="c1"># skip unlabeled contours</span>
-                <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">include_unlabeled</span><span class="p">:</span>
                     <span class="k">continue</span>
 
                 <span class="c1"># convert to list format</span>
-                <span class="n">ctr_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_contour</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
+                <span class="n">keys</span><span class="p">,</span> <span class="n">ctr_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_contour</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
                 <span class="n">ctr_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">layer_id</span><span class="p">,</span> <span class="n">label</span><span class="p">])</span>
 
                 <span class="c1"># store contours from current layer</span>
                 <span class="n">contours</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctr_list</span><span class="p">)</span>
 
         <span class="c1"># compile dataframe</span>
-        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">,</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;segment_id&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;centroid_x&#39;</span><span class="p">,</span>
                    <span class="s1">&#39;centroid_y&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;pixel_count&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;green_std&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;red_std&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;blue_std&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                   <span class="s1">&#39;segment&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;pixel_count&#39;</span><span class="p">]</span>
+        <span class="n">columns</span> <span class="o">+=</span> <span class="n">keys</span>
+        <span class="n">columns</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{:s}</span><span class="s1">_std&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+        <span class="n">columns</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">contours</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="c1"># delete duplicate RGB channel labels</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="s1">&#39;rgb&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;ch</span><span class="si">{:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="s1">&#39;_std&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df</span></div></div>
 </pre></div>
