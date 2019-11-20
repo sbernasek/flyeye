@@ -7,11 +7,11 @@
 Installation
 ============
 
-After downloading the `latest distribution <https://github.com/sebastianbernasek/flyeye/archive/v0.2-beta.tar.gz>`_, the simplest method is to install via ``pip``:
+After downloading the `latest distribution <https://github.com/sebastianbernasek/flyeye/archive/v0.2.tar.gz>`_, the simplest method is to install via ``pip``:
 
 .. code-block:: bash
 
-   pip install flyeye-0.2-beta.tar.gz
+   pip install flyeye-0.2.tar.gz
 
 
 Dependencies
