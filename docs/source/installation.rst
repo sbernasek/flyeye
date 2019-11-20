@@ -23,7 +23,6 @@ Required:
 
  - `Scipy <https://www.scipy.org/>`_
  - `Pandas <https://pandas.pydata.org/>`_
- - `PIL <https://pillow.readthedocs.io/en/5.2.x/>`_
  - `Matplotlib <https://matplotlib.org/>`_
  - `AstroML <https://pypi.org/project/astroML/>`_
  - `AstroML Addons <https://github.com/astroML/astroML_addons>`_
