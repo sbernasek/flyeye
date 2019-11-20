@@ -278,12 +278,16 @@ class Triangulation:
         self._plot_histogram(self.distances, ax=ax, dist_type=dist_type)
 
     @staticmethod
-    def _plot_expression(ax, disc, hours_per_pixel, window_size=100, channel='green', color='black', alpha=1):
+    def _plot_expression(ax, disc, hours_per_pixel,
+                         window_size=100,
+                         channel='ch1_norm',
+                         color='black',
+                         alpha=1):
         """ Plot expression trajectories. """
 
         cells = disc.select_cell_type('pre')
-        cells.plot_expression_time_series(ax=ax, channel=channel, marker_color=color, line_color=color, raw_data=False, ma=True,
-            alpha=alpha, line_width=2)
+        cells.plot_dynamics(channel, ax=ax,
+                            line_kw={'color': color, 'alpha': alpha, 'lw': 2})
 
         # format x axis
         ax.set_ylim(0, 2)
@@ -301,7 +305,10 @@ class Triangulation:
         ax_alt = ax.twinx()
         self.plot_expression(ax_alt, **kwargs)
 
-    def show(self, gs_parent=None, include_expression=True, is_subplot=False, **kwargs):
+    def show(self,
+             gs_parent=None,
+             include_expression=True,
+             is_subplot=False, **kwargs):
         """
         Plot inter-R8 distance distribution, Delaunay triangulation, and expression.
         """
@@ -420,7 +427,7 @@ class ExperimentTriangulation:
         return {i: Triangulation(disc, **kwargs) for i, disc in discs.items()}
 
     def plot_expression(self, ax,
-                        channel='green',
+                        channel='ch1_norm',
                         color='black',
                         **kwargs):
         """ Plot expression for all triangulations. """
@@ -440,7 +447,7 @@ class ExperimentTriangulation:
         return fig
 
     def show_alignment(self,
-                       channel='green',
+                       channel='ch1_norm',
                        xoffsets=None,
                        ax=None,
                        scatter=False,

@@ -272,9 +272,10 @@ class SilhouetteData(Silhouette):
         columns += ['layer', 'label']
         df = pd.DataFrame(contours, columns=columns)
 
-        # replace color strings for RGB
-        for color in ('red', 'green', 'blue'):
-            df[color] = df[color[0]]
-            df['{:s}_std'.format(color)] = df['{:s}_std'.format(color[0])]
+        # delete duplicate RGB channel labels
+        for i, c in enumerate('rgb'):
+            if 'ch{:d}'.format(i) in df.columns:
+                df.drop(c, axis=1, inplace=True)
+                df.drop(c+'_std', axis=1, inplace=True)
 
         return df

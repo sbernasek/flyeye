@@ -360,7 +360,7 @@ class CellsAlignment(Alignment):
 
     def __init__(self, df,
                  reference_df=None,
-                 channel='green',
+                 channel='ch1_norm',
                  basis='t',
                  metric='crosscorrelation',
                  window_size=None):
@@ -373,7 +373,7 @@ class CellsAlignment(Alignment):
 
             reference_df (pd.DataFrame) - reference cells data
 
-            channel (str) - cells attribute used as alignment values
+            channel (str or int) - cells attribute used as alignment values
 
             basis (str) - cells attribute  used as alignment timepoints
 
@@ -426,7 +426,7 @@ class DiscAlignment(CellsAlignment):
     """
 
     def __init__(self, disc, reference_disc,
-                 channel='green',
+                 channel='ch1_norm',
                  metric='crosscorrelation',
                  window_size=None):
         """
@@ -593,7 +593,8 @@ class MultiExperimentAlignment:
         self.align_experiments(**kwargs)
 
     @classmethod
-    def _align_experiments(cls, experiments, channel='green', **kwargs):
+    def _align_experiments(cls, experiments,
+                           channel='ch1_norm', **kwargs):
         """
         Align all experiments with the first experiment.
 

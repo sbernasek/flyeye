@@ -7,7 +7,7 @@ from scipy.stats import norm
 
 from .silhouette import SilhouetteData
 from .image import ImageStack
-from .cells import Cells
+from .cells import Cells, format_channel
 from ..dynamics.averages import detrend_signal
 from ..processing.triangulation import Triangulation
 
@@ -35,11 +35,12 @@ class Disc(Cells):
     def __init__(self,
                  df=None,
                  path=None,
-                 normalization='red',
+                 normalization=None,
                  flip_about_yz=False,
                  flip_about_xy=False,
                  furrow_velocity=2.,
-                 offset=None):
+                 offset=None,
+                 bit_depth=None):
         """
         Instantiate object representing all cells in a single eye disc.
 
@@ -47,7 +48,7 @@ class Disc(Cells):
 
             df (pd.DataFrame) - cell measurement data
 
-            normalization (str) - normalization channel
+            normalization (str or int) - normalization channel
 
             flip_about_yz (bool) - if True, invert about YZ plane
 
@@ -58,6 +59,8 @@ class Disc(Cells):
             furrow_velocity (float) - furrow inverse-velocity (hours per column)
 
             offset (float) - time by which disc is shifted from first R8
+
+            bit_depth (int) - fluorescence intensity bit depth, log2 scaled
 
         """
 
@@ -78,11 +81,14 @@ class Disc(Cells):
         if flip_about_xy is True:
             self.flip_about_xy()
 
-        # normalize expression levels
-        if normalization is not None:
-            self.normalize_expression(base=255)
-            self.normalize_by_reference(reference_channel=normalization)
-            self.set_ratio()
+        # normalize fluorescence intensities by bit depth
+        if bit_depth is not None:
+            self.bit_depth = bit_depth
+            self.normalize_expression(base=2**self.bit_depth)
+
+        # normalize fluorescence intensities by reference channel
+        if self.normalization is not None:
+            self.normalize_by_reference(self.normalization)
 
         # construct triangulation of R8 positions
         self.triangulation = None
@@ -97,11 +103,11 @@ class Disc(Cells):
         self.apply_lag(offset=offset)
 
         # detrend
-        self.detrend()
+        self.detrend(channels=self.normalized_channels)
 
     @staticmethod
     def from_silhouette(path,
-                        normalization='red',
+                        normalization=None,
                         furrow_velocity=2.,
                         recompile=False,
                         **kwargs):
@@ -112,7 +118,7 @@ class Disc(Cells):
 
             path (str) - silhouette filepath
 
-            normalization (str) - normalization channel
+            normalization (str or int) - normalization channel
 
             furrow_velocity (float) - furrow inverse-velocity (hours per column)
 
@@ -158,13 +164,16 @@ class Disc(Cells):
 
     def flip_about_xy(self):
         """ Flip disc bottom to top. """
-        self.df['centroid_y'] = self.df.centroid_y.max() - self.df.centroid_y + self.df.centroid_y.min()
+        ymax, ymin = self.df.centroid_y.max(), self.df.centroid_y.min()
+        self.df['centroid_y'] = ymax - self.df.centroid_y + ymin
 
     def flip_about_yz(self):
         """ Flip disc left to right. """
-        self.df['centroid_x'] = self.df.centroid_x.max() - self.df.centroid_x + self.df.centroid_x.min()
+        xmax, xmin = self.df.centroid_x.max(), self.df.centroid_x.min()
+        self.df['centroid_x'] = xmax - self.df.centroid_x + xmin
         if 't' in self.df.keys():
-            self.df['t'] = self.df.t.max() - self.df.t + self.df.t.min()
+            tmax. tmin = self.df.t.max(), self.df.t.min()
+            self.df['t'] = tmax - self.df.t + tmin
 
     def apply_time_scaling(self):
         """ Apply distance-to-time scaling to generate time vector. """
@@ -191,59 +200,61 @@ class Disc(Cells):
         if offset == 'first_r8':
             r8_neurons = self.select_cell_type('r8')
             if len(r8_neurons.df) > 0:
-                offset = -r8_neurons.df.centroid_x.min()
+                offset = -r8_neurons.df.t.min()
             else:
                 offset = 0
 
         self.df['t'] += offset
         self.df['centroid_x'] += offset / self.hours_per_pixel
 
-    def normalize_expression(self, base=255):
+    def normalize_expression(self, max_value):
         """
         Convert each channel's fluorescence to a 0-1 scale.
 
         Args:
 
-            base (float) - maximum fluorescence
+            max_value (float) - maximum fluorescence intensity
 
         """
-        for channel in ['red', 'green', 'blue']:
-            self.df[channel] /= base
-            self.df[channel+'_std'] /= base
+        for channel in self.channels:
+            self.df[channel] /= max_value
+            self.df[channel+'_std'] /= max_value
 
-    def normalize_by_reference(self, reference_channel='red'):
+    def normalize_by_reference(self, reference):
         """
         Normalize expression levels by the reference channel.
 
         Args:
 
-            reference_channel (str) - channel used for normalization
+            reference (str or int) - channel used for normalization
 
         """
-        normalization = self.df[reference_channel]
-        for channel in ['red', 'green', 'blue']:
-            if channel != reference_channel:
-                self.df[channel] /= normalization
+        for channel in self.channels:
+            if channel != reference:
+                self.df[channel+'_norm'] = self.df[channel]/self.df[reference]
 
-    def set_ratio(self):
-        """ Add fluorescence ratio to dataframe. """
+    def set_ratio(self, num, den):
+        """
+        Add fluorescence ratio to dataframe, defined by <num>/<den> channels.
+        """
 
-        if self.normalization == 'red':
-            den = 'blue'
-        else:
-            den = 'red'
+        num, den = format_channel(num), format_channel(den)
 
         if self.df[den].max() != 0:
-            self.df['ratio'] = np.log2(self.df.green/self.df[den])
-            self.df['raw_ratio'] = self.df.green/self.df[den]
-        else:
-            self.df['ratio'] = np.zeros(len(self.df))
+            self.df['logratio'] = np.log2(self.df[num]/self.df[den])
+            self.df['ratio'] = self.df[num]/self.df[den]
+            self.detrend(channels=('logratio',))
 
-    def detrend(self, order=1):
+        else:
+            raise ValueError('Denominator channel is empty.')
+
+    def detrend(self, channels, order=1):
         """
         Add detrended fluctuations for each fluorescence channel within each cell type to disc dataframe.
 
         Args:
+
+            channels (iterable) - channels to be detrended
 
             order (int) - polyorder for local trendfitting
 
@@ -256,7 +267,11 @@ class Disc(Cells):
             cells = self.select_cell_type(cell_type)
 
             data, columns = [], []
-            for ch in ['red', 'green', 'blue', 'ratio']:
+            for ch in channels:
+
+                # skip missing channels
+                if ch not in self.df.columns:
+                    continue
 
                 # get samples for current cell type and channel
                 x = cells.df[ch].values
@@ -272,13 +287,12 @@ class Disc(Cells):
                     residuals, trend = detrend_signal(x, window_size, order)
                 else:
                     trend = x.mean() * np.ones(x.size)
-
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")
                         residuals = x - trend
 
                 # normalize residuals
-                if ch == 'ratio':
+                if ch == 'logratio':
                     flux_raw = residuals
                 else:
                     flux_raw = residuals/trend

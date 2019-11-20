@@ -54,6 +54,9 @@ class CorrelationData:
 
         """
 
+        if self.channel != correlation.channel:
+            raise ValueError('Correlations applied to different channels.')
+
         # concatenate distanced and fluctuations
         d_ij = np.hstack((self.d_ij, correlation.d_ij))
         C_ij = np.hstack((self.C_ij, correlation.C_ij))
@@ -259,8 +262,6 @@ class SpatialCorrelation(CorrelationData):
 
         y_only (bool) - if True, only use y-component of pairwise distances
 
-        raw (bool) - if True, use raw fluorescence intensities
-
     Inherited attributes:
 
         d_ij (np array) - pairwise separation distances between measurements
@@ -269,34 +270,30 @@ class SpatialCorrelation(CorrelationData):
 
     """
 
-    def __init__(self,
+    def __init__(self, channel,
                  df=None,
-                 channel='green',
-                 y_only=True,
-                 raw=False):
+                 y_only=True):
         """
         Instantiate object for evaluating spatial correlation of expression between cells.
 
         Args:
 
+            channel (str or int) - channel for which correlations are desired
+
             df (pd.Dataframe) - cell measurement data
 
-            channel (str) - expression channel for which correlations are desired
-
             y_only (bool) - if True, only use y-component of pairwise distances
-
-            raw (bool) - if True, use raw fluorescence intensities
 
         """
 
         # store parameters
         self.channel = channel
         self.y_only = y_only
-        self.raw = raw
 
         # get pairwise distances and fluctuations
         if df is None:
             d_ij, C_ij = np.ndarray([]), np.ndarray([])
+
         else:
 
             # get distances vector
@@ -304,8 +301,6 @@ class SpatialCorrelation(CorrelationData):
 
             # get covariance vector
             expression = df[channel].values
-            if raw is True and channel != 'ratio':
-                expression *= df[cells.normalization].values
             C_ij = self.get_covariance_vector(expression.reshape(-1, 1))
 
         # instantiate parent object

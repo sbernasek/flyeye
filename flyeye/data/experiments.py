@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
 from .discs import Disc
-from .cells import Cells
+from .cells import Cells, format_channel
 from ..processing.triangulation import Triangulation
 from ..processing.alignment import DiscAlignment, ExperimentAlignment
 from ..analysis.correlation import SpatialCorrelation
@@ -27,8 +27,7 @@ class Experiment:
 
     """
 
-    def __init__(self, dirpath,
-                 normalization='red',
+    def __init__(self, dirpath, normalization,
                  auto_alignment=True,
                  **kwargs):
         """
@@ -38,24 +37,35 @@ class Experiment:
 
             dirpath (str) - path to directory containing silhouette files
 
-            normalization (str) - normalization channel
+            normalization (str or int) - normalization channel
 
             auto_alignment (bool) - if True, align discs
 
             kwargs: keyword arguments for disc instantiation
 
         """
-
         self.discs = self.load(dirpath, normalization=normalization, **kwargs)
+        self.count = 0
 
         # align discs
         if auto_alignment:
             self.align_discs()
             self.align_to_first_r8()
 
-    def __getitem__(self, key):
-        """ Return disc. """
-        return self.discs[key]
+    def __getitem__(self, idx):
+        """ Returns disc indexed by <idx>. """
+        return self.discs[idx]
+
+    def __iter__(self):
+        """ Iterate over discs. """
+        return self
+
+    def __next__(self):
+        if self.count >= self.num_discs:
+            raise StopIteration
+        else:
+            self.count += 1
+            return self.discs[self.count - 1]
 
     @property
     def num_discs(self):
@@ -68,7 +78,7 @@ class Experiment:
         return len(self.get_cells('pre').df)
 
     @staticmethod
-    def load(dirpath, normalization='red', **kwargs):
+    def load(dirpath, normalization, **kwargs):
         """
         Load discs from silhouette files.
 
@@ -76,7 +86,7 @@ class Experiment:
 
             dirpath (str) - path to directory containing silhouette files
 
-            normalization (str) - normalization channel
+            normalization (str or int) - normalization channel
 
             kwargs: keyword arguments for disc instantiation
 
@@ -98,7 +108,14 @@ class Experiment:
 
         return discs
 
-    def align_discs(self, channel='green'):
+    def set_ratio(self, num, den):
+        """
+        Add fluorescence ratio to each disc's dataframe, defined by <num>/<den> channels.
+        """
+        for disc in self.discs.values():
+            disc.set_ratio(num, den)
+
+    def align_discs(self, channel='ch1_norm'):
         """
         Align all discs within experiment.
 
@@ -107,6 +124,7 @@ class Experiment:
             channel (str) - expression channel by which discs are aligned
 
         """
+        channel = format_channel(channel)
         al = ExperimentAlignment(self, channel=channel)
         self.discs = al.get_aligned_experiment().discs
 
@@ -299,11 +317,9 @@ class Experiment:
             df = pd.concat([df, data])
         return df
 
-    def get_spatial_correlations(self,
+    def get_spatial_correlations(self, channel,
                                  cell_type='pre',
-                                 channel='green',
                                  y_only=False,
-                                 raw=False,
                                  discs_included='all',
                                  **selection_kw):
         """
@@ -311,13 +327,11 @@ class Experiment:
 
         Args:
 
+            channel (str or int) - channel for which correlations are desired
+
             cell_type (str) - type of cells to select
 
-            channel (str) - expression channel for which correlations are desired
-
             y_only (bool) - if True, only use y-component of data
-
-            raw (bool) - if True, removes normalization
 
             discs_included (list or str) - included discs, defaults to all
 
@@ -330,7 +344,7 @@ class Experiment:
         """
 
         # instantiate empty SpatialCorrelation object
-        corr = SpatialCorrelation()
+        corr = SpatialCorrelation(channel)
 
         # specify included discs
         if discs_included == 'all':
@@ -346,7 +360,7 @@ class Experiment:
             cells = cells.select_by_position(**selection_kw)
 
             # concatenate fluctuations to existing correlation object
-            corr += SpatialCorrelation(cells, channel, y_only=y_only, raw=raw)
+            corr += SpatialCorrelation(channel, cells, y_only=y_only)
 
         return corr
 

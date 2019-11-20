@@ -6,9 +6,32 @@ from operator import add
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import re
 
 from ..dynamics.timeseries import TimeseriesPlot, IntervalPlot
 from ..dynamics.resampling import DiscResampler
+
+
+def format_channel(channel):
+    """ Returns string representation of <channel>. """
+
+    if type(channel) == int:
+        return 'ch{:d}'.format(channel)
+
+    elif type(channel) != str:
+        raise ValueError('Channel data type not recognized.')
+
+    elif 'ch' in channel:
+        return channel
+
+    elif channel.lower() in 'rgb':
+        return format_channel('rgb'.index(channel.lower()))
+
+    elif channel.lower() in ('red', 'green', 'blue'):
+        return format_channel('rgb'.index(channel.lower()[0]))
+
+    else:
+        raise ValueError('Channel string not recognized.')
 
 
 class Cells:
@@ -30,7 +53,7 @@ class Cells:
 
             df (pd.DataFrame) - cell measurement data
 
-            normalization (str) - channel against which intensities are normalized
+            normalization (str or int) - channel used to normalize intensities
 
         """
 
@@ -40,7 +63,7 @@ class Cells:
         self.df = df
 
         # store normalization
-        self.normalization = normalization
+        self.normalization = format_channel(normalization)
 
         # standardize levels
         if len(self.df) > 0:
@@ -51,6 +74,25 @@ class Cells:
         cells = Cells(pd.concat((self.df, cells.df)), self.normalization)
         cells.sort(by='t')
         return cells
+
+    @property
+    def channels(self):
+        """ List of unique fluorescence channels. """
+        return [s for s in self.df.columns if len(re.findall('ch[0-9]+$', s))]
+
+    @property
+    def normalized_channels(self):
+        """ List of normalized channel names. """
+        return [ch+'_norm' for ch in self.channels]
+
+    @property
+    def num_channels(self):
+        """ Number of unique fluorescence channels. """
+        return len(self.channels)
+
+    @property
+    def is_sorted(self):
+        return (self.df.centroid_x.diff() < 0).sum() == 0
 
     def sort(self, by='centroid_x'):
         """
@@ -299,9 +341,7 @@ class Cells:
 
         return interval_plot.ax
 
-    def scatterplot(self,
-                      x='blue',
-                      y='green',
+    def scatterplot(self, x, y,
                       color='grey',
                       s=5,
                       alpha=0.5,
@@ -312,7 +352,7 @@ class Cells:
 
         Args:
 
-            x, y (str) - channels used for x and y axes
+            x, y (str or int) - channels used for x and y axes
 
             color (str) - marker color
 
@@ -329,6 +369,9 @@ class Cells:
             ax (mpl.axes.AxesSubplot)
 
         """
+
+        # get string representation of channel names
+        x, y = format_channel(x), format_channel(y)
 
         # create figure
         if ax is None:
@@ -369,8 +412,7 @@ class Cells:
         ax.text(p, p+0.5, '{:2.1%}'.format(fraction), ha='right', fontsize=8)
         ax.text(p, p-0.5, '{:2.1%}'.format(1-fraction), ha='left', fontsize=8)
 
-    def plot_spectrogram(self,
-                     channel='green',
+    def plot_spectrogram(self, channel,
                      periods=None,
                      ymax=None,
                      ax=None, **kwargs):
@@ -379,7 +421,7 @@ class Cells:
 
         Args:
 
-            channel (str) - expression channel
+            channel (str or int) - expression channel
 
             periods (array like) - spectral frequencies to be tested
 
@@ -394,6 +436,9 @@ class Cells:
             ax (mpl.axes.AxesSubplot)
 
         """
+
+        # get string representation of channel name
+        channel = format_channel(channel)
 
         # compile spectrogram
         precursors = self.select_cell_type('pre')
