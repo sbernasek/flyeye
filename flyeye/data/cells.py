@@ -34,7 +34,39 @@ def format_channel(channel):
         raise ValueError('Channel string not recognized.')
 
 
-class Cells:
+class CellProperties:
+    """ Properties of Cells object. """
+
+    @property
+    def channels(self):
+        """ List of unique fluorescence channels. """
+        return [s for s in self.df.columns if len(re.findall('ch[0-9]+$', s))]
+
+    @property
+    def normalized_channels(self):
+        """ List of normalized channel names. """
+        return [ch+'_norm' for ch in self.channels]
+
+    @property
+    def num_channels(self):
+        """ Number of unique fluorescence channels. """
+        return len(self.channels)
+
+    @property
+    def is_sorted(self):
+        return (self.df.centroid_x.diff() < 0).sum() == 0
+
+    @property
+    def cell_type_counts(self):
+        return self.df.groupby('label')['label'].count()
+
+    @property
+    def cell_types(self):
+        """ Unique cell types. """
+        return self.cell_type_counts.index.tolist()
+
+
+class Cells(CellProperties):
     """
 
     Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.
@@ -74,25 +106,6 @@ class Cells:
         cells = Cells(pd.concat((self.df, cells.df)), self.normalization)
         cells.sort(by='t')
         return cells
-
-    @property
-    def channels(self):
-        """ List of unique fluorescence channels. """
-        return [s for s in self.df.columns if len(re.findall('ch[0-9]+$', s))]
-
-    @property
-    def normalized_channels(self):
-        """ List of normalized channel names. """
-        return [ch+'_norm' for ch in self.channels]
-
-    @property
-    def num_channels(self):
-        """ Number of unique fluorescence channels. """
-        return len(self.channels)
-
-    @property
-    def is_sorted(self):
-        return (self.df.centroid_x.diff() < 0).sum() == 0
 
     def sort(self, by='centroid_x'):
         """
