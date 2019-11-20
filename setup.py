@@ -18,6 +18,5 @@ setup(
         "matplotlib >= 2.0.0",
         "astroML == 0.3",
         "astroML-addons == 0.2.2",
-        "pillow == 5.2.0"
     ],
 )

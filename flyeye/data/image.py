@@ -2,7 +2,6 @@ __author__ = 'Sebastian Bernasek'
 
 from os.path import join
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from glob import glob
 from matplotlib import patches
@@ -320,6 +319,22 @@ class Image(ScalarField):
         return ScalarField(self.im[:, :, 'rgb'.index(channel)])
 
     @staticmethod
+    def load_image(path):
+        """ Load image from <path>. """
+
+        img_format = path.rsplit('.')[-1]
+        if img_format.lower() != 'png':
+            try:
+                import matplotlib.image as mpimg
+            except:
+                raise UserWarning('PIL library is required for non-png formats. Please install via PyPI.')
+
+        # read image (non-PNG formats require pillow library)
+        im = mpimg.imread(path)
+
+        return im
+
+    @staticmethod
     def from_tiff(path, **kwargs):
         """
         Read image file using matplotlib.image.imread.
@@ -338,8 +353,7 @@ class Image(ScalarField):
 
         """
 
-        # read image (non-PNG formats require pillow library)
-        im = mpimg.imread(path)
+        im = Image.load_image(path)
 
         # convert to floating point format (float32)
         if im.dtype == np.uint8:
@@ -510,8 +524,8 @@ class ImageStack(Image):
 
             im_path = join(path, '{:d}.{:s}'.format(layer, fmt))
 
-            # read image (non-PNG formats require pillow library)
-            im = mpimg.imread(im_path)
+            # read image
+            im = Image.load_image(im_path)
 
             # convert to floating point format (float32)
             if im.dtype == np.uint8:
