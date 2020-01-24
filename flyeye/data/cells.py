@@ -37,9 +37,17 @@ def format_channel(channel):
 def standardize_channels(df):
     """ Standardize all channel names. """
     for name in ('r', 'g', 'b', 'red', 'green', 'blue'):
+
+        formatted_name = format_channel(name)
+
         if name in df.columns:
-            df[format_channel(name)] = df[name]
+            df[formatted_name] = df[name]
             df.drop(name, axis=1, inplace=True)
+
+        if name + '_std' in df.columns:
+            df[formatted_name + '_std'] = df[name + '_std']
+            df.drop(name + '_std', axis=1, inplace=True)
+
     return df
 
 
