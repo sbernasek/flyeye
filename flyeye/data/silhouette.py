@@ -18,6 +18,10 @@ class Silhouette:
 
         feud (dict) - feud file containing cell type labels
 
+        flip_about_yz (bool) - if True, invert about YZ plane
+
+        flip_about_xy (bool) - if True, invert about XY plane
+
     """
     def __init__(self, path):
         """
@@ -34,7 +38,7 @@ class Silhouette:
         self.feed = self.read_json('feed.json')
         self.feud = self.read_json('feud.json')
 
-        # read suggested disc orientation from feed file
+        # read disc orientation from feed file
         self.load_orientation()
 
     def read_json(self, filename):
@@ -55,16 +59,46 @@ class Silhouette:
             out = json.load(f)
         return out
 
-    def load_orientation(self):
-        """ Load suggested disc orientation from feed file. """
+    def write_json(self, filename, data):
+        """
+        Write contents of <data> to specified JSON file.
 
-        # read orientation
-        try:
-            self.flip_about_yz = bool(self.feed['orientation']['flip_about_yz'])
-            self.flip_about_xy = bool(self.feed['orientation']['flip_about_xy'])
-        except:
-            self.flip_about_yz = False
-            self.flip_about_xy = False
+        Args:
+
+            filename (str) - filename
+
+            data (dict) - data contents
+
+        """
+        filepath = join(self.path, filename)
+        with open(filepath, 'w') as f:
+            json.dump(data, f)
+
+    def write_feed(self):
+        """ Writes contents of feed dictionary to silhouette file. """
+        self.write_json('feed.json', self.feed)
+
+    def load_orientation(self):
+        """
+        Load suggested disc orientation from feed file.
+
+        If the orientation parameter is missing (as in older silhouette filetypes), the default orientation is preserved.
+
+        """
+
+        flip_about_yz, flip_about_xy = False, False
+
+        if 'orientation' in self.feed.keys():
+            orientation = self.feed['orientation']
+
+            if 'flip_about_yz' in orientation.keys():
+                flip_about_yz = orientation['flip_about_yz']
+
+            if 'flip_about_xy' in orientation.keys():
+                flip_about_xy = orientation['flip_about_xy']
+
+        self.flip_about_yz = flip_about_yz
+        self.flip_about_xy = flip_about_xy
 
 
 class SilhouetteData(Silhouette):
@@ -80,10 +114,6 @@ class SilhouetteData(Silhouette):
 
         df (pd.DataFrame) - cell measurement data
 
-        flip_about_yz (bool) - if True, invert about YZ plane
-
-        flip_about_xy (bool) - if True, invert about XY plane
-
     Inherited attributes:
 
         path (str) - path to Silhouette file
@@ -91,6 +121,10 @@ class SilhouetteData(Silhouette):
         feed (dict) - feed file containing layer IDs
 
         feud (dict) - feud file containing cell type labels
+
+        flip_about_yz (bool) - if True, invert about YZ plane
+
+        flip_about_xy (bool) - if True, invert about XY plane
 
     """
 
