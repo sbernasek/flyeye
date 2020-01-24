@@ -34,6 +34,14 @@ def format_channel(channel):
         raise ValueError('Channel string not recognized.')
 
 
+def standardize_channels(df):
+    """ Standardize all channel names. """
+    for name in ('r', 'g', 'b', 'red', 'green', 'blue'):
+        df[format_channel(name)] = df[name]
+        df.drop(name, axis=1, inplace=True)
+    return df
+
+
 class CellProperties:
     """ Properties of Cells object. """
 
@@ -94,7 +102,7 @@ class Cells(CellProperties):
         # store measurements
         if df is None:
             df = pd.DataFrame()
-        self.df = df
+        self.df = standardize_channels(df)
 
         # store normalization
         self.normalization = format_channel(normalization)
