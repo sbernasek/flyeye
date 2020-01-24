@@ -172,7 +172,7 @@ class Disc(Cells):
         xmax, xmin = self.df.centroid_x.max(), self.df.centroid_x.min()
         self.df['centroid_x'] = xmax - self.df.centroid_x + xmin
         if 't' in self.df.keys():
-            tmax. tmin = self.df.t.max(), self.df.t.min()
+            tmax, tmin = self.df.t.max(), self.df.t.min()
             self.df['t'] = tmax - self.df.t + tmin
 
     def apply_time_scaling(self):
