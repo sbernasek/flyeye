@@ -18,6 +18,8 @@ class Silhouette:
 
         feud (dict) - feud file containing cell type labels
 
+    Properties:
+
         flip_about_yz (bool) - if True, invert about YZ plane
 
         flip_about_xy (bool) - if True, invert about XY plane
@@ -72,33 +74,34 @@ class Silhouette:
         """
         filepath = join(self.path, filename)
         with open(filepath, 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, sort_keys=True, indent='\t')
 
     def write_feed(self):
         """ Writes contents of feed dictionary to silhouette file. """
         self.write_json('feed.json', self.feed)
 
+    def write_feud(self):
+        """ Writes contents of feud dictionary to silhouette file. """
+        self.write_json('feud.json', self.feud)
+
     def load_orientation(self):
         """
-        Load suggested disc orientation from feed file.
-
-        If the orientation parameter is missing (as in older silhouette filetypes), the default orientation is preserved.
+        Ensure that feed file includes disc orientation. If it does not, as in older silhouette filetypes, the default orientation is preserved.
 
         """
+        if 'orientation' not in self.feed.keys():
+            orientation = dict(flip_about_yz=False, flip_about_xy=False)
+            self.feed['orientation'] = orientation
 
-        flip_about_yz, flip_about_xy = False, False
+    @property
+    def flip_about_yz(self):
+        """ Boolean flag for flipping disc horizontally. """
+        return self.feed['orientation']['flip_about_yz']
 
-        if 'orientation' in self.feed.keys():
-            orientation = self.feed['orientation']
-
-            if 'flip_about_yz' in orientation.keys():
-                flip_about_yz = orientation['flip_about_yz']
-
-            if 'flip_about_xy' in orientation.keys():
-                flip_about_xy = orientation['flip_about_xy']
-
-        self.flip_about_yz = flip_about_yz
-        self.flip_about_xy = flip_about_xy
+    @property
+    def flip_about_xy(self):
+        """ Boolean flag for flipping disc vertically. """
+        return self.feed['orientation']['flip_about_xy']
 
 
 class SilhouetteData(Silhouette):

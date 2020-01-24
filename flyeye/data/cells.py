@@ -75,6 +75,8 @@ class Cells(CellProperties):
 
         df (pd.DataFrame) - cell measurement data
 
+        normalization (str or int) - channel used to normalize intensities
+
     """
 
     def __init__(self, df=None, normalization=None):

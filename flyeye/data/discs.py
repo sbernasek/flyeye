@@ -16,28 +16,79 @@ from ..processing.triangulation import Triangulation
 #warnings.filterwarnings('error')
 
 
-class Disc(Cells):
+df=silhouette.df,
+path=silhouette.path,
+flip_about_yz=silhouette.flip_about_yz,
+flip_about_xy=silhouette.flip_about_xy,
+
+
+flip_about_yz=False,
+                 flip_about_xy=False,
+
+
+flip_about_yz (bool) - if True, invert about YZ plane
+
+            flip_about_xy (bool) - if True, invert about XY plane
+
+df (pd.DataFrame) - cell measurement data
+
+            path (str) - silhouette filepath
+
+
+class DiscProperties:
+    """ Properties for Disc class. """
+
+    @property
+    def path(self):
+        """ Path to silhouette file. """
+        return self.silhouette.path
+
+    @property
+    def flip_about_yz(self):
+        """ If True, disc is inverted about YZ plane. """
+        return self.silhouette.flip_about_yz
+
+    @property
+    def flip_about_xy(self):
+        """ If True, disc is inverted about XY plane. """
+        return self.silhouette.flip_about_xy
+
+
+class Disc(Cells, DiscProperties):
     """
     Object representing all cells in a single eye disc.
 
     Attributes:
 
-        path (str) - unique silhouette filepath
+        silhouette (flyeye.SilhouetteData) - data from silhouette file
+
+        furrow_velocity (float) - furrow inverse-velocity (hours per column)
+
+        offset (float) - time by which disc is shifted from first R8
+
+        bit_depth (int) - fluorescence intensity bit depth, log2 scaled
 
         triangulation (processing.triangulation.Triangulation)
 
     Inherited Attributes:
 
+        normalization (str or int) - channel used to normalize intensities
+
         df (pd.DataFrame) - cell measurement data
+
+    Properties:
+
+        path (str) - unique silhouette filepath
+
+        flip_about_yz (bool) - if True, disc is inverted about YZ plane
+
+        flip_about_xy (bool) - if True, disc is inverted about XY plane
 
     """
 
     def __init__(self,
-                 df=None,
-                 path=None,
+                 silhouette,
                  normalization=None,
-                 flip_about_yz=False,
-                 flip_about_xy=False,
                  furrow_velocity=2.,
                  offset=None,
                  bit_depth=None):
@@ -46,15 +97,9 @@ class Disc(Cells):
 
         Args:
 
-            df (pd.DataFrame) - cell measurement data
+            silhouette (flyeye.SilhouetteData) - data from silhouette file
 
-            normalization (str or int) - normalization channel
-
-            flip_about_yz (bool) - if True, invert about YZ plane
-
-            flip_about_xy (bool) - if True, invert about XY plane
-
-            path (str) - silhouette filepath
+            normalization (str or int) - channel used to normalize intensities
 
             furrow_velocity (float) - furrow inverse-velocity (hours per column)
 
@@ -64,22 +109,22 @@ class Disc(Cells):
 
         """
 
-        Cells.__init__(self, df, normalization=normalization)
+        Cells.__init__(self, silhouette.df, normalization=normalization)
 
-        # set path to silhouette file
-        self.path = path
+        # set sihouette attribute
+        self.silhouette = silhouette
 
         # standardize precursor labels
         self.standardize_labels()
 
         # orient disc (flip horizontally)
-        if flip_about_yz is True:
-            self.flip_about_yz()
+        if self.flip_about_yz is True:
+            self.flip_horizontal()
             self.sort()
 
         # flip stack vertically
-        if flip_about_xy is True:
-            self.flip_about_xy()
+        if self.flip_about_xy is True:
+            self.flip_vertical()
 
         # normalize fluorescence intensities by bit depth
         if bit_depth is not None:
@@ -91,6 +136,7 @@ class Disc(Cells):
             self.normalize_by_reference(self.normalization)
 
         # construct triangulation of R8 positions
+        self.furrow_velocity = furrow_velocity
         self.triangulation = None
         r8_neurons = self.select_cell_type('r8')
         if len(r8_neurons.df) > 0:
@@ -136,11 +182,8 @@ class Disc(Cells):
         silhouette = SilhouetteData(path, recompile=recompile)
 
         # instantiate disc
-        disc = Disc(df=silhouette.df,
-                    path=silhouette.path,
+        disc = Disc(silhouette,
                     normalization=normalization,
-                    flip_about_yz=silhouette.flip_about_yz,
-                    flip_about_xy=silhouette.flip_about_xy,
                     furrow_velocity=furrow_velocity,
                     **kwargs)
 
@@ -162,18 +205,42 @@ class Disc(Cells):
         names = ['p', 'prepre', 'v']
         self.df.loc[self.df.label.isin(names), 'label'] = 'pre'
 
-    def flip_about_xy(self):
-        """ Flip disc bottom to top. """
+    def flip_vertical(self, save=False):
+        """
+        Flip disc bottom to top.
+
+        Args:
+
+            save (bool) - if True, save new orientation to silhouette file
+
+        """
         ymax, ymin = self.df.centroid_y.max(), self.df.centroid_y.min()
         self.df['centroid_y'] = ymax - self.df.centroid_y + ymin
 
-    def flip_about_yz(self):
-        """ Flip disc left to right. """
+        # update feed file
+        if save:
+            self.silhouette.feed['orientation']['flip_about_xy'] = not self.flip_about_xy
+            self.silhouette.write_feed()
+
+    def flip_horizontal(self, save=False):
+        """
+        Flip disc left to right.
+
+        Args:
+
+            save (bool) - if True, save new orientation to silhouette file
+
+        """
         xmax, xmin = self.df.centroid_x.max(), self.df.centroid_x.min()
         self.df['centroid_x'] = xmax - self.df.centroid_x + xmin
         if 't' in self.df.keys():
             tmax, tmin = self.df.t.max(), self.df.t.min()
             self.df['t'] = tmax - self.df.t + tmin
+
+        # update feed file
+        if save:
+            self.silhouette.feed['orientation']['flip_about_yz'] = not self.flip_about_yz
+            self.silhouette.write_feed()
 
     def apply_time_scaling(self):
         """ Apply distance-to-time scaling to generate time vector. """
