@@ -16,25 +16,6 @@ from ..processing.triangulation import Triangulation
 #warnings.filterwarnings('error')
 
 
-df=silhouette.df,
-path=silhouette.path,
-flip_about_yz=silhouette.flip_about_yz,
-flip_about_xy=silhouette.flip_about_xy,
-
-
-flip_about_yz=False,
-                 flip_about_xy=False,
-
-
-flip_about_yz (bool) - if True, invert about YZ plane
-
-            flip_about_xy (bool) - if True, invert about XY plane
-
-df (pd.DataFrame) - cell measurement data
-
-            path (str) - silhouette filepath
-
-
 class DiscProperties:
     """ Properties for Disc class. """
 
