@@ -24,11 +24,7 @@ Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
-Check out our `tutorial <https://sebastianbernasek.github.io/flyeye/start.html>`_ for tips on getting started with analyzing your own microscopy data. But first, you'll need to install the package using ``pip``!
-
-.. code-block:: bash
-
-   pip install flyeye
+Check out our `tutorial <https://sebastianbernasek.github.io/flyeye/start.html>`_ for tips on getting started with analyzing your own microscopy data.
 
 
 .. toctree::
