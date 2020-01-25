@@ -1,0 +1,356 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Analysis Module &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contact Us" href="../contact.html" />
+    <link rel="prev" title="Dynamics Module" href="dynamics.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <img alt="nulogo" class="align-right" id="analysis" src="../_images/Northwestern_purple_RGB1.png" style="width: 30%;" />
+<div class="section" id="analysis-module">
+<h1>Analysis Module<a class="headerlink" href="#analysis-module" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">flyeye.analysis</span></code> provides tools for detecting periodic spatial patterns of expression in the developing <em>Drosophila</em> eye field.</p>
+<div class="section" id="spatial-correlations">
+<h2>Spatial Correlations<a class="headerlink" href="#spatial-correlations" title="Permalink to this headline">¶</a></h2>
+<p>Tools for quantifying expression similarity as a function of distance between cells.</p>
+<span class="target" id="module-flyeye.analysis.correlation"></span><dl class="class">
+<dt id="flyeye.analysis.correlation.CorrelationData">
+<em class="property">class </em><code class="descclassname">flyeye.analysis.correlation.</code><code class="descname">CorrelationData</code><span class="sig-paren">(</span><em>d_ij=None</em>, <em>C_ij=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#CorrelationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.CorrelationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for correlations between 1-D timeseries.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>d_ij (np array) - pairwise separation distances between measurements</p>
+<p>C_ij (np array) - normalized pairwise fluctuations between measurements</p>
+</div></blockquote>
+<dl class="classmethod">
+<dt id="flyeye.analysis.correlation.CorrelationData.bootstrap">
+<em class="property">classmethod </em><code class="descname">bootstrap</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>confidence=95</em>, <em>N=1000</em>, <em>bins=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#CorrelationData.bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.CorrelationData.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate confidence interval for aggregation statistic.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np array) - values upon which samples are grouped</p>
+<p>y (np array) - values upon which aggregate statistics are evaluated</p>
+<p>N (int) - number of repeated samples</p>
+<p>confidence (int) - confidence interval, between 0 and 100</p>
+<p>bins (np array) - bins within which the statistic is applied</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div><p>centers (np array) - centers of distance bins</p>
+<p>uppers, lowers (np array) - statistic confidence interval bounds</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.analysis.correlation.CorrelationData.get_binned_stats">
+<em class="property">static </em><code class="descname">get_binned_stats</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>bins</em>, <em>statistic='mean'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#CorrelationData.get_binned_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.CorrelationData.get_binned_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Group samples into x-bins and evaluate aggregate statistic of y-values.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (np array) - values upon which samples are grouped</p>
+<p>y (np array) - values upon which aggregate statistics are evaluated</p>
+<p>bins (np array) - bin edges</p>
+<p>statistic (str) - aggregation statistic applied to each bin</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div><p>centers (np array) - bin centers</p>
+<p>stats (np array) - aggregate statistic for each bin</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.correlation.CorrelationData.visualize">
+<code class="descname">visualize</code><span class="sig-paren">(</span><em>ax=None</em>, <em>null_model=False</em>, <em>scatter=True</em>, <em>confidence=True</em>, <em>zero=True</em>, <em>ma_kw=None</em>, <em>nbootstraps=100</em>, <em>color='k'</em>, <em>max_distance=500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#CorrelationData.visualize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.CorrelationData.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot pairwise normalized fluctuations versus pairwise distances.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (mpl.axes.AxesSubplot) - if None, create figure</p>
+<p>null_model (bool) - if True, shuffle d_ij vector</p>
+<p>scatter (bool) - if True, show individual markers</p>
+<p>confidence (bool) - if True, include confidence interval</p>
+<p>zero (bool) - if True, include zero correlation line for reference</p>
+<p>interval_kw (dict) - keyword arguments for interval formatting</p>
+<p>ma_kw (dict) - keyword arguments for moving average smoothing</p>
+<p>nbootstraps (int) - number of bootstrap samples for confidence interval</p>
+<p>color (str) - color used for confidence interval</p>
+<p>max_distance (float) - largest pairwise distance included</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.analysis.correlation.SpatialCorrelation">
+<em class="property">class </em><code class="descclassname">flyeye.analysis.correlation.</code><code class="descname">SpatialCorrelation</code><span class="sig-paren">(</span><em>channel</em>, <em>df=None</em>, <em>y_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#SpatialCorrelation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.SpatialCorrelation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object for evaluating spatial correlation of expression between cells.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>channel (str) - expression channel for which correlations are desired</p>
+<p>y_only (bool) - if True, only use y-component of pairwise distances</p>
+</div></blockquote>
+<p>Inherited attributes:</p>
+<blockquote>
+<div><p>d_ij (np array) - pairwise separation distances between measurements</p>
+<p>C_ij (np array) - normalized pairwise fluctuations between measurements</p>
+</div></blockquote>
+<dl class="classmethod">
+<dt id="flyeye.analysis.correlation.SpatialCorrelation.get_covariance_vector">
+<em class="property">classmethod </em><code class="descname">get_covariance_vector</code><span class="sig-paren">(</span><em>vector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#SpatialCorrelation.get_covariance_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.SpatialCorrelation.get_covariance_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get upper triangular portion of pairwise expression covariance matrix.</p>
+<p>Args:</p>
+<blockquote>
+<div>vector (1D np.ndarray) - expression levels for each cell</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>covariance (1D np.ndarray) - pairwise fluctuations, ordered row then column</div></blockquote>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="flyeye.analysis.correlation.SpatialCorrelation.get_distances_vector">
+<em class="property">classmethod </em><code class="descname">get_distances_vector</code><span class="sig-paren">(</span><em>df</em>, <em>y_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#SpatialCorrelation.get_distances_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.SpatialCorrelation.get_distances_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get upper triangular portion of pairwise distance matrix.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>df (pd.Dataframe) - cell measurements including position data</p>
+<p>y_only (bool) - if True, only use y-component of cell positions</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>distances (1D np.ndarray) - pairwise distances, ordered row then column</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.analysis.correlation.SpatialCorrelation.get_matrix_upper">
+<em class="property">static </em><code class="descname">get_matrix_upper</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/correlation.html#SpatialCorrelation.get_matrix_upper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.correlation.SpatialCorrelation.get_matrix_upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return upper triangular portion of a 2-D matrix.</p>
+<p>Parameters:</p>
+<blockquote>
+<div>matrix (2D np.ndarray)</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>upper (1D np.ndarray) - upper triangle, ordered row then column</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="spectrogram">
+<h2>Spectrogram<a class="headerlink" href="#spectrogram" title="Permalink to this headline">¶</a></h2>
+<p>Tools for statistical detection of periodic spatial patterns, primarily via the AstroML library.</p>
+<span class="target" id="module-flyeye.analysis.spectrogram"></span><dl class="class">
+<dt id="flyeye.analysis.spectrogram.Spectrogram">
+<em class="property">class </em><code class="descclassname">flyeye.analysis.spectrogram.</code><code class="descname">Spectrogram</code><span class="sig-paren">(</span><em>t</em>, <em>y</em>, <em>dy=None</em>, <em>periods=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object for spectral decomposition of a 1-D timeseries via Lomb-Scargle periodogram. Internal functions are based on AstroML library.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>t (np.ndarray) - timepoints</p>
+<p>y (np.ndarray) - values</p>
+<p>dy (np.ndarray) - estimated measurement error</p>
+<p>periods (np.ndarray) - oscillation periods tested (same units as t)</p>
+<p>omegas (np.ndarray) - oscillation frequencies tested</p>
+<p>PS (np.ndarray) - spectral power of each frequency</p>
+<p>power (np.ndarray) - max. spectral power</p>
+<p>dominant_period (float) - oscillation period of max. spectral power</p>
+<p>dominant_frequency (float) - oscillation frequency of max. spectral power</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.add_power">
+<code class="descname">add_power</code><span class="sig-paren">(</span><em>ax</em>, <em>xaxis='period'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.add_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.add_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate peak spectral power.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (mpl.axes.AxesSublot)</p>
+<p>xaxis (str) - quantity for x axis, either ‘period’ or ‘frequency’</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.compute_thresholds">
+<code class="descname">compute_thresholds</code><span class="sig-paren">(</span><em>confidence=None</em>, <em>nbootstraps=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.compute_thresholds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.compute_thresholds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine significance thresholds.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>confidence (array like) - confidence levels to assess, length C</p>
+<p>nbootstraps (int) - number of boostrap samples</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>thresholds (np.ndarray) - spectral power thresholds, length C</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.evaluate_periodogram">
+<code class="descname">evaluate_periodogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.evaluate_periodogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.evaluate_periodogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate periodogram.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.full_visualization">
+<code class="descname">full_visualization</code><span class="sig-paren">(</span><em>confidence=[99], nbootstraps=1000, xaxis='period'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.full_visualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.full_visualization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrogram and corresponding signal on adjacent axes.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>confidence (array like) - confidence levels to be added</p>
+<p>nbootstraps (int) - number of bootstrap samples</p>
+<p>xaxis (str) - quantity for x axis, either ‘period’ or ‘frequency’</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.plot_samples">
+<code class="descname">plot_samples</code><span class="sig-paren">(</span><em>ax</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.plot_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.plot_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot timeseries samples.</p>
+<p>Args:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSublot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.plot_spectrogram">
+<code class="descname">plot_spectrogram</code><span class="sig-paren">(</span><em>ax, confidence=[99], nbootstraps=None, xaxis='period', annotate=True, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.plot_spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrogram.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (mpl.axes.AxesSublot)</p>
+<p>confidence (array like) - confidence levels to be added</p>
+<p>nbootstraps (int) - number of bootstrap samples</p>
+<p>xaxis (str) - quantity for x axis, either ‘period’ or ‘frequency’</p>
+<p>annotate (bool) - if True, label peak spectral power</p>
+<p>kwargs: plot formatting keyword arguments</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSublot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.analysis.spectrogram.Spectrogram.simple_visualization">
+<code class="descname">simple_visualization</code><span class="sig-paren">(</span><em>ax=None, confidence=[99], nbootstraps=1000, xaxis='period', annotate=True, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/analysis/spectrogram.html#Spectrogram.simple_visualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.analysis.spectrogram.Spectrogram.simple_visualization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrogram.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (mpl.axes.AxesSublot) - if None, create figure</p>
+<p>confidence (array like) - confidence levels to be added</p>
+<p>nbootstraps (int) - number of bootstrap samples</p>
+<p>xaxis (str) - quantity for x axis, either ‘period’ or ‘frequency’</p>
+<p>annotate (bool) - if True, label peak spectral power</p>
+<p>kwargs: plot formatting keyword arguments</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSublot)</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/img/analysis_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">DOCUMENTATION</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processing.html">Processing Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics Module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analysis Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">CONTACT</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../documentation.html">Documentation</a><ul>
+      <li>Previous: <a href="dynamics.html" title="previous chapter">Dynamics Module</a></li>
+      <li>Next: <a href="../contact.html" title="next chapter">Contact Us</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Amaral Lab.
+      
+      |
+      <a href="../_sources/modules/analysis.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

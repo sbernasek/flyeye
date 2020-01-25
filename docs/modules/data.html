@@ -1,0 +1,1091 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Data Module &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Processing Module" href="processing.html" />
+    <link rel="prev" title="Documentation" href="../documentation.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <img alt="nulogo" class="align-right" id="data" src="../_images/Northwestern_purple_RGB1.png" style="width: 30%;" />
+<div class="section" id="data-module">
+<h1>Data Module<a class="headerlink" href="#data-module" title="Permalink to this headline">¶</a></h1>
+<p><strong>FlyEye Analysis</strong> is built upon quantitative expression measurements read from <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files using the  <code class="docutils literal notranslate"><span class="pre">flyeye.data.silhouette</span></code> submodule. Each labeled cell measurement becomes a record in a <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">Pandas dataframe</a>.</p>
+<p>Cell measurement data are subject to three levels of organization:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">Cells</span></code> objects contain one or more expression level measurements</li>
+<li><code class="docutils literal notranslate"><span class="pre">Disc</span></code> objects contain all expression level measurements from a single <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file</li>
+<li><code class="docutils literal notranslate"><span class="pre">Experiment</span></code> objects contain multiple <code class="docutils literal notranslate"><span class="pre">Disc</span></code> instances collected under similar conditions</li>
+</ol>
+</div></blockquote>
+<p>The images contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files are managed separarely by the <code class="docutils literal notranslate"><span class="pre">flyeye.data.image</span></code> submodule.</p>
+<div class="section" id="silhouette">
+<h2>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this headline">¶</a></h2>
+<p>Interface for managing the <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype.</p>
+<span class="target" id="module-flyeye.data.silhouette"></span><dl class="class">
+<dt id="flyeye.data.silhouette.Silhouette">
+<em class="property">class </em><code class="descclassname">flyeye.data.silhouette.</code><code class="descname">Silhouette</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface to a FlyEye Silhouette file.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>path (str) - path to Silhouette file</p>
+<p>feed (dict) - feed file containing layer IDs</p>
+<p>feud (dict) - feud file containing cell type labels</p>
+</div></blockquote>
+<p>Properties:</p>
+<blockquote>
+<div><p>is_flipped_about_yz (bool) - if True, invert about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, invert about XY plane</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.flip_about_xy">
+<code class="descname">flip_about_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.flip_about_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.flip_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc vertically.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.flip_about_yz">
+<code class="descname">flip_about_yz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.flip_about_yz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.flip_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc horizontally.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.silhouette.Silhouette.is_flipped_about_xy">
+<code class="descname">is_flipped_about_xy</code><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.is_flipped_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean flag for flipping disc vertically.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.silhouette.Silhouette.is_flipped_about_yz">
+<code class="descname">is_flipped_about_yz</code><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.is_flipped_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean flag for flipping disc horizontally.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.load_orientation">
+<code class="descname">load_orientation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.load_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.load_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that feed file includes disc orientation. If it does not, as in older silhouette filetypes, the default orientation is preserved.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.read_json">
+<code class="descname">read_json</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.read_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.read_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read contents of specified JSON file.</p>
+<p>Args:</p>
+<blockquote>
+<div>filename (str) - filename</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>out (dict) - file contents</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_feed">
+<code class="descname">write_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of feed dictionary to silhouette file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_feud">
+<code class="descname">write_feud</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_feud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_feud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of feud dictionary to silhouette file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_json">
+<code class="descname">write_json</code><span class="sig-paren">(</span><em>filename</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write contents of &lt;data&gt; to specified JSON file.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>filename (str) - filename</p>
+<p>data (dict) - data contents</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.silhouette.SilhouetteData">
+<em class="property">class </em><code class="descclassname">flyeye.data.silhouette.</code><code class="descname">SilhouetteData</code><span class="sig-paren">(</span><em>path</em>, <em>recompile=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interface to data within a FlyEye Silhouette file.</p>
+<p>Upon instantiation, individual cell measurements are aggregated into a data.cells.Cells compatible DataFrame.</p>
+<p>Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.</p>
+<p>Attributes:</p>
+<blockquote>
+<div>df (pd.DataFrame) - cell measurement data</div></blockquote>
+<p>Inherited attributes:</p>
+<blockquote>
+<div><p>path (str) - path to Silhouette file</p>
+<p>feed (dict) - feed file containing layer IDs</p>
+<p>feud (dict) - feud file containing cell type labels</p>
+<p>is_flipped_about_yz (bool) - if True, invert about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, invert about XY plane</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.compile_measurements">
+<code class="descname">compile_measurements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.compile_measurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.compile_measurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile measurements from all layers (slow access).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.silhouette.SilhouetteData.labels">
+<code class="descname">labels</code><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>pd.Series of labels keyed by (layer_id, segment_id).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>recompile=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all contour and orientation data from silhouette file.</p>
+<p>Args:</p>
+<blockquote>
+<div>recompile (bool) - if True, recompile measurements from all layers</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.load_measurements">
+<code class="descname">load_measurements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.load_measurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.load_measurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load serialized measurements (fast access).</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.silhouette.SilhouetteData.parse_contour">
+<em class="property">static </em><code class="descname">parse_contour</code><span class="sig-paren">(</span><em>contour</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.parse_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.parse_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert contour to list format.</p>
+<p>Args:</p>
+<blockquote>
+<div>contour (dict) - contour from silhouette file</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ctr_list (list) - values in data.cells.Cells compatible list format</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.read_contours">
+<code class="descname">read_contours</code><span class="sig-paren">(</span><em>all_labels={}</em>, <em>include_unlabeled=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.read_contours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.read_contours" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read contours from silhouette file.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>all_labels (dict) - {layer_id: {contour_id: label}} for each layer</p>
+<p>include_unlabeled (bool) - if True, include unlabeled segments</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.read_labels">
+<code class="descname">read_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.read_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.read_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load segment labels from silhouette file.</p>
+<p>Returns:</p>
+<blockquote>
+<div>labels (dict) - {layer_id: {contour_id: label}} entries for each layer</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.SilhouetteData.save_measurements">
+<code class="descname">save_measurements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#SilhouetteData.save_measurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.SilhouetteData.save_measurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save serialized measurements for fast access.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="cells">
+<h2>Cells<a class="headerlink" href="#cells" title="Permalink to this headline">¶</a></h2>
+<p>Cells are a collection of one or more labeled expression measurements. Cells may be a subsample of a single Disc, or a combination of several discs.</p>
+<span class="target" id="module-flyeye.data.cells"></span><dl class="class">
+<dt id="flyeye.data.cells.CellProperties">
+<em class="property">class </em><code class="descclassname">flyeye.data.cells.</code><code class="descname">CellProperties</code><a class="reference internal" href="../_modules/flyeye/data/cells.html#CellProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.CellProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Properties of Cells object.</p>
+<dl class="attribute">
+<dt id="flyeye.data.cells.CellProperties.cell_types">
+<code class="descname">cell_types</code><a class="headerlink" href="#flyeye.data.cells.CellProperties.cell_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique cell types.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.cells.CellProperties.channels">
+<code class="descname">channels</code><a class="headerlink" href="#flyeye.data.cells.CellProperties.channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of unique fluorescence channels.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.cells.CellProperties.normalized_channels">
+<code class="descname">normalized_channels</code><a class="headerlink" href="#flyeye.data.cells.CellProperties.normalized_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of normalized channel names.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.cells.CellProperties.num_channels">
+<code class="descname">num_channels</code><a class="headerlink" href="#flyeye.data.cells.CellProperties.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of unique fluorescence channels.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.cells.Cells">
+<em class="property">class </em><code class="descclassname">flyeye.data.cells.</code><code class="descname">Cells</code><span class="sig-paren">(</span><em>df=None</em>, <em>normalization=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>df (pd.DataFrame) - cell measurement data</p>
+<p>normalization (str or int) - channel used to normalize intensities</p>
+</div></blockquote>
+<dl class="staticmethod">
+<dt id="flyeye.data.cells.Cells.annotate_fraction">
+<em class="property">static </em><code class="descname">annotate_fraction</code><span class="sig-paren">(</span><em>ax</em>, <em>ratio</em>, <em>p=2.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.annotate_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.annotate_fraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add fraction of cells above midline.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (mpl.axes.AxesSubplot)</p>
+<p>ratio (array like) - vector of ratios</p>
+<p>p (float) - text position relative to center line</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.apply_lag">
+<code class="descname">apply_lag</code><span class="sig-paren">(</span><em>lag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.apply_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.apply_lag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift cells in time.</p>
+<p>Args:</p>
+<blockquote>
+<div>lag (float) - shift (NOTE: x-positions are unaffected)</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.cells.Cells.get_binned_mean">
+<em class="property">static </em><code class="descname">get_binned_mean</code><span class="sig-paren">(</span><em>x</em>, <em>values</em>, <em>bins=None</em>, <em>bin_width=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.get_binned_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.get_binned_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bin cells and compute mean for each bin.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (pd.Series) - coordinate on which to bin values</p>
+<p>values (pd.Series) - values to be aggregated</p>
+<p>bins (np array) - edges for specified bins</p>
+<p>bin_width (float) - width of bins used if no bins specified</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div><p>bin_centers (np.ndarray) - bin centers</p>
+<p>means (np array) - mean value within each bin</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.get_nuclear_diameter">
+<code class="descname">get_nuclear_diameter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.get_nuclear_diameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.get_nuclear_diameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns median nuclear diameter. Diameters are approximated as that of a circle with equivalent area to each nuclear contour.</p>
+<p>Returns:</p>
+<blockquote>
+<div>nuclear_diameter (float) - median diameter</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.plot_dynamics">
+<code class="descname">plot_dynamics</code><span class="sig-paren">(</span><em>channel</em>, <em>ax=None</em>, <em>scatter=False</em>, <em>average=True</em>, <em>interval=False</em>, <em>marker_kw={}</em>, <em>line_kw={}</em>, <em>interval_kw={}</em>, <em>ma_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.plot_dynamics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.plot_dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot expression dynamics for specified channel.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>channel (str) - expression channel</p>
+<p>ax (mpl.axes.AxesSubplot) - if None, create axes</p>
+<p>scatter (bool) - if True, add markers for each measurement</p>
+<p>average (bool) - if True, add moving average</p>
+<p>interval - if True, add confidence interval for moving average</p>
+<p>marker_kw (dict) - keyword arguments for marker formatting</p>
+<p>line_kw (dict) - keyword arguments for line formatting</p>
+<p>interval_kw (dict) - keyword arguments for interval formatting</p>
+<p>ma_kw (dict) - keyword arguments for interval construction</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.plot_resampled_dynamics">
+<code class="descname">plot_resampled_dynamics</code><span class="sig-paren">(</span><em>channel</em>, <em>ax=None</em>, <em>average=True</em>, <em>interval=False</em>, <em>marker_kw={}</em>, <em>line_kw={}</em>, <em>interval_kw={}</em>, <em>resampling_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.plot_resampled_dynamics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.plot_resampled_dynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot expression dynamics for specified channel, resampling from discrete subpopulations of cells.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>channel (str) - expression channel</p>
+<p>ax (mpl.axes.AxesSubplot) - if None, create axes</p>
+<p>average (bool) - if True, add moving average</p>
+<p>interval - if True, add confidence interval for moving average</p>
+<p>line_kw (dict) - keyword arguments for line formatting</p>
+<p>interval_kw (dict) - keyword arguments for interval formatting</p>
+<p>resampling_kw (dict) - keyword arguments for disc resampler</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.plot_spectrogram">
+<code class="descname">plot_spectrogram</code><span class="sig-paren">(</span><em>channel</em>, <em>periods=None</em>, <em>ymax=None</em>, <em>ax=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.plot_spectrogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.plot_spectrogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Lomb Scargle periodogram.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>channel (str or int) - expression channel</p>
+<p>periods (array like) - spectral frequencies to be tested</p>
+<p>ymax (float) - max spectral power</p>
+<p>ax (mpl.axes.AxesSubplot)</p>
+<p>kwargs: spectrogram visualization keywords</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.scatterplot">
+<code class="descname">scatterplot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>color='grey'</em>, <em>s=5</em>, <em>alpha=0.5</em>, <em>fraction=False</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.scatterplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.scatterplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create XY scatterplot of two fluorescence channels.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x, y (str or int) - channels used for x and y axes</p>
+<p>color (str) - marker color</p>
+<p>s (float) - marker size</p>
+<p>alpha (float) - transparency of markers</p>
+<p>fraction (bool) - if True, annotate fraction above midline</p>
+<p>ax (mpl.axes.AxesSubplot) - if None, create figure</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (mpl.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.select_by_position">
+<code class="descname">select_by_position</code><span class="sig-paren">(</span><em>xmin=-inf</em>, <em>xmax=inf</em>, <em>ymin=-inf</em>, <em>ymax=inf</em>, <em>zmin=-inf</em>, <em>zmax=inf</em>, <em>tmin=-inf</em>, <em>tmax=inf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.select_by_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.select_by_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select subset of cells within specified spatial bounds.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>xmin, xmax (float) - x-coordinate bounds</p>
+<p>ymin, ymax (float) - y-coordinate bounds</p>
+<p>zmin, zmax (float) - z-coordinate (layer number) bounds</p>
+<p>tmin, tmax (float) - time interval bounds</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>cells (data.cells.Cells) - copied subset of cells</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.select_cell_type">
+<code class="descname">select_cell_type</code><span class="sig-paren">(</span><em>cell_types</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.select_cell_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.select_cell_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select subset of cells corresponding to a specified label.</p>
+<p>Args:</p>
+<blockquote>
+<div>cell_types (str or list) - type of cells to be selected (e.g. pre, r8)</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>cells (data.cells.Cells)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.cells.Cells.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>by='centroid_x'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort cell measurements in place.</p>
+<p>Args:</p>
+<blockquote>
+<div>by (str) - key on which measurements are sorted</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="flyeye.data.cells.format_channel">
+<code class="descclassname">flyeye.data.cells.</code><code class="descname">format_channel</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#format_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.format_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns string representation of &lt;channel&gt;.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="flyeye.data.cells.standardize_channels">
+<code class="descclassname">flyeye.data.cells.</code><code class="descname">standardize_channels</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#standardize_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.standardize_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standardize all channel names.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="discs">
+<h2>Discs<a class="headerlink" href="#discs" title="Permalink to this headline">¶</a></h2>
+<p>Discs are the set of cells that comprise an individual eye disc. This submodule contains all of the methods required to convert an individual disc’s cell measurements into developmental timepoints. Measurements are imported from <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files at this level.</p>
+<span class="target" id="module-flyeye.data.discs"></span><dl class="class">
+<dt id="flyeye.data.discs.Disc">
+<em class="property">class </em><code class="descclassname">flyeye.data.discs.</code><code class="descname">Disc</code><span class="sig-paren">(</span><em>silhouette</em>, <em>normalization=None</em>, <em>furrow_velocity=2.0</em>, <em>offset=None</em>, <em>bit_depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing all cells in a single eye disc.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>silhouette (flyeye.SilhouetteData) - data from silhouette file</p>
+<p>furrow_velocity (float) - furrow inverse-velocity (hours per column)</p>
+<p>offset (float) - time by which disc is shifted from first R8</p>
+<p>bit_depth (int) - fluorescence intensity bit depth, log2 scaled</p>
+<p>triangulation (processing.triangulation.Triangulation)</p>
+</div></blockquote>
+<p>Inherited Attributes:</p>
+<blockquote>
+<div><p>normalization (str or int) - channel used to normalize intensities</p>
+<p>df (pd.DataFrame) - cell measurement data</p>
+</div></blockquote>
+<p>Properties:</p>
+<blockquote>
+<div><p>path (str) - unique silhouette filepath</p>
+<p>is_flipped_about_yz (bool) - if True, disc is inverted about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, disc is inverted about XY plane</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.apply_lag">
+<code class="descname">apply_lag</code><span class="sig-paren">(</span><em>offset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.apply_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.apply_lag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift disc in time.</p>
+<p>Args:</p>
+<blockquote>
+<div>offset (str or float) - position of new origin, if ‘first_r8’ shift such that first R8 occurs at time zero</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.apply_time_scaling">
+<code class="descname">apply_time_scaling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.apply_time_scaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.apply_time_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply distance-to-time scaling to generate time vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.detrend">
+<code class="descname">detrend</code><span class="sig-paren">(</span><em>channels</em>, <em>order=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.detrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.detrend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add detrended fluctuations for each fluorescence channel within each cell type to disc dataframe.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>channels (iterable) - channels to be detrended</p>
+<p>order (int) - polyorder for local trendfitting</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.flip_about_xy">
+<code class="descname">flip_about_xy</code><span class="sig-paren">(</span><em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc bottom to top.</p>
+<p>Args:</p>
+<blockquote>
+<div>save (bool) - if True, save new orientation to silhouette file</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.flip_about_yz">
+<code class="descname">flip_about_yz</code><span class="sig-paren">(</span><em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_yz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc left to right.</p>
+<p>Args:</p>
+<blockquote>
+<div>save (bool) - if True, save new orientation to silhouette file</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.discs.Disc.from_silhouette">
+<em class="property">static </em><code class="descname">from_silhouette</code><span class="sig-paren">(</span><em>path</em>, <em>normalization=None</em>, <em>furrow_velocity=2.0</em>, <em>recompile=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.from_silhouette"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.from_silhouette" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate disc from silhouette file.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>path (str) - silhouette filepath</p>
+<p>normalization (str or int) - normalization channel</p>
+<p>furrow_velocity (float) - furrow inverse-velocity (hours per column)</p>
+<p>recompile (bool) - if True, recompile measurements from all layers</p>
+<p>kwargs: keyword arguments for disc instantiation</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>disc (data.discs.Disc)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.get_multipotent_layers">
+<code class="descname">get_multipotent_layers</code><span class="sig-paren">(</span><em>q=0.9</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.get_multipotent_layers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.get_multipotent_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine which layers span multipotent cells. Bounds correspond to lower and upper quantiles taken from a normal fit to all progenitor layers.</p>
+<p>Args:</p>
+<blockquote>
+<div>q (float) - width parameter (interquantile range), 0 to 1</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>bounds (np.ndarray, length 2) - lower and upper bounds</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.load_imagestack">
+<code class="descname">load_imagestack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.load_imagestack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.load_imagestack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load image stack from silhouette file.</p>
+<p>Returns:</p>
+<blockquote>
+<div>stack (data.image.ImageStack)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.normalize_by_reference">
+<code class="descname">normalize_by_reference</code><span class="sig-paren">(</span><em>reference</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.normalize_by_reference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.normalize_by_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize expression levels by the reference channel.</p>
+<p>Args:</p>
+<blockquote>
+<div>reference (str or int) - channel used for normalization</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.normalize_expression">
+<code class="descname">normalize_expression</code><span class="sig-paren">(</span><em>max_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.normalize_expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.normalize_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert each channel’s fluorescence to a 0-1 scale.</p>
+<p>Args:</p>
+<blockquote>
+<div>max_value (float) - maximum fluorescence intensity</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.set_ratio">
+<code class="descname">set_ratio</code><span class="sig-paren">(</span><em>num</em>, <em>den</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.set_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.set_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add fluorescence ratio to dataframe, defined by &lt;num&gt;/&lt;den&gt; channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.discs.Disc.standardize_labels">
+<code class="descname">standardize_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.standardize_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.standardize_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert all alternate precursor labels to ‘pre’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.discs.DiscProperties">
+<em class="property">class </em><code class="descclassname">flyeye.data.discs.</code><code class="descname">DiscProperties</code><a class="reference internal" href="../_modules/flyeye/data/discs.html#DiscProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.DiscProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Properties for Disc class.</p>
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.is_flipped_about_xy">
+<code class="descname">is_flipped_about_xy</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.is_flipped_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, disc is inverted about XY plane.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.is_flipped_about_yz">
+<code class="descname">is_flipped_about_yz</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.is_flipped_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, disc is inverted about YZ plane.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.path">
+<code class="descname">path</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to silhouette file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="experiments">
+<h2>Experiments<a class="headerlink" href="#experiments" title="Permalink to this headline">¶</a></h2>
+<p>An Experiment is a set of one or more Disc objects collected under the same experimental conditions. Measurements are often aggregated between discs and compared at this level.</p>
+<span class="target" id="module-flyeye.data.experiments"></span><dl class="class">
+<dt id="flyeye.data.experiments.Experiment">
+<em class="property">class </em><code class="descclassname">flyeye.data.experiments.</code><code class="descname">Experiment</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>auto_alignment=True</em>, <em>align_by='ch1_norm'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing multiple eye discs obtained under a single set of conditions.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>discs (dict) - {disc ID: data.discs.Disc} pairs</p>
+<p>num_discs (int) - number of discs within experiment</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.align_discs">
+<code class="descname">align_discs</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.align_discs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.align_discs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Align all discs within experiment.</p>
+<p>Args:</p>
+<blockquote>
+<div>channel (str) - expression channel by which discs are aligned</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.align_to_first_r8">
+<code class="descname">align_to_first_r8</code><span class="sig-paren">(</span><em>disc_id=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.align_to_first_r8"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.align_to_first_r8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift all discs s.t. t=0 is the first R8 in the reference disc.</p>
+<p>Args:</p>
+<blockquote>
+<div>disc_id (int) - index of disc used as reference</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.apply_lag">
+<code class="descname">apply_lag</code><span class="sig-paren">(</span><em>lag=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.apply_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.apply_lag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply time shift to all discs in experiment.</p>
+<p>Args:</p>
+<blockquote>
+<div>lag (float) - time shift applied to each disc</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.get_cells">
+<code class="descname">get_cells</code><span class="sig-paren">(</span><em>cell_type='pre'</em>, <em>**selection_kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return Cells object for all specified cells.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>cell_type (str or list) - type of cells to select</p>
+<p>selection_kw: keyword arguments for cell position selection</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>cells (data.cells.Cells)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.get_early_neuron_df">
+<code class="descname">get_early_neuron_df</code><span class="sig-paren">(</span><em>N=10</em>, <em>lower_slip=0</em>, <em>upper_slip=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_early_neuron_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_early_neuron_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile Dataframe of early R cells and concurrent progenitors.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>N (int) - number of reference cells defining time window</p>
+<p>lower_slip (float) - extension before first reference cell, hours</p>
+<p>upper_slip (int) - reference cells skipped (excludes outliers)</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>df (DataFrame) - measurement data for early R cells and concurrent progenitors</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.get_pairwise_alignment">
+<code class="descname">get_pairwise_alignment</code><span class="sig-paren">(</span><em>window_size=10</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_pairwise_alignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_pairwise_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute pairwise quality of alignment between each disc.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>window_size (int) - number of cells for smoothing</p>
+<p>kw: keyword arguments for DiscAlignment</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>scores (np.ndarray) - mean quality of alignment for each disc</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.get_spatial_correlations">
+<code class="descname">get_spatial_correlations</code><span class="sig-paren">(</span><em>channel</em>, <em>cell_type='pre'</em>, <em>y_only=False</em>, <em>discs_included='all'</em>, <em>**selection_kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_spatial_correlations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_spatial_correlations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile SpatialCorrelation instance for all specified cells.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>channel (str or int) - channel for which correlations are desired</p>
+<p>cell_type (str) - type of cells to select</p>
+<p>y_only (bool) - if True, only use y-component of data</p>
+<p>discs_included (list or str) - included discs, defaults to all</p>
+<p>selection_kw: keyword arguments for cell position selection</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>corr (analysis.correlation.SpatialCorrelation)</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.experiments.Experiment.load">
+<em class="property">static </em><code class="descname">load</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load discs from silhouette files.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>dirpath (str) - path to directory containing silhouette files</p>
+<p>normalization (str or int) - normalization channel</p>
+<p>kwargs: keyword arguments for disc instantiation</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>discs (dict) - {disc_id: data.discs.Disc} pairs</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.experiments.Experiment.num_discs">
+<code class="descname">num_discs</code><a class="headerlink" href="#flyeye.data.experiments.Experiment.num_discs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of discs in experiment.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.experiments.Experiment.num_progenitors">
+<code class="descname">num_progenitors</code><a class="headerlink" href="#flyeye.data.experiments.Experiment.num_progenitors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of progenitor measurements in experiment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.select_by_concurrency">
+<code class="descname">select_by_concurrency</code><span class="sig-paren">(</span><em>reference_types</em>, <em>N=10</em>, <em>lower_slip=0</em>, <em>upper_slip=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.select_by_concurrency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.select_by_concurrency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select cells concurrent with first N identified cells of reference cell type.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>reference_types (array like) - reference cell type(s)</p>
+<p>N (int) - number of reference cells defining time window</p>
+<p>lower_slip (float) - extension before first reference cell, hours</p>
+<p>upper_slip (int) - reference cells skipped (excludes outliers)</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>df (DataFrame) - cells concurrent with reference cell type</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.experiments.Experiment.set_ratio">
+<code class="descname">set_ratio</code><span class="sig-paren">(</span><em>num</em>, <em>den</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.set_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.set_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add fluorescence ratio to each disc’s dataframe, defined by &lt;num&gt;/&lt;den&gt; channels.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="image">
+<h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+<p>A submodule for managing, processing, and visualizing images contained in a <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file.</p>
+<span class="target" id="module-flyeye.data.image"></span><dl class="class">
+<dt id="flyeye.data.image.Image">
+<em class="property">class </em><code class="descclassname">flyeye.data.image.</code><code class="descname">Image</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object contains a floating point three channel image.</p>
+<p>Attributes:
+im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</p>
+<dl class="method">
+<dt id="flyeye.data.image.Image.build_colorfilter">
+<code class="descname">build_colorfilter</code><span class="sig-paren">(</span><em>scheme='rgb'</em>, <em>channels='rgb'</em>, <em>reference='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Image.build_colorfilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Image.build_colorfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build filter for converting between RGB and MG colorschemes.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>scheme (str) - colorscheme, ‘rgb’ or ‘mg’</p>
+<p>channels (str) - included channels, one or more of ‘rgbmg’</p>
+<p>reference (str) - reference channel (used for rgb to mg conversion)</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>colorfilter (np.ndarray[np.float32]) - multiplicative colorfilter</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.image.Image.from_tiff">
+<em class="property">static </em><code class="descname">from_tiff</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Image.from_tiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Image.from_tiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read image file using matplotlib.image.imread.</p>
+<p>All formats except PNG require pillow or PIL. PNG images are converted from 8-bit to floating point format by default, while other image formats must be manually converted.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>path (str) - image path</p>
+<p>kwargs: keyword arguments for Image instantiation</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>im (data.image.Image)</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.image.Image.load_image">
+<em class="property">static </em><code class="descname">load_image</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Image.load_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Image.load_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load image from &lt;path&gt;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.Image.render">
+<code class="descname">render</code><span class="sig-paren">(</span><em>ax=None</em>, <em>size=(2</em>, <em>2)</em>, <em>scheme='rgb'</em>, <em>channels='rgb'</em>, <em>reference='r'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Image.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Image.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render image.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>ax (matplotlib.axes.AxesSubplot) - if None, create figure</p>
+<p>size (tuple) - image size, used if no axis provided</p>
+<p>scheme (str) - colorscheme, ‘rgb’ or ‘mg’</p>
+<p>channels (str) - included channels, one or more of ‘rgbmg’</p>
+<p>reference (str) - reference channel (used for rgb to mg conversion)</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>ax (matplotlib.axes.AxesSubplot)</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.image.ImageStack">
+<em class="property">class </em><code class="descclassname">flyeye.data.image.</code><code class="descname">ImageStack</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ImageStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ImageStack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing a 3D stack of RGB image layers. Stack is compiled from sequentially numbered images of each layer within a silhouette file.</p>
+<p>Attributes:</p>
+<blockquote>
+<div>im (np.ndarray[float32]) - RGB pixel values. Array is shaped (N,X,Y,3) where N is the number of layers and (X,Y) are the dimensions of a single cross section.</div></blockquote>
+<dl class="staticmethod">
+<dt id="flyeye.data.image.ImageStack.from_silhouette">
+<em class="property">static </em><code class="descname">from_silhouette</code><span class="sig-paren">(</span><em>path</em>, <em>fmt='png'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ImageStack.from_silhouette"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ImageStack.from_silhouette" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load imagestack from sequentially numbered images of each layer.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>path (str) - path to silhouette file</p>
+<p>fmt (str) - image format for all layers</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>stack (data.image.ImageStack)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ImageStack.get_layer">
+<code class="descname">get_layer</code><span class="sig-paren">(</span><em>layer_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ImageStack.get_layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ImageStack.get_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return RGB image of individual layer.</p>
+<p>Args:</p>
+<blockquote>
+<div>layer_id (int) - layer number</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>image (data.image.Image)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ImageStack.project_max">
+<code class="descname">project_max</code><span class="sig-paren">(</span><em>min_layer=0</em>, <em>max_layer=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ImageStack.project_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ImageStack.project_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return maximum intensity projection across specified layers.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>min_layer (int) - lower layer bound</p>
+<p>max_layer (int) - upper layer bound</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>image (data.image.Image)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ImageStack.project_mean">
+<code class="descname">project_mean</code><span class="sig-paren">(</span><em>min_layer=0</em>, <em>max_layer=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ImageStack.project_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ImageStack.project_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return mean intensity projection across specified layers.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>min_layer (int) - lower layer bound</p>
+<p>max_layer (int) - upper layer bound</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>image (data.image.Image)</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.image.ScalarField">
+<em class="property">class </em><code class="descclassname">flyeye.data.image.</code><code class="descname">ScalarField</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object representing a floating-point 2D scalar field that can take on positive or negative values.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>im (np.ndarray[float32]) - scalar values, (X,Y)</p>
+<p>fig (matplotlib.figure.Figure) - image rendering</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.apply_filter">
+<code class="descname">apply_filter</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.apply_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.apply_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply filter to image.</p>
+<p>Args:</p>
+<blockquote>
+<div>func (function) - function operating on image array</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.fliplr">
+<code class="descname">fliplr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.fliplr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.fliplr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip image about Y axis.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.image.ScalarField.from_8bit">
+<em class="property">static </em><code class="descname">from_8bit</code><span class="sig-paren">(</span><em>im</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.from_8bit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.from_8bit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate from 8-bit image.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.get_crop_indices">
+<code class="descname">get_crop_indices</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.get_crop_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.get_crop_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute image index boundaries from fractional bounds.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.render">
+<code class="descname">render</code><span class="sig-paren">(</span><em>size=(2</em>, <em>2)</em>, <em>cmap=None</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render image.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>size (tuple) - figure size</p>
+<p>cmap (matplotlib.cm.ColorMap) - colormap, defaults to Greys</p>
+<p>vmin, vmax (float) - colorscale bounds</p>
+<p>ax (matplotlib.axes.AxesSubplot) - if None, create figure</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.rotate">
+<code class="descname">rotate</code><span class="sig-paren">(</span><em>angle</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply rotation to image.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>name</em>, <em>directory='./'</em>, <em>dpi=300</em>, <em>fmt='png'</em>, <em>transparent=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save rendered image.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>name (str) - file name</p>
+<p>directory (str) - target directory</p>
+<p>dpi (int) - resolution</p>
+<p>fmt (str) - image format</p>
+<p>transparent (bool) - if True, remove background</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.smooth">
+<code class="descname">smooth</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.smooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth image.</p>
+<p>kwargs: keyword arguments for smoothing operation</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.image.ScalarField.uint8_to_float32">
+<em class="property">static </em><code class="descname">uint8_to_float32</code><span class="sig-paren">(</span><em>im_uint8</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.uint8_to_float32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.uint8_to_float32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert 8-bit array to floating point values on a 0-1 interval.</p>
+<p>Args:</p>
+<blockquote>
+<div>im_uint8 (np.ndarray[uint8])</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>im_float32 (np.ndarray[float32])</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flyeye.data.image.Smoothing">
+<em class="property">class </em><code class="descclassname">flyeye.data.image.</code><code class="descname">Smoothing</code><span class="sig-paren">(</span><em>niters=3</em>, <em>size=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Smoothing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Smoothing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smoothing operation applied to images.</p>
+<p>Default behavior entails three iterations of grey closing followed by a 3-pixel wide median filter.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>niters (int) - number of grey closing iterations</p>
+<p>size (int) - pixel size of median filter in XY dimensions</p>
+</div></blockquote>
+<dl class="staticmethod">
+<dt id="flyeye.data.image.Smoothing.grey_closing">
+<em class="property">static </em><code class="descname">grey_closing</code><span class="sig-paren">(</span><em>im</em>, <em>niters=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Smoothing.grey_closing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Smoothing.grey_closing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply grey closing operation to image.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.</p>
+<p>niters (int) - number of grey closing iterations</p>
+</div></blockquote>
+<p>Returns</p>
+<blockquote>
+<div>im (np.ndarray(np.float32))</div></blockquote>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="flyeye.data.image.Smoothing.median_filter">
+<em class="property">static </em><code class="descname">median_filter</code><span class="sig-paren">(</span><em>im</em>, <em>size=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#Smoothing.median_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.Smoothing.median_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply grey closing operation to image.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>im (np.ndarray(np.float32)) - pixel values. Shape may be (X,Y), (X,Y,3), or (N,X,Y,3) depending on image type.</p>
+<p>size (int) - pixel size of median filter in XY dimensions</p>
+</div></blockquote>
+<p>Returns</p>
+<blockquote>
+<div>im (np.ndarray(np.float32))</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/img/analysis_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../documentation.html">DOCUMENTATION</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processing.html">Processing Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamics.html">Dynamics Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contact.html">CONTACT</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../documentation.html">Documentation</a><ul>
+      <li>Previous: <a href="../documentation.html" title="previous chapter">Documentation</a></li>
+      <li>Next: <a href="processing.html" title="next chapter">Processing Module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Amaral Lab.
+      
+      |
+      <a href="../_sources/modules/data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
