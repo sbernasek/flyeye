@@ -1,0 +1,515 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>flyeye.dynamics.visualization &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.dynamics.visualization</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">.averages</span> <span class="k">import</span> <span class="n">savgol</span><span class="p">,</span> <span class="n">get_rolling_mean</span><span class="p">,</span> <span class="n">get_rolling_mean_interval</span>
+
+
+<div class="viewcode-block" id="plot_mean"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.plot_mean">[docs]</a><span class="k">def</span> <span class="nf">plot_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+              <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;sliding&#39;</span><span class="p">,</span>
+              <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+              <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+              <span class="n">line_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+              <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+              <span class="n">line_alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+              <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+              <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot moving average.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        x, y (array like) - timeseries data</span>
+
+<span class="sd">        ax (matplotlib.axes.AxesSubplot) - axis which to which line is added</span>
+
+<span class="sd">        label (str) - data label</span>
+
+<span class="sd">        ma_type (str) - type of average used, either sliding, binned, or savgol</span>
+
+<span class="sd">        window_size (int) - size of window</span>
+
+<span class="sd">        resolution (int) - sampling interval</span>
+
+<span class="sd">        line_color, line_width, line_alpha, linestyle - formatting parameters</span>
+
+<span class="sd">        smooth (bool) - if True, apply secondary savgol filter</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        line (matplotlib.lines.Line2D)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get moving average (skip first point to avoid outliers)</span>
+    <span class="k">if</span> <span class="n">ma_type</span> <span class="o">==</span> <span class="s1">&#39;savgol&#39;</span><span class="p">:</span>
+        <span class="n">x_av</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">y_av</span> <span class="o">=</span> <span class="n">savgol</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">polyorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ma_type</span> <span class="o">==</span> <span class="s1">&#39;binned&#39;</span><span class="p">:</span>
+            <span class="n">resolution</span> <span class="o">=</span> <span class="n">window_size</span>
+        <span class="n">x_av</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="n">y_av</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+
+    <span class="c1"># get line and dashstyles</span>
+    <span class="k">if</span> <span class="n">linestyle</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;solid&#39;</span>
+    <span class="n">dashstyles</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;solid&#39;</span><span class="p">:</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;dashed&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)}</span>
+    <span class="n">dashstyle</span> <span class="o">=</span> <span class="n">dashstyles</span><span class="p">[</span><span class="n">linestyle</span><span class="p">]</span>
+
+    <span class="c1"># apply secondary smoothing (for visualization)</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">sw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sw</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">y_av</span> <span class="o">=</span> <span class="n">savgol</span><span class="p">(</span><span class="n">y_av</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">sw</span><span class="p">,</span> <span class="n">polyorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># plot line</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_av</span><span class="p">,</span> <span class="n">y_av</span><span class="p">,</span>
+                   <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="n">dashstyle</span><span class="p">,</span>
+                   <span class="n">lw</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">line_alpha</span><span class="p">,</span>
+                   <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">line</span></div>
+
+
+<div class="viewcode-block" id="plot_mean_interval"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.plot_mean_interval">[docs]</a><span class="k">def</span> <span class="nf">plot_mean_interval</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                       <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;sliding&#39;</span><span class="p">,</span>
+                       <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">resolution</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                       <span class="n">nbootstraps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                       <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+                       <span class="n">error_bars</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">lw</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds confidence interval for line average (sliding window or binned) to existing axes.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        x, y (array like) - data</span>
+
+<span class="sd">        ax (axes) - axis which to which line is added</span>
+
+<span class="sd">        ma_type (str) - type of average used, either &#39;sliding&#39; or &#39;binned&#39;</span>
+
+<span class="sd">        window_size (int) - size of sliding window or bin (num of cells)</span>
+
+<span class="sd">        interval_resolution (int) - sampling resolution for confidence interval</span>
+
+<span class="sd">        nbootstraps (int) - number of bootstraps</span>
+
+<span class="sd">        confidence (float) - confidence interval, between 0 and 100</span>
+
+<span class="sd">        color, alpha - formatting parameters</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">ma_type</span> <span class="o">==</span> <span class="s1">&#39;binned&#39;</span><span class="p">:</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">window_size</span>
+    <span class="n">x_av</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="n">y_av</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">get_rolling_mean_interval</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">nbootstraps</span><span class="o">=</span><span class="n">nbootstraps</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">)</span>
+    <span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span> <span class="o">=</span> <span class="n">interval</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_av</span><span class="p">,</span> <span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">lw</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">error_bars</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">x_av</span><span class="p">,</span> <span class="n">y_av</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="p">[</span><span class="n">y_av</span><span class="o">-</span><span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span><span class="o">-</span><span class="n">y_av</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeseriesPlot"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot">[docs]</a><span class="k">class</span> <span class="nc">TimeseriesPlot</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object describes a 1D timeseries.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        x (np.ndarray) - independent variable</span>
+
+<span class="sd">        y (np.ndarray) - dependent variable</span>
+
+<span class="sd">        ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate a 1D timeseries.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            x (np.ndarray) - independent variable</span>
+
+<span class="sd">            y (np.ndarray) - dependent variable</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="c1"># set axis</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_figure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+
+<div class="viewcode-block" id="TimeseriesPlot.create_figure"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.create_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Instantiate figure. &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;expression (a.u.)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ax</span></div>
+
+<div class="viewcode-block" id="TimeseriesPlot.scatter"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.scatter">[docs]</a>    <span class="k">def</span> <span class="nf">scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                 <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">rasterized</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scatterplot markers for x and y data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            color (str) - marker color</span>
+
+<span class="sd">            alpha (float) - marker alpha</span>
+
+<span class="sd">            s (float) - marker size</span>
+
+<span class="sd">            rasterized (bool) - if True, rasterize markers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">marker_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="n">rasterized</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">marker_kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TimeseriesPlot.average"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.average">[docs]</a>    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;savgol&#39;</span><span class="p">,</span>
+            <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">addtl</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot moving average of x and y data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            ma_type (str) - type of average, &#39;savgol&#39;, &#39;sliding&#39;, or &#39;binned&#39;</span>
+
+<span class="sd">            window_size (int) - size of sliding window or bin (num of cells)</span>
+
+<span class="sd">            resolution (int) - sampling resolution for confidence interval</span>
+
+<span class="sd">            smooth (bool) - if True, apply secondary savgol filter</span>
+
+<span class="sd">            color, alpha, lw, linestyle - formatting parameters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ma_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ma_type</span><span class="o">=</span><span class="n">ma_type</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">line_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">line_alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">window_size</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">plot_mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TimeseriesPlot.interval"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.interval">[docs]</a>    <span class="k">def</span> <span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;sliding&#39;</span><span class="p">,</span>
+            <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+            <span class="n">nbootstraps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+            <span class="n">confidence</span><span class="o">=</span><span class="mi">95</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">additional</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot confidence interval for moving average of x and y data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            ma_type (str) - type of moving average, &#39;sliding&#39; or &#39;binned&#39;</span>
+
+<span class="sd">            window_size (int) - size of sliding window or bin (num of cells)</span>
+
+<span class="sd">            resolution (int) - sampling resolution for confidence interval</span>
+
+<span class="sd">            nbootstraps (int) - number of bootstraps</span>
+
+<span class="sd">            confidence (float) - confidence interval, between 0 and 100</span>
+
+<span class="sd">            color, alpha - formatting parameters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># define moving average keyword arguments</span>
+        <span class="n">ma_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ma_type</span><span class="o">=</span><span class="n">ma_type</span><span class="p">,</span>
+                     <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span>
+                     <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+                     <span class="n">nbootstraps</span><span class="o">=</span><span class="n">nbootstraps</span><span class="p">,</span>
+                     <span class="n">confidence</span><span class="o">=</span><span class="n">confidence</span><span class="p">)</span>
+
+        <span class="c1"># define interval shading keyword arguments</span>
+        <span class="n">shade_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="c1"># plot confidence interval</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">window_size</span><span class="p">:</span>
+            <span class="n">plot_mean_interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                                  <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">shade_kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TimeseriesPlot.plot"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">scatter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">interval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">marker_kw</span><span class="o">=</span><span class="p">{},</span>
+             <span class="n">line_kw</span><span class="o">=</span><span class="p">{},</span>
+             <span class="n">interval_kw</span><span class="o">=</span><span class="p">{},</span>
+             <span class="n">ma_kw</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot timeseries data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            scatter (bool) - if True, add datapoints</span>
+
+<span class="sd">            average (bool) - if True, add moving average</span>
+
+<span class="sd">            interval (bool) - if True, add moving average interval</span>
+
+<span class="sd">            marker_kw (dict) - keyword arguments for marker formatting</span>
+
+<span class="sd">            line_kw (dict) - keyword arguments for line formatting</span>
+
+<span class="sd">            interval_kw (dict) - keyword arguments for interval formatting</span>
+
+<span class="sd">            ma_kw (dict) - keyword arguments for moving average</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># add scattered data</span>
+        <span class="k">if</span> <span class="n">scatter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">**</span><span class="n">marker_kw</span><span class="p">)</span>
+
+        <span class="c1"># add moving average</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span>
+
+        <span class="c1"># add confidence interval for moving average</span>
+        <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">interval_kw</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="IntervalPlot"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.IntervalPlot">[docs]</a><span class="k">class</span> <span class="nc">IntervalPlot</span><span class="p">(</span><span class="n">TimeseriesPlot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object describes the 95% confidence interval for a 1D timeseries.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        x (np.ndarray) - independent variable</span>
+
+<span class="sd">        y_lower (np.ndarray) - lower bound for dependent variable</span>
+
+<span class="sd">        y_upper (np.ndarray) - upper bound for dependence variable</span>
+
+<span class="sd">        y (np.ndarray) - mean or median value for dependent variable</span>
+
+<span class="sd">        ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate a 1D timeseries.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            x (np.ndarray) - independent variable</span>
+
+<span class="sd">            y_lower (np.ndarray) - lower bound for dependent variable</span>
+
+<span class="sd">            y_upper (np.ndarray) - upper bound for dependence variable</span>
+
+<span class="sd">            y (np.ndarray) - median value for dependent variable</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_lower</span> <span class="o">=</span> <span class="n">y_lower</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_upper</span> <span class="o">=</span> <span class="n">y_upper</span>
+
+        <span class="c1"># set axis</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_figure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+
+<div class="viewcode-block" id="IntervalPlot.average"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.IntervalPlot.average">[docs]</a>    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">addtl</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot moving average of x and y data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            smooth (bool) - if True, apply first-order savgol filter</span>
+
+<span class="sd">            color, alpha, lw, linestyle - formatting parameters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntervalPlot.interval"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.IntervalPlot.interval">[docs]</a>    <span class="k">def</span> <span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">additional</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot confidence interval for moving average of x and y data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            color, alpha - formatting parameters</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shade_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_lower</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_upper</span><span class="p">,</span> <span class="o">**</span><span class="n">shade_kw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntervalPlot.plot"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.IntervalPlot.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">interval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">line_kw</span><span class="o">=</span><span class="p">{},</span>
+             <span class="n">interval_kw</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot timeseries data.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            average (bool) - if True, add moving average</span>
+
+<span class="sd">            interval (bool) - if True, add moving average interval</span>
+
+<span class="sd">            line_kw (dict) - keyword arguments for line formatting</span>
+
+<span class="sd">            interval_kw (dict) - keyword arguments for interval formatting</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># add moving average</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="o">**</span><span class="n">line_kw</span><span class="p">)</span>
+
+        <span class="c1"># add confidence interval for moving average</span>
+        <span class="k">if</span> <span class="n">interval</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="o">**</span><span class="n">interval_kw</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/img/analysis_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Amaral Lab.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
