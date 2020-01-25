@@ -33,6 +33,6 @@ Check out our `tutorial <https://sebastianbernasek.github.io/flyeye/start.html>`
 
    INSTALLATION <installation>
    GETTING STARTED <start>
-   DOCUMENTATION <documentation>
    EXAMPLE USAGE <usage>
+   DOCUMENTATION <documentation>
    CONTACT <contact>

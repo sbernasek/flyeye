@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting Started &#8212; analysis v0.1-beta documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example Usage" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" />
+<div class="section" id="getting-started">
+<span id="start"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>The fastest way to gain familiarity with <strong>FlyEye Analysis</strong> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
+<p>We recommend reading the sections below before working with your own microscopy data.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The initial release of <strong>NU FlyEye Silhouette</strong> only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.</p>
+</div>
+<div class="section" id="data-format">
+<h2>Data Format<a class="headerlink" href="#data-format" title="Permalink to this headline">¶</a></h2>
+<p><strong>FlyEye Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the <strong>FlyEye Silhouette</strong> documentation for tips on generating <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files from your microscopy data.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype includes reporter level measurements and an image for each layer in a 3D image stack. A single file containing all measurement annotations is also included. The contents are structured as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
+├── feud.json        <span class="c1"># image stack metadata</span>
+├── feed.json        <span class="c1"># measurement annotations</span>
+├── <span class="m">0</span>.json           <span class="c1"># reporter level measurements for first layer</span>
+├── <span class="m">0</span>.png            <span class="c1"># image of first layer</span>
+<span class="p">|</span>
+├── ... N.json       <span class="c1"># reporter level measurements for Nth layer</span>
+└── ... N.png        <span class="c1"># image of Nth layer</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.json</span></code> file contains all reporter levels measured during segmentation of the corresponding layer. Measured reporter levels reflect the mean pixel intensity within each nuclear contour, evaluated across all reporter wavelengths. These values are raw measurements; all subsequent normalization and processing by <strong>FlyEye Analysis</strong> are performed in local memory.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">feud.json</span></code> file contains all user-assigned contour labels. <strong>FlyEye Analysis</strong> automatically pairs measurements with their corresponding labels upon import of a <code class="docutils literal notranslate"><span class="pre">.sihouette</span></code> file. Unlabeled contours are ignored.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;layer_number&gt;.png</span></code> images are compressed versions of the original microscopy. They provide a visual representation of the original images, but they are not suitable for expression quantification.</p>
+<dl class="docutils">
+<dt>Each <code class="docutils literal notranslate"><span class="pre">.sihouette</span></code> file must adhere to some basic requirements before using FlyEye Analysis:</dt>
+<dd><ul class="first last simple">
+<li>R8 cells must be fully annotated within a locally contiguous region. <a class="footnote-reference" href="#id2" id="id1">[*]</a></li>
+<li>R8 cells must be labeled ‘r8’ or ‘R8’.</li>
+<li>Only one contour should be labeled per cell that appears in the 3-D image stack.</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[*]</a></td><td>Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-management">
+<h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
+<p><strong>FlyEye Analysis</strong> offers three levels of organization for accessing measurement data. At the highest level, measurements are combined between eye discs collected under similar experimental conditions. We recommend organizing your <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files in an equivalent manner by creating a separate directory for each experiment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data
+├── experiment_A
+<span class="p">|</span>   ├── eye0.silhouette
+<span class="p">|</span>   <span class="p">|</span>
+<span class="p">|</span>   └── ... eyeN.silhouette
+<span class="p">|</span>
+└── ... experiment_Z
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-data">
+<h2>Loading Data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h2>
+<p>Measurement data must be loaded as <code class="docutils literal notranslate"><span class="pre">data.discs.Disc</span></code> instances prior to analysis. Several important operations are automatically triggered upon instantiation of a <code class="docutils literal notranslate"><span class="pre">Disc</span></code>:</p>
+<ol class="arabic simple">
+<li>Each cell is assigned a developmental age based on its proximity to the furrow</li>
+<li>Expression levels are normalized against the level of the reporter used to mark cell nuclei</li>
+<li>The expression ratio between the two remaining reporters is evaluated</li>
+<li>Moving average expression trends are evaluated for each labeled cell type</li>
+</ol>
+<p>These operations are governed by a handful of user-specified parameters such as furrow velocity and the reporter color used to mark cell nuclei. These parameters must be specified in accordance with your particular dataset.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><strong>FlyEye Analysis</strong> assumes that one of the three available reporter colors was reserved for a nuclear marker. The expression ratio assigned to each cell is evaluated using the two remaining reporter colors.</p>
+</div>
+<p>To load an individual <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">Disc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_to_disc</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A/eye0.silhouette&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">disc</span> <span class="o">=</span> <span class="n">Disc</span><span class="o">.</span><span class="n">from_silhouette</span><span class="p">(</span><span class="n">path_to_disc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, the <code class="docutils literal notranslate"><span class="pre">experiments.Experiment</span></code> constructor will automatically load and combine all discs within a specified directory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flyeye.data</span> <span class="kn">import</span> <span class="n">Experiment</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_to_experiment</span> <span class="o">=</span> <span class="s1">&#39;./data/experiment_A&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">path_to_experiment</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Your data are now ready for analysis!</strong></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/img/analysis_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">INSTALLATION</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GETTING STARTED</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-format">Data Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-management">Data Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-data">Loading Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">CONTACT</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="usage.html" title="next chapter">Example Usage</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Sebastian Bernasek.
+      
+      |
+      <a href="_sources/start.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

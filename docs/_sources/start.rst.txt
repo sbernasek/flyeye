@@ -13,7 +13,7 @@ The fastest way to gain familiarity with **FlyEye Analysis** is to start with a 
 We recommend reading the sections below before working with your own microscopy data.
 
 .. Note::
-   The initial release of the **NU FlyEye** platform only supports three-channel RGB microscopy data. The available reporter colors are thus nominally limited to red, green, and blue. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation via **FlyEye Silhouette**. This leaves at most two reporter colors available for measuring target gene expression in any one experiment.
+   The initial release of **NU FlyEye Silhouette** only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.
 
 
 Data Format
@@ -26,7 +26,7 @@ The ``.silhouette`` filetype includes reporter level measurements and an image f
 .. code-block:: bash
 
    example.silhouette
-   ├── feud.json        # stack metadata
+   ├── feud.json        # image stack metadata
    ├── feed.json        # measurement annotations
    ├── 0.json           # reporter level measurements for first layer
    ├── 0.png            # image of first layer
@@ -38,27 +38,20 @@ Each ``<layer_number>.json`` file contains all reporter levels measured during s
 
 The ``feud.json`` file contains all user-assigned contour labels. **FlyEye Analysis** automatically pairs measurements with their corresponding labels upon import of a ``.sihouette`` file. Unlabeled contours are ignored.
 
-The ``<layer_number>.png`` images are compressed versions of the original microscopy. They provide a clear visual representation of the original images, but they are not suitable for expression quantification.
+The ``<layer_number>.png`` images are compressed versions of the original microscopy. They provide a visual representation of the original images, but they are not suitable for expression quantification.
 
-
-.. warning::
-
+Each ``.sihouette`` file must adhere to some basic requirements before using FlyEye Analysis:
  - R8 cells must be fully annotated within a locally contiguous region. [*]_
- - Only one contour should be labeled per cell that appears in the 3-D image stack.
- - Progenitors must be labeled 'p' or 'pre'. [*]_
  - R8 cells must be labeled 'r8' or 'R8'.
-
+ - Only one contour should be labeled per cell that appears in the 3-D image stack.
 
 .. [*] Timeseries construction relies upon regularly spaced R8 measurements. This requirement may be relaxed if estimated developmental times are ignored.
-
-.. [*] Custom labels for cell types other than progenitors and R8 cells are possible without any modification of the :ref:`flyeye.data <data>` source code.
-
 
 
 Data Management
 ---------------
 
-**FlyEye Analysis** offers three levels of organization for managing cell measurement data. At the highest level, measurements are combined between eye discs collected under similar experimental conditions. We recommend organizing your ``.silhouette`` files in an equivalent manner by creating a separate directory for each experiment:
+**FlyEye Analysis** offers three levels of organization for accessing measurement data. At the highest level, measurements are combined between eye discs collected under similar experimental conditions. We recommend organizing your ``.silhouette`` files in an equivalent manner by creating a separate directory for each experiment:
 
 .. code-block:: bash
 
@@ -91,18 +84,18 @@ To load an individual ``.silhouette`` file:
 
 .. code-block:: python
 
-   >>> from flyeye.data import discs
+   >>> from flyeye.data import Disc
    >>> path_to_disc = './data/experiment_A/eye0.silhouette'
-   >>> disc = discs.Disc.from_silhouette(path_to_disc)
+   >>> disc = Disc.from_silhouette(path_to_disc)
 
 
 Alternatively, the ``experiments.Experiment`` constructor will automatically load and combine all discs within a specified directory:
 
 .. code-block:: python
 
-   >>> from flyeye.data import experiments
+   >>> from flyeye.data import Experiment
    >>> path_to_experiment = './data/experiment_A'
-   >>> experiment = experiments.Experiment(path_to_experiment)
+   >>> experiment = Experiment(path_to_experiment)
 
 
 **Your data are now ready for analysis!**
