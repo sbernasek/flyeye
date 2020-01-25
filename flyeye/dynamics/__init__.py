@@ -1,1 +1,1 @@
-from .averages import plot_mean, plot_mean_interval
+from .visualization import plot_mean, plot_mean_interval

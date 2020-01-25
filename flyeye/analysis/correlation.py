@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import binned_statistic
 import matplotlib.pyplot as plt
 
-from ..dynamics.averages import plot_mean, plot_mean_interval
+from ..dynamics.visualization import plot_mean, plot_mean_interval
 
 
 class CorrelationData:

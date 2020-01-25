@@ -5,7 +5,8 @@ import matplotlib.cm as cmaps
 from matplotlib import colors
 import matplotlib.gridspec as gs
 
-from ..dynamics.averages import get_rolling_mean, plot_mean
+from ..dynamics.averages import get_rolling_mean
+from ..dynamics.visualization import plot_mean
 
 
 class Triangulation:

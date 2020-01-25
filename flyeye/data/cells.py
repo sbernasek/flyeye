@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import re
 
-from ..dynamics.timeseries import TimeseriesPlot, IntervalPlot
+from ..dynamics.visualization import TimeseriesPlot, IntervalPlot
 from ..dynamics.resampling import DiscResampler
 
 
