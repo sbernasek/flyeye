@@ -12,20 +12,20 @@ FlyEye Analysis
    :align: center
    :alt: header
 
-**FlyEye Analysis** is part of the **NU FlyEye** platform for studying gene expression in the developing fruit fly eye. The analysis package provides methods for analyzing expression data measured in vivo using **FlyEye Silhouette**.
+**FlyEye Analysis** is part of the **NU FlyEye** platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using **FlyEye Silhouette**.
 
+Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 
-Given one or more ``.silhouette`` files, the package enables:
+   - **Dynamic Measurements.** Infer expression dynamics from static data
 
-   - **Dynamic Measurements.** Infer dynamics from static expression data
+   - **Data Querying.** Select cells by developmental age and cell type
 
-   - **Data Management.** Query cells by developmental age and cell type
-
-   - **Timeseries Analysis.** Analyze and visualize expression dynamics
+   - **Dynamic Analysis.** Analyze and visualize expression dynamics
 
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
-The initial release is limited to basic tools required to replicate `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during retinal patterning in *Drosophila*. We intend to expand this functionality in later releases.
+
+Please refer to the [documentation](https://sebastianbernasek.github.io/flyeye/index.html#) page for tips on getting started with analyzing your data.
 
 
 .. toctree::
