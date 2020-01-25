@@ -7,20 +7,16 @@
 Installation
 ============
 
-The simplest method is to install via ``pip``:
+The simplest method is to install via PyPi:
 
 .. code-block:: bash
 
    pip install flyeye
 
 
-Dependencies
-------------
+Dependencies:
 
  - Python 3.6+
-
-Required:
-
  - `Scipy <https://www.scipy.org/>`_
  - `Pandas <https://pandas.pydata.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_

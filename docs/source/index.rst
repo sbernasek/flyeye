@@ -12,7 +12,7 @@ FlyEye Analysis
    :align: center
    :alt: header
 
-**FlyEye Analysis** is part of the **NU FlyEye** platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using **FlyEye Silhouette**.
+**FlyEye Analysis** is part of the NU FlyEye platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using FlyEye Silhouette.
 
 Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 
@@ -24,8 +24,11 @@ Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
+Check out our `tutorial <https://sebastianbernasek.github.io/flyeye/start.html>`_ for tips on getting started with analyzing your own microscopy data. But first, you'll need to install the package using ``pip``!
 
-Please refer to the [documentation](https://sebastianbernasek.github.io/flyeye/index.html#) page for tips on getting started with analyzing your data.
+.. code-block:: bash
+
+   pip install flyeye
 
 
 .. toctree::
