@@ -21,17 +21,16 @@ To load an individual eye disc:
 
 .. code-block:: python
 
-   >>> from flyeye.data import discs
-   >>> disc = discs.Disc.from_silhouette(path_to_silhouette_file)
+   >>> from flyeye.data import Disc
+   >>> disc = Disc.from_silhouette(path_to_silhouette_file)
 
 
 To load an entire experiment:
 
 .. code-block:: python
 
-   >>> from flyeye.data import experiments
-   >>> experiment = experiments.Experiment(path_to_experiment)
-
+   >>> from flyeye.data import Experiment
+   >>> experiment = Experiment(path_to_experiment)
 
 
 
@@ -67,7 +66,7 @@ Plot expression dynamics:
 
 .. code-block:: python
 
-   >>> reporter_channel = 'green'
+   >>> reporter_channel = 'ch0'
    >>> cells.plot_dynamics(reporter_channel)
 
 
@@ -75,7 +74,7 @@ Plot expression heterogeneity dynamics:
 
 .. code-block:: python
 
-   >>> reporter_channel = 'green'
+   >>> reporter_channel = 'ch0'
    >>> fluctuations_channel = reporter_channel + '_flux'
    >>> cells.plot_dynamics(fluctuations_channel)
 
@@ -83,4 +82,4 @@ Plot expression heterogeneity dynamics:
 Additional Examples
 -------------------
 
-For detailed usage examples, please refer to the `code <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ used to generate the figures in our manuscript.
+For additional usage examples, please refer to our `study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during photoreceptor specification.
