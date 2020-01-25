@@ -60,10 +60,39 @@
 <p>feed (dict) - feed file containing layer IDs</p>
 <p>feud (dict) - feud file containing cell type labels</p>
 </div></blockquote>
+<p>Properties:</p>
+<blockquote>
+<div><p>is_flipped_about_yz (bool) - if True, invert about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, invert about XY plane</p>
+</div></blockquote>
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.flip_about_xy">
+<code class="descname">flip_about_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.flip_about_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.flip_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc vertically.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.flip_about_yz">
+<code class="descname">flip_about_yz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.flip_about_yz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.flip_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip disc horizontally.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.silhouette.Silhouette.is_flipped_about_xy">
+<code class="descname">is_flipped_about_xy</code><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.is_flipped_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean flag for flipping disc vertically.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.silhouette.Silhouette.is_flipped_about_yz">
+<code class="descname">is_flipped_about_yz</code><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.is_flipped_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean flag for flipping disc horizontally.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="flyeye.data.silhouette.Silhouette.load_orientation">
 <code class="descname">load_orientation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.load_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.load_orientation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load suggested disc orientation from feed file.</p>
+<dd><p>Ensure that feed file includes disc orientation. If it does not, as in older silhouette filetypes, the default orientation is preserved.</p>
 </dd></dl>
 
 <dl class="method">
@@ -78,6 +107,29 @@
 <div>out (dict) - file contents</div></blockquote>
 </dd></dl>
 
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_feed">
+<code class="descname">write_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of feed dictionary to silhouette file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_feud">
+<code class="descname">write_feud</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_feud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_feud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes contents of feud dictionary to silhouette file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.silhouette.Silhouette.write_json">
+<code class="descname">write_json</code><span class="sig-paren">(</span><em>filename</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/silhouette.html#Silhouette.write_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.silhouette.Silhouette.write_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write contents of &lt;data&gt; to specified JSON file.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>filename (str) - filename</p>
+<p>data (dict) - data contents</p>
+</div></blockquote>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -88,15 +140,14 @@
 <p>Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.</p>
 <p>Attributes:</p>
 <blockquote>
-<div><p>df (pd.DataFrame) - cell measurement data</p>
-<p>flip_about_yz (bool) - if True, invert about YZ plane</p>
-<p>flip_about_xy (bool) - if True, invert about XY plane</p>
-</div></blockquote>
+<div>df (pd.DataFrame) - cell measurement data</div></blockquote>
 <p>Inherited attributes:</p>
 <blockquote>
 <div><p>path (str) - path to Silhouette file</p>
 <p>feed (dict) - feed file containing layer IDs</p>
 <p>feud (dict) - feud file containing cell type labels</p>
+<p>is_flipped_about_yz (bool) - if True, invert about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, invert about XY plane</p>
 </div></blockquote>
 <dl class="method">
 <dt id="flyeye.data.silhouette.SilhouetteData.compile_measurements">
@@ -208,7 +259,9 @@
 <dd><p>Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.</p>
 <p>Attributes:</p>
 <blockquote>
-<div>df (pd.DataFrame) - cell measurement data</div></blockquote>
+<div><p>df (pd.DataFrame) - cell measurement data</p>
+<p>normalization (str or int) - channel used to normalize intensities</p>
+</div></blockquote>
 <dl class="staticmethod">
 <dt id="flyeye.data.cells.Cells.annotate_fraction">
 <em class="property">static </em><code class="descname">annotate_fraction</code><span class="sig-paren">(</span><em>ax</em>, <em>ratio</em>, <em>p=2.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells.annotate_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells.annotate_fraction" title="Permalink to this definition">¶</a></dt>
@@ -377,22 +430,39 @@
 <dd><p>Returns string representation of &lt;channel&gt;.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="flyeye.data.cells.standardize_channels">
+<code class="descclassname">flyeye.data.cells.</code><code class="descname">standardize_channels</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#standardize_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.standardize_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standardize all channel names.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="discs">
 <h2>Discs<a class="headerlink" href="#discs" title="Permalink to this headline">¶</a></h2>
 <p>Discs are the set of cells that comprise an individual eye disc. This submodule contains all of the methods required to convert an individual disc’s cell measurements into developmental timepoints. Measurements are imported from <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files at this level.</p>
 <span class="target" id="module-flyeye.data.discs"></span><dl class="class">
 <dt id="flyeye.data.discs.Disc">
-<em class="property">class </em><code class="descclassname">flyeye.data.discs.</code><code class="descname">Disc</code><span class="sig-paren">(</span><em>df=None</em>, <em>path=None</em>, <em>normalization=None</em>, <em>flip_about_yz=False</em>, <em>flip_about_xy=False</em>, <em>furrow_velocity=2.0</em>, <em>offset=None</em>, <em>bit_depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">flyeye.data.discs.</code><code class="descname">Disc</code><span class="sig-paren">(</span><em>silhouette</em>, <em>normalization=None</em>, <em>furrow_velocity=2.0</em>, <em>offset=None</em>, <em>bit_depth=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object representing all cells in a single eye disc.</p>
 <p>Attributes:</p>
 <blockquote>
-<div><p>path (str) - unique silhouette filepath</p>
+<div><p>silhouette (flyeye.SilhouetteData) - data from silhouette file</p>
+<p>furrow_velocity (float) - furrow inverse-velocity (hours per column)</p>
+<p>offset (float) - time by which disc is shifted from first R8</p>
+<p>bit_depth (int) - fluorescence intensity bit depth, log2 scaled</p>
 <p>triangulation (processing.triangulation.Triangulation)</p>
 </div></blockquote>
 <p>Inherited Attributes:</p>
 <blockquote>
-<div>df (pd.DataFrame) - cell measurement data</div></blockquote>
+<div><p>normalization (str or int) - channel used to normalize intensities</p>
+<p>df (pd.DataFrame) - cell measurement data</p>
+</div></blockquote>
+<p>Properties:</p>
+<blockquote>
+<div><p>path (str) - unique silhouette filepath</p>
+<p>is_flipped_about_yz (bool) - if True, disc is inverted about YZ plane</p>
+<p>is_flipped_about_xy (bool) - if True, disc is inverted about XY plane</p>
+</div></blockquote>
 <dl class="method">
 <dt id="flyeye.data.discs.Disc.apply_lag">
 <code class="descname">apply_lag</code><span class="sig-paren">(</span><em>offset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.apply_lag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.apply_lag" title="Permalink to this definition">¶</a></dt>
@@ -421,14 +491,20 @@
 
 <dl class="method">
 <dt id="flyeye.data.discs.Disc.flip_about_xy">
-<code class="descname">flip_about_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_xy" title="Permalink to this definition">¶</a></dt>
+<code class="descname">flip_about_xy</code><span class="sig-paren">(</span><em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_xy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flip disc bottom to top.</p>
+<p>Args:</p>
+<blockquote>
+<div>save (bool) - if True, save new orientation to silhouette file</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="flyeye.data.discs.Disc.flip_about_yz">
-<code class="descname">flip_about_yz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_yz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_yz" title="Permalink to this definition">¶</a></dt>
+<code class="descname">flip_about_yz</code><span class="sig-paren">(</span><em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/discs.html#Disc.flip_about_yz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.Disc.flip_about_yz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flip disc left to right.</p>
+<p>Args:</p>
+<blockquote>
+<div>save (bool) - if True, save new orientation to silhouette file</div></blockquote>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -501,13 +577,37 @@
 
 </dd></dl>
 
+<dl class="class">
+<dt id="flyeye.data.discs.DiscProperties">
+<em class="property">class </em><code class="descclassname">flyeye.data.discs.</code><code class="descname">DiscProperties</code><a class="reference internal" href="../_modules/flyeye/data/discs.html#DiscProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.discs.DiscProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Properties for Disc class.</p>
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.is_flipped_about_xy">
+<code class="descname">is_flipped_about_xy</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.is_flipped_about_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, disc is inverted about XY plane.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.is_flipped_about_yz">
+<code class="descname">is_flipped_about_yz</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.is_flipped_about_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, disc is inverted about YZ plane.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.discs.DiscProperties.path">
+<code class="descname">path</code><a class="headerlink" href="#flyeye.data.discs.DiscProperties.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to silhouette file.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="experiments">
 <h2>Experiments<a class="headerlink" href="#experiments" title="Permalink to this headline">¶</a></h2>
 <p>An Experiment is a set of one or more Disc objects collected under the same experimental conditions. Measurements are often aggregated between discs and compared at this level.</p>
 <span class="target" id="module-flyeye.data.experiments"></span><dl class="class">
 <dt id="flyeye.data.experiments.Experiment">
-<em class="property">class </em><code class="descclassname">flyeye.data.experiments.</code><code class="descname">Experiment</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>auto_alignment=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">flyeye.data.experiments.</code><code class="descname">Experiment</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>auto_alignment=True</em>, <em>align_by='ch1_norm'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object representing multiple eye discs obtained under a single set of conditions.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -516,7 +616,7 @@
 </div></blockquote>
 <dl class="method">
 <dt id="flyeye.data.experiments.Experiment.align_discs">
-<code class="descname">align_discs</code><span class="sig-paren">(</span><em>channel='ch1_norm'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.align_discs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.align_discs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">align_discs</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.align_discs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.align_discs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Align all discs within experiment.</p>
 <p>Args:</p>
 <blockquote>

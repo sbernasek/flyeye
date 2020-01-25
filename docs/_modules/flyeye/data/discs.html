@@ -33,9 +33,7 @@
           <div class="body" role="main">
             
   <h1>Source code for flyeye.data.discs</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
-
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
@@ -51,28 +49,60 @@
 <span class="c1">#warnings.filterwarnings(&#39;error&#39;)</span>
 
 
-<div class="viewcode-block" id="Disc"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc">[docs]</a><span class="k">class</span> <span class="nc">Disc</span><span class="p">(</span><span class="n">Cells</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscProperties"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.DiscProperties">[docs]</a><span class="k">class</span> <span class="nc">DiscProperties</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Properties for Disc class. &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Path to silhouette file. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span><span class="o">.</span><span class="n">path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_flipped_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If True, disc is inverted about YZ plane. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span><span class="o">.</span><span class="n">is_flipped_about_yz</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_flipped_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If True, disc is inverted about XY plane. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span><span class="o">.</span><span class="n">is_flipped_about_xy</span></div>
+
+
+<div class="viewcode-block" id="Disc"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc">[docs]</a><span class="k">class</span> <span class="nc">Disc</span><span class="p">(</span><span class="n">Cells</span><span class="p">,</span> <span class="n">DiscProperties</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object representing all cells in a single eye disc.</span>
 
 <span class="sd">    Attributes:</span>
 
-<span class="sd">        path (str) - unique silhouette filepath</span>
+<span class="sd">        silhouette (flyeye.SilhouetteData) - data from silhouette file</span>
+
+<span class="sd">        furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
+
+<span class="sd">        offset (float) - time by which disc is shifted from first R8</span>
+
+<span class="sd">        bit_depth (int) - fluorescence intensity bit depth, log2 scaled</span>
 
 <span class="sd">        triangulation (processing.triangulation.Triangulation)</span>
 
 <span class="sd">    Inherited Attributes:</span>
 
+<span class="sd">        normalization (str or int) - channel used to normalize intensities</span>
+
 <span class="sd">        df (pd.DataFrame) - cell measurement data</span>
+
+<span class="sd">    Properties:</span>
+
+<span class="sd">        path (str) - unique silhouette filepath</span>
+
+<span class="sd">        is_flipped_about_yz (bool) - if True, disc is inverted about YZ plane</span>
+
+<span class="sd">        is_flipped_about_xy (bool) - if True, disc is inverted about XY plane</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">silhouette</span><span class="p">,</span>
                  <span class="n">normalization</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">flip_about_yz</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">flip_about_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">furrow_velocity</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span>
                  <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">bit_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -81,15 +111,9 @@
 
 <span class="sd">        Args:</span>
 
-<span class="sd">            df (pd.DataFrame) - cell measurement data</span>
+<span class="sd">            silhouette (flyeye.SilhouetteData) - data from silhouette file</span>
 
-<span class="sd">            normalization (str or int) - normalization channel</span>
-
-<span class="sd">            flip_about_yz (bool) - if True, invert about YZ plane</span>
-
-<span class="sd">            flip_about_xy (bool) - if True, invert about XY plane</span>
-
-<span class="sd">            path (str) - silhouette filepath</span>
+<span class="sd">            normalization (str or int) - channel used to normalize intensities</span>
 
 <span class="sd">            furrow_velocity (float) - furrow inverse-velocity (hours per column)</span>
 
@@ -99,21 +123,21 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">Cells</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="n">Cells</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
 
-        <span class="c1"># set path to silhouette file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="c1"># set sihouette attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span> <span class="o">=</span> <span class="n">silhouette</span>
 
         <span class="c1"># standardize precursor labels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">standardize_labels</span><span class="p">()</span>
 
         <span class="c1"># orient disc (flip horizontally)</span>
-        <span class="k">if</span> <span class="n">flip_about_yz</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_flipped_about_yz</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
         <span class="c1"># flip stack vertically</span>
-        <span class="k">if</span> <span class="n">flip_about_xy</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_flipped_about_xy</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span><span class="p">()</span>
 
         <span class="c1"># normalize fluorescence intensities by bit depth</span>
@@ -126,6 +150,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">normalize_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
 
         <span class="c1"># construct triangulation of R8 positions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">furrow_velocity</span> <span class="o">=</span> <span class="n">furrow_velocity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triangulation</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">r8_neurons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;r8&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -171,11 +196,8 @@
         <span class="n">silhouette</span> <span class="o">=</span> <span class="n">SilhouetteData</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">recompile</span><span class="o">=</span><span class="n">recompile</span><span class="p">)</span>
 
         <span class="c1"># instantiate disc</span>
-        <span class="n">disc</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">silhouette</span><span class="o">.</span><span class="n">df</span><span class="p">,</span>
-                    <span class="n">path</span><span class="o">=</span><span class="n">silhouette</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+        <span class="n">disc</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">(</span><span class="n">silhouette</span><span class="p">,</span>
                     <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">,</span>
-                    <span class="n">flip_about_yz</span><span class="o">=</span><span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_yz</span><span class="p">,</span>
-                    <span class="n">flip_about_xy</span><span class="o">=</span><span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_xy</span><span class="p">,</span>
                     <span class="n">furrow_velocity</span><span class="o">=</span><span class="n">furrow_velocity</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -197,18 +219,40 @@
         <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;prepre&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pre&#39;</span></div>
 
-<div class="viewcode-block" id="Disc.flip_about_xy"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_xy">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Flip disc bottom to top. &quot;&quot;&quot;</span>
-        <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="n">ymin</span></div>
+<div class="viewcode-block" id="Disc.flip_about_xy"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_xy">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flip disc bottom to top.</span>
 
-<div class="viewcode-block" id="Disc.flip_about_yz"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_yz">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Flip disc left to right. &quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+
+<span class="sd">            save (bool) - if True, save new orientation to silhouette file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="n">ymin</span>
+
+        <span class="c1"># update silhouette file</span>
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_xy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Disc.flip_about_yz"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_yz">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flip disc left to right.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            save (bool) - if True, save new orientation to silhouette file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+</span> <span class="n">xmin</span>
         <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">tmax</span><span class="o">.</span> <span class="n">tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">tmin</span></div>
+            <span class="n">tmax</span><span class="p">,</span> <span class="n">tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">tmin</span>
+
+        <span class="c1"># update silhouette file</span>
+        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span><span class="o">.</span><span class="n">flip_about_yz</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Disc.apply_time_scaling"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.apply_time_scaling">[docs]</a>    <span class="k">def</span> <span class="nf">apply_time_scaling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Apply distance-to-time scaling to generate time vector. &quot;&quot;&quot;</span>

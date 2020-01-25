@@ -33,9 +33,7 @@
           <div class="body" role="main">
             
   <h1>Source code for flyeye.data.silhouette</h1><div class="highlight"><pre>
-<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Sebastian Bernasek&#39;</span>
-
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">exists</span>
+<span></span><span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">exists</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -53,6 +51,12 @@
 
 <span class="sd">        feud (dict) - feud file containing cell type labels</span>
 
+<span class="sd">    Properties:</span>
+
+<span class="sd">        is_flipped_about_yz (bool) - if True, invert about YZ plane</span>
+
+<span class="sd">        is_flipped_about_xy (bool) - if True, invert about XY plane</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -69,7 +73,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">feed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;feed.json&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;feud.json&#39;</span><span class="p">)</span>
 
-        <span class="c1"># read suggested disc orientation from feed file</span>
+        <span class="c1"># read disc orientation from feed file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_orientation</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Silhouette.read_json"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.read_json">[docs]</a>    <span class="k">def</span> <span class="nf">read_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -90,16 +94,58 @@
             <span class="n">out</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span></div>
 
-<div class="viewcode-block" id="Silhouette.load_orientation"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.load_orientation">[docs]</a>    <span class="k">def</span> <span class="nf">load_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Load suggested disc orientation from feed file. &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Silhouette.write_json"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.write_json">[docs]</a>    <span class="k">def</span> <span class="nf">write_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write contents of &lt;data&gt; to specified JSON file.</span>
 
-        <span class="c1"># read orientation</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">])</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_yz</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flip_about_xy</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+<span class="sd">        Args:</span>
+
+<span class="sd">            filename (str) - filename</span>
+
+<span class="sd">            data (dict) - data contents</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Silhouette.write_feed"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.write_feed">[docs]</a>    <span class="k">def</span> <span class="nf">write_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Writes contents of feed dictionary to silhouette file. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s1">&#39;feed.json&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Silhouette.write_feud"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.write_feud">[docs]</a>    <span class="k">def</span> <span class="nf">write_feud</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Writes contents of feud dictionary to silhouette file. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="s1">&#39;feud.json&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feud</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Silhouette.load_orientation"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.load_orientation">[docs]</a>    <span class="k">def</span> <span class="nf">load_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure that feed file includes disc orientation. If it does not, as in older silhouette filetypes, the default orientation is preserved.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;orientation&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">orientation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flip_about_yz</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">flip_about_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">orientation</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_flipped_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Boolean flag for flipping disc horizontally. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_flipped_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Boolean flag for flipping disc vertically. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Silhouette.flip_about_yz"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.flip_about_yz">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_yz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Flip disc horizontally. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_yz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_flipped_about_yz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_feed</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Silhouette.flip_about_xy"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.Silhouette.flip_about_xy">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Flip disc vertically. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">][</span><span class="s1">&#39;flip_about_xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_flipped_about_xy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_feed</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="SilhouetteData"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.silhouette.SilhouetteData">[docs]</a><span class="k">class</span> <span class="nc">SilhouetteData</span><span class="p">(</span><span class="n">Silhouette</span><span class="p">):</span>
@@ -115,10 +161,6 @@
 
 <span class="sd">        df (pd.DataFrame) - cell measurement data</span>
 
-<span class="sd">        flip_about_yz (bool) - if True, invert about YZ plane</span>
-
-<span class="sd">        flip_about_xy (bool) - if True, invert about XY plane</span>
-
 <span class="sd">    Inherited attributes:</span>
 
 <span class="sd">        path (str) - path to Silhouette file</span>
@@ -126,6 +168,10 @@
 <span class="sd">        feed (dict) - feed file containing layer IDs</span>
 
 <span class="sd">        feud (dict) - feud file containing cell type labels</span>
+
+<span class="sd">        is_flipped_about_yz (bool) - if True, invert about YZ plane</span>
+
+<span class="sd">        is_flipped_about_xy (bool) - if True, invert about XY plane</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
