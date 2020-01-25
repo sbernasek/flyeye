@@ -9,7 +9,7 @@
 Dynamics Module
 ===============
 
-``flyeye.dynamics`` provides methods for analyzing and visualizing protein expression dynamics in the developing *Drosophila* eye field.
+``flyeye.dynamics`` provides methods for analyzing and visualizing protein expression dynamics.
 
 
 Moving Averages
@@ -21,10 +21,19 @@ Tools for evaluating the moving average of empirical timeseries data.
    :members:
 
 
+Moving Averages
+---------------
+
+Tools for resampling discretized data.
+
+.. automodule:: flyeye.dynamics.resampling
+   :members:
+
+
 Timeseries Visualization
 ------------------------
 
 Tools for visualizing empirical timeseries data.
 
-.. automodule:: flyeye.dynamics.timeseries
+.. automodule:: flyeye.dynamics.visualization
    :members:
