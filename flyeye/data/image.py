@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 from os.path import join
 import matplotlib.pyplot as plt
 import numpy as np
@@ -322,12 +320,11 @@ class Image(ScalarField):
     def load_image(path):
         """ Load image from <path>. """
 
+        import matplotlib.image as mpimg
+
         img_format = path.rsplit('.')[-1]
         if img_format.lower() != 'png':
-            try:
-                import matplotlib.image as mpimg
-            except:
-                raise UserWarning('PIL library is required for non-png formats. Please install via PyPI.')
+            raise UserWarning('PIL library is required for non-png formats.')
 
         # read image (non-PNG formats require pillow library)
         im = mpimg.imread(path)

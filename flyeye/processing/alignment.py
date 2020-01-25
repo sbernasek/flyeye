@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 import numpy as np
 from copy import deepcopy
 import matplotlib.pyplot as plt

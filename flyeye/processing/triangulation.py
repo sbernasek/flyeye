@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 from scipy.spatial import Delaunay
 import numpy as np
 import matplotlib.pyplot as plt

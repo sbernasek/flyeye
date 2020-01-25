@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 from os.path import join, abspath, exists
 import json
 import pandas as pd
@@ -20,9 +18,9 @@ class Silhouette:
 
     Properties:
 
-        flip_about_yz (bool) - if True, invert about YZ plane
+        is_flipped_about_yz (bool) - if True, invert about YZ plane
 
-        flip_about_xy (bool) - if True, invert about XY plane
+        is_flipped_about_xy (bool) - if True, invert about XY plane
 
     """
     def __init__(self, path):
@@ -90,18 +88,29 @@ class Silhouette:
 
         """
         if 'orientation' not in self.feed.keys():
-            orientation = dict(flip_about_yz=False, flip_about_xy=False)
+            orientation = dict(flip_about_yz=False,
+                               flip_about_xy=False)
             self.feed['orientation'] = orientation
 
     @property
-    def flip_about_yz(self):
+    def is_flipped_about_yz(self):
         """ Boolean flag for flipping disc horizontally. """
         return self.feed['orientation']['flip_about_yz']
 
     @property
-    def flip_about_xy(self):
+    def is_flipped_about_xy(self):
         """ Boolean flag for flipping disc vertically. """
         return self.feed['orientation']['flip_about_xy']
+
+    def flip_about_yz(self):
+        """ Flip disc horizontally. """
+        self.feed['orientation']['flip_about_yz'] = not self.is_flipped_about_yz
+        self.write_feed()
+
+    def flip_about_xy(self):
+        """ Flip disc vertically. """
+        self.feed['orientation']['flip_about_xy'] = not self.is_flipped_about_xy
+        self.write_feed()
 
 
 class SilhouetteData(Silhouette):
@@ -125,9 +134,9 @@ class SilhouetteData(Silhouette):
 
         feud (dict) - feud file containing cell type labels
 
-        flip_about_yz (bool) - if True, invert about YZ plane
+        is_flipped_about_yz (bool) - if True, invert about YZ plane
 
-        flip_about_xy (bool) - if True, invert about XY plane
+        is_flipped_about_xy (bool) - if True, invert about XY plane
 
     """
 

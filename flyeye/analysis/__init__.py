@@ -1,1 +1,2 @@
-__author__ = 'Sebastian Bernasek'
+from .correlation import SpatialCorrelation
+from .spectrogram import Spectrogram

@@ -1,7 +1,6 @@
-__author__ = 'Sebastian Bernasek'
-
 from math import floor
 import numpy as np
+from pandas import Series
 import scipy.stats as st
 from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
@@ -81,6 +80,11 @@ def get_rolling_window(x, window_size=100, resolution=1):
         windows (np.ndarray) - sampled values, N/resolution x W
 
     """
+
+    # use values from pandas series
+    if isinstance(x, Series):
+        x = x.values
+
     shape = x.shape[:-1] + (floor((x.shape[-1] - window_size + 1)/resolution), window_size)
     strides = x.strides[:-1] + (x.strides[-1]*resolution,) + (x.strides[-1],)
     return np.lib.stride_tricks.as_strided(x, shape=shape, strides=strides)

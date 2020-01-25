@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 import warnings
 import numpy as np
 import pandas as pd
@@ -25,14 +23,14 @@ class DiscProperties:
         return self.silhouette.path
 
     @property
-    def flip_about_yz(self):
+    def is_flipped_about_yz(self):
         """ If True, disc is inverted about YZ plane. """
-        return self.silhouette.flip_about_yz
+        return self.silhouette.is_flipped_about_yz
 
     @property
-    def flip_about_xy(self):
+    def is_flipped_about_xy(self):
         """ If True, disc is inverted about XY plane. """
-        return self.silhouette.flip_about_xy
+        return self.silhouette.is_flipped_about_xy
 
 
 class Disc(Cells, DiscProperties):
@@ -61,9 +59,9 @@ class Disc(Cells, DiscProperties):
 
         path (str) - unique silhouette filepath
 
-        flip_about_yz (bool) - if True, disc is inverted about YZ plane
+        is_flipped_about_yz (bool) - if True, disc is inverted about YZ plane
 
-        flip_about_xy (bool) - if True, disc is inverted about XY plane
+        is_flipped_about_xy (bool) - if True, disc is inverted about XY plane
 
     """
 
@@ -99,13 +97,13 @@ class Disc(Cells, DiscProperties):
         self.standardize_labels()
 
         # orient disc (flip horizontally)
-        if self.flip_about_yz is True:
-            self.flip_horizontal()
+        if self.is_flipped_about_yz is True:
+            self.flip_about_yz()
             self.sort()
 
         # flip stack vertically
-        if self.flip_about_xy is True:
-            self.flip_vertical()
+        if self.is_flipped_about_xy is True:
+            self.flip_about_xy()
 
         # normalize fluorescence intensities by bit depth
         if bit_depth is not None:
@@ -186,7 +184,7 @@ class Disc(Cells, DiscProperties):
         names = ['p', 'prepre', 'v']
         self.df.loc[self.df.label.isin(names), 'label'] = 'pre'
 
-    def flip_vertical(self, save=False):
+    def flip_about_xy(self, save=False):
         """
         Flip disc bottom to top.
 
@@ -198,12 +196,11 @@ class Disc(Cells, DiscProperties):
         ymax, ymin = self.df.centroid_y.max(), self.df.centroid_y.min()
         self.df['centroid_y'] = ymax - self.df.centroid_y + ymin
 
-        # update feed file
+        # update silhouette file
         if save:
-            self.silhouette.feed['orientation']['flip_about_xy'] = not self.flip_about_xy
-            self.silhouette.write_feed()
+            self.silhouette.flip_about_xy()
 
-    def flip_horizontal(self, save=False):
+    def flip_about_yz(self, save=False):
         """
         Flip disc left to right.
 
@@ -218,10 +215,9 @@ class Disc(Cells, DiscProperties):
             tmax, tmin = self.df.t.max(), self.df.t.min()
             self.df['t'] = tmax - self.df.t + tmin
 
-        # update feed file
+        # update silhouette file
         if save:
-            self.silhouette.feed['orientation']['flip_about_yz'] = not self.flip_about_yz
-            self.silhouette.write_feed()
+            self.silhouette.flip_about_yz()
 
     def apply_time_scaling(self):
         """ Apply distance-to-time scaling to generate time vector. """

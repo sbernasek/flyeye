@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 import matplotlib.pyplot as plt
 from .averages import plot_mean, plot_mean_interval
 

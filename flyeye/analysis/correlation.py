@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 import numpy as np
 from scipy.stats import binned_statistic
 import matplotlib.pyplot as plt

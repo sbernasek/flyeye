@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 import numpy as np
 from matplotlib import pyplot as plt
 from astroML.time_series import lomb_scargle, lomb_scargle_bootstrap

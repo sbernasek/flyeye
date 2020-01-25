@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 from os.path import join
 from glob import glob
 import numpy as np
@@ -12,7 +10,6 @@ from .cells import Cells, format_channel
 from ..processing.triangulation import Triangulation
 from ..processing.alignment import DiscAlignment, ExperimentAlignment
 from ..analysis.correlation import SpatialCorrelation
-
 
 
 class Experiment:
@@ -29,6 +26,7 @@ class Experiment:
 
     def __init__(self, dirpath, normalization,
                  auto_alignment=True,
+                 align_by='ch1_norm',
                  **kwargs):
         """
         Instantiate object representing all discs obtained under a single set of conditions.
@@ -41,6 +39,8 @@ class Experiment:
 
             auto_alignment (bool) - if True, align discs
 
+            align_by (str or int) - channel used to align discs
+
             kwargs: keyword arguments for disc instantiation
 
         """
@@ -49,7 +49,7 @@ class Experiment:
 
         # align discs
         if auto_alignment:
-            self.align_discs()
+            self.align_discs(align_by)
             self.align_to_first_r8()
 
     def __getitem__(self, idx):
@@ -115,7 +115,7 @@ class Experiment:
         for disc in self.discs.values():
             disc.set_ratio(num, den)
 
-    def align_discs(self, channel='ch1_norm'):
+    def align_discs(self, channel):
         """
         Align all discs within experiment.
 

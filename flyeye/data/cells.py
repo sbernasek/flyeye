@@ -1,5 +1,3 @@
-__author__ = 'Sebastian Bernasek'
-
 from copy import deepcopy
 from functools import reduce
 from operator import add
@@ -15,7 +13,10 @@ from ..dynamics.resampling import DiscResampler
 def format_channel(channel):
     """ Returns string representation of <channel>. """
 
-    if type(channel) == int:
+    if channel is None:
+        return 'ch0'
+
+    elif type(channel) == int:
         return 'ch{:d}'.format(channel)
 
     elif type(channel) != str:
