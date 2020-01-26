@@ -7,7 +7,7 @@
 Installation
 ============
 
-The simplest method is to install via PyPi:
+The simplest method is to install via PyPI:
 
 .. code-block:: bash
 
