@@ -7,11 +7,6 @@
 FlyEye Analysis
 ===============
 
-.. image:: graphics/header-01.png
-   :width: 100%
-   :align: center
-   :alt: header
-
 **FlyEye Analysis** is part of the NU FlyEye platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using FlyEye Silhouette.
 
 Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
