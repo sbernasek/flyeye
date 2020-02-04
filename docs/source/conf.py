@@ -23,7 +23,7 @@ if '..' not in sys.path:
 
 # -- Project information -----------------------------------------------------
 
-project = 'analysis'
+project = 'flyeye'
 copyright = '2020, Amaral Lab'
 author = 'Sebastian Bernasek'
 
@@ -93,6 +93,11 @@ html_theme_options = {
     'logo': 'img/analysis_logo.png',
     #'logo_name': False,
     #'logo_text_align': 'center',
+
+    #github
+    'github_user': 'sebastianbernasek',
+    'github_repo': 'flyeye',
+    'github_banner': True,
 
     # sidebar
     'sidebar_collapse': True,
