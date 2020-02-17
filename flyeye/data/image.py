@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from glob import glob
 from matplotlib import patches
+import matplotlib.image as mpimg
 from scipy.ndimage import filters, rotate
 from scipy.ndimage import grey_closing, median_filter
 from copy import deepcopy
@@ -319,8 +320,6 @@ class Image(ScalarField):
     @staticmethod
     def load_image(path):
         """ Load image from <path>. """
-
-        import matplotlib.image as mpimg
 
         img_format = path.rsplit('.')[-1]
         if img_format.lower() != 'png':

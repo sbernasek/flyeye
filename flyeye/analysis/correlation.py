@@ -269,7 +269,7 @@ class SpatialCorrelation(CorrelationData):
     """
 
     def __init__(self, channel,
-                 df=None,
+                 data=None,
                  y_only=True):
         """
         Instantiate object for evaluating spatial correlation of expression between cells.
@@ -278,7 +278,7 @@ class SpatialCorrelation(CorrelationData):
 
             channel (str or int) - channel for which correlations are desired
 
-            df (pd.Dataframe) - cell measurement data
+            data (pd.Dataframe) - cell measurement data
 
             y_only (bool) - if True, only use y-component of pairwise distances
 
@@ -289,16 +289,16 @@ class SpatialCorrelation(CorrelationData):
         self.y_only = y_only
 
         # get pairwise distances and fluctuations
-        if df is None:
+        if data is None:
             d_ij, C_ij = np.ndarray([]), np.ndarray([])
 
         else:
 
             # get distances vector
-            d_ij = self.get_distances_vector(df, y_only=y_only)
+            d_ij = self.get_distances_vector(data, y_only=y_only)
 
             # get covariance vector
-            expression = df[channel].values
+            expression = data[channel].values
             C_ij = self.get_covariance_vector(expression.reshape(-1, 1))
 
         # instantiate parent object
@@ -321,13 +321,13 @@ class SpatialCorrelation(CorrelationData):
         return matrix[np.triu_indices(len(matrix), k=1)]
 
     @classmethod
-    def get_distances_vector(cls, df, y_only=False):
+    def get_distances_vector(cls, data, y_only=False):
         """
         Get upper triangular portion of pairwise distance matrix.
 
         Args:
 
-            df (pd.Dataframe) - cell measurements including position data
+            data (pd.Dataframe) - cell measurements including position data
 
             y_only (bool) - if True, only use y-component of cell positions
 
@@ -338,12 +338,12 @@ class SpatialCorrelation(CorrelationData):
         """
 
         # if no measurements are included, return None
-        if len(df) == 0:
+        if len(data) == 0:
             return None
 
         # compute pairwise distances between cells
-        x = df.centroid_x.values.reshape((len(df), 1))
-        y = df.centroid_y.values.reshape((len(df), 1))
+        x = data.centroid_x.values.reshape((len(data), 1))
+        y = data.centroid_y.values.reshape((len(data), 1))
         x_component = np.repeat(x**2, x.size, axis=1) + np.repeat(x.T**2, x.size, axis=0) - 2*np.dot(x, x.T)
         if y_only is True:
             x_component *= 0

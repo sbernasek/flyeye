@@ -8,7 +8,7 @@ class DiscResampler:
 
     Attributes:
 
-        df (pd.DataFrame) - cell measurement data, including a disc_id attribute
+        data (pd.DataFrame) - cell measurement data, including a disc_id attribute
 
         variable (str) - variable to be averaged
 
@@ -47,7 +47,7 @@ class DiscResampler:
             confidence (float) - confidence interval, 0 to 100
 
         """
-        self.df = cells.df
+        self.data = cells.data
         self.variable = variable
         self.window_size = window_size
         self.resolution = resolution
@@ -82,7 +82,7 @@ class DiscResampler:
         """
 
         # create dictionary of values for each disc
-        cells = self.df.iloc[idx]
+        cells = self.data.iloc[idx]
         unique_ids = cells.disc_id.unique()
         values_per_disc = {i: cells[cells.disc_id==_id][variable].values for i, _id in enumerate(unique_ids)}
 
@@ -118,7 +118,7 @@ class DiscResampler:
     def generate_point_estimates(self):
         """ Returns an array of point estimates within each window. """
         bootstrap = lambda idx: self.bootstrap(idx, self.variable, np.mean, self.nbootstraps)
-        indices = np.arange(self.df.shape[0])
+        indices = np.arange(self.data.shape[0])
         point_estimates = self.apply(bootstrap, indices)
         return point_estimates
 

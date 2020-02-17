@@ -10,7 +10,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='flyeye',
-    version='0.2',
+    version='0.3',
     author='Sebastian Bernasek',
     author_email='sebastian@u.northwestern.com',
     packages=find_packages(exclude=('tests',)),
@@ -24,10 +24,10 @@ setup(
     install_requires=[
         "scipy >= 1.1.0",
         "pandas == 0.23.4",
-        "matplotlib >= 2.0.0",
-        "astroML == 0.3",
-        "astroML-addons == 0.2.2",
-    ],
+        "matplotlib >= 2.0.0"],
+    extras_require = {
+        'frequency_detection': ["astroML == 0.3", "astroML-addons == 0.2.2"],
+        },
     tests_require=['nose'],
     test_suite='nose.collector'
 )

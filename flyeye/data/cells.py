@@ -6,50 +6,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import re
 
+from ..utilities.string_handling import format_channel, standardize_channels
 from ..dynamics.visualization import TimeseriesPlot, IntervalPlot
 from ..dynamics.resampling import DiscResampler
-
-
-def format_channel(channel):
-    """ Returns string representation of <channel>. """
-
-    if channel is None:
-        return 'ch0'
-
-    elif type(channel) == int:
-        return 'ch{:d}'.format(channel)
-
-    elif type(channel) != str:
-        raise ValueError('Channel data type not recognized.')
-
-    elif 'ch' in channel:
-        return channel
-
-    elif channel.lower() in 'rgb':
-        return format_channel('rgb'.index(channel.lower()))
-
-    elif channel.lower() in ('red', 'green', 'blue'):
-        return format_channel('rgb'.index(channel.lower()[0]))
-
-    else:
-        raise ValueError('Channel string not recognized.')
-
-
-def standardize_channels(df):
-    """ Standardize all channel names. """
-    for name in ('r', 'g', 'b', 'red', 'green', 'blue'):
-
-        formatted_name = format_channel(name)
-
-        if name in df.columns:
-            df[formatted_name] = df[name]
-            df.drop(name, axis=1, inplace=True)
-
-        if name + '_std' in df.columns:
-            df[formatted_name + '_std'] = df[name + '_std']
-            df.drop(name + '_std', axis=1, inplace=True)
-
-    return df
 
 
 class CellProperties:
@@ -58,12 +17,12 @@ class CellProperties:
     @property
     def channels(self):
         """ List of unique fluorescence channels. """
-        return [s for s in self.df.columns if len(re.findall('ch[0-9]+$', s))]
+        return [s for s in self.data.columns if len(re.findall('ch[0-9]+$', s))]
 
     @property
     def normalized_channels(self):
         """ List of normalized channel names. """
-        return [ch+'_norm' for ch in self.channels]
+        return [ch+'_normalized' for ch in self.channels]
 
     @property
     def num_channels(self):
@@ -72,11 +31,11 @@ class CellProperties:
 
     @property
     def is_sorted(self):
-        return (self.df.centroid_x.diff() < 0).sum() == 0
+        return (self.data.centroid_x.diff() < 0).sum() == 0
 
     @property
     def cell_type_counts(self):
-        return self.df.groupby('label')['label'].count()
+        return self.data.groupby('label')['label'].count()
 
     @property
     def cell_types(self):
@@ -91,39 +50,39 @@ class Cells(CellProperties):
 
     Attributes:
 
-        df (pd.DataFrame) - cell measurement data
+        data (pd.DataFrame) - cell measurement data
 
         normalization (str or int) - channel used to normalize intensities
 
     """
 
-    def __init__(self, df=None, normalization=None):
+    def __init__(self, data=None, normalization=None):
         """
         Instantiate population of cells.
 
         Args:
 
-            df (pd.DataFrame) - cell measurement data
+            data (pd.DataFrame) - cell measurement data
 
             normalization (str or int) - channel used to normalize intensities
 
         """
 
         # store measurements
-        if df is None:
-            df = pd.DataFrame()
-        self.df = standardize_channels(df)
+        if data is None:
+            data = pd.DataFrame()
+        self.data = standardize_channels(data)
 
         # store normalization
         self.normalization = format_channel(normalization)
 
         # standardize levels
-        if len(self.df) > 0:
+        if len(self.data) > 0:
             self.sort()
 
     def __add__(self, cells):
         """ Concatenate second Cell instance. """
-        cells = Cells(pd.concat((self.df, cells.df)), self.normalization)
+        cells = Cells(pd.concat((self.data, cells.data)), self.normalization)
         cells.sort(by='t')
         return cells
 
@@ -136,7 +95,7 @@ class Cells(CellProperties):
             by (str) - key on which measurements are sorted
 
         """
-        self.df = self.df.sort_values(by=by, ascending=True)
+        self.data = self.data.sort_values(by=by, ascending=True)
 
     def apply_lag(self, lag):
         """
@@ -147,7 +106,7 @@ class Cells(CellProperties):
             lag (float) - shift (NOTE: x-positions are unaffected)
 
         """
-        self.df['t'] += lag
+        self.data['t'] += lag
 
     def select_cell_type(self, cell_types):
         """
@@ -174,10 +133,10 @@ class Cells(CellProperties):
             cell_types.append('pre')
 
         # select cells
-        df = self.df[self.df.label.apply(lambda x: x in cell_types)]
+        data = self.data[self.data.label.apply(lambda x: x in cell_types)]
 
         # instantiate cells object
-        cells = Cells(df, self.normalization)
+        cells = Cells(data, self.normalization)
 
         return cells
 
@@ -210,16 +169,16 @@ class Cells(CellProperties):
         """
 
         # initialize filter to include all cells
-        df = deepcopy(self.df)
+        data = deepcopy(self.data)
 
         # apply sequential filters
-        df = df[df['centroid_x'].between(xmin, xmax)]
-        df = df[df['centroid_y'].between(ymin, ymax)]
-        df = df[df['layer'].between(zmin, zmax)]
-        df = df[df['t'].between(tmin, tmax)]
+        data = data[data['centroid_x'].between(xmin, xmax)]
+        data = data[data['centroid_y'].between(ymin, ymax)]
+        data = data[data['layer'].between(zmin, zmax)]
+        data = data[data['t'].between(tmin, tmax)]
 
         # instantiate subpopulation
-        cells = Cells(df, self.normalization)
+        cells = Cells(data, self.normalization)
 
         return cells
 
@@ -232,7 +191,7 @@ class Cells(CellProperties):
             nuclear_diameter (float) - median diameter
 
         """
-        return (2*np.sqrt(self.df.pixel_count/np.pi)).median()
+        return (2*np.sqrt(self.data.pixel_count/np.pi)).median()
 
     @staticmethod
     def get_binned_mean(x, values,
@@ -307,7 +266,7 @@ class Cells(CellProperties):
         self.sort('t')
 
         # instantiate TimeseriesPlot
-        x, y = self.df.t.values, self.df[channel].values
+        x, y = self.data.t.values, self.data[channel].values
         tsplot = TimeseriesPlot(x, y, ax=ax)
 
         # plot dynamics
@@ -418,11 +377,11 @@ class Cells(CellProperties):
         ax.grid(True)
 
         # scatter data
-        ax.scatter(self.df[x], self.df[y], c=color, s=s, alpha=alpha, lw=0)
+        ax.scatter(self.data[x], self.data[y], c=color, s=s, alpha=alpha, lw=0)
 
         # add fraction above midline
         if fraction:
-            ratio = self.df[y]/self.df[x]
+            ratio = self.data[y]/self.data[x]
             self.annotate_fraction(ax, ratio, p=2.5)
 
         return ax
@@ -475,7 +434,7 @@ class Cells(CellProperties):
 
         # compile spectrogram
         precursors = self.select_cell_type('pre')
-        spectrogram = Spectrogram(precursors.df.centroid_y.values, precursors.df[channel].values, periods=periods)
+        spectrogram = Spectrogram(precursors.data.centroid_y.values, precursors.data[channel].values, periods=periods)
 
         # plot power spectrum
         ax = spectrogram.simple_visualization(ax=ax, ymax=ymax, **kwargs)

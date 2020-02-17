@@ -104,7 +104,7 @@ class Triangulation:
             disc (data.discs.Disc) - disc with estimated developmental times
 
         """
-        disc.df['t'] = disc.df.centroid_x * hours_per_pixel
+        disc.data['t'] = disc.data.centroid_x * hours_per_pixel
         return disc
 
     @staticmethod
@@ -191,7 +191,7 @@ class Triangulation:
         """
 
         # get coordinates
-        xycoords = disc.df[disc.df.label=='r8'][['centroid_x', 'centroid_y']].values
+        xycoords = disc.data[disc.data.label=='r8'][['centroid_x', 'centroid_y']].values
         self.xycoords = xycoords
 
         # get triangulation
@@ -277,9 +277,8 @@ class Triangulation:
         self._plot_histogram(self.distances, ax=ax, dist_type=dist_type)
 
     @staticmethod
-    def _plot_expression(ax, disc, hours_per_pixel,
+    def _plot_expression(ax, disc, channel, hours_per_pixel,
                          window_size=100,
-                         channel='ch1_norm',
                          color='black',
                          alpha=1):
         """ Plot expression trajectories. """
@@ -295,18 +294,19 @@ class Triangulation:
         ax.set_xticks(np.arange(-10, 60, step=10))
         ax.set_xticklabels([str(int(round(label, 0))) for label in ax.get_xticks()])
 
-    def plot_expression(self, ax, **kwargs):
+    def plot_expression(self, ax, channel, **kwargs):
         """ Plot expression trajectory. """
-        self._plot_expression(ax, self.disc, self.hours_per_pixel, **kwargs)
+        self._plot_expression(ax, self.disc, channel, self.hours_per_pixel, **kwargs)
 
-    def overlay_epression(self, ax, **kwargs):
+    def overlay_epression(self, ax, channel, **kwargs):
         """ Plot expression trajectory on twin y-axis. """
         ax_alt = ax.twinx()
-        self.plot_expression(ax_alt, **kwargs)
+        self.plot_expression(ax_alt, channel, **kwargs)
 
     def show(self,
              gs_parent=None,
              include_expression=True,
+             channel=None,
              is_subplot=False, **kwargs):
         """
         Plot inter-R8 distance distribution, Delaunay triangulation, and expression.
@@ -329,8 +329,8 @@ class Triangulation:
 
         # plot edges, expression, and histogram
         self.add_edges_to_plot(ax1, cmap=cmaps.coolwarm)
-        if include_expression:
-            self.overlay_epression(ax1, **kwargs)
+        if include_expression and channel is not None:
+            self.overlay_epression(ax1, channel, **kwargs)
         self.plot_histogram(ax=ax0)
 
         plt.tight_layout()
@@ -425,8 +425,7 @@ class ExperimentTriangulation:
         """
         return {i: Triangulation(disc, **kwargs) for i, disc in discs.items()}
 
-    def plot_expression(self, ax,
-                        channel='ch1_norm',
+    def plot_expression(self, ax, channel,
                         color='black',
                         **kwargs):
         """ Plot expression for all triangulations. """
@@ -445,8 +444,7 @@ class ExperimentTriangulation:
         plt.tight_layout()
         return fig
 
-    def show_alignment(self,
-                       channel='ch1_norm',
+    def show_alignment(self, channel,
                        xoffsets=None,
                        ax=None,
                        scatter=False,
@@ -476,12 +474,12 @@ class ExperimentTriangulation:
             color = color_wheel[i % len(color_wheel)]
 
             # get cells
-            disc_cells_df = triangulation.df[np.logical_or(triangulation.df.label=='pre', triangulation.df.label=='p')]
+            disc_cells_data = triangulation.data[np.logical_or(triangulation.data.label=='pre', triangulation.data.label=='p')]
             if scatter is True:
-                ax.plot(disc_cells_df.t + xoffsets[i], disc_cells_df[channel], '.', alpha=0.1, color=color)
+                ax.plot(disc_cells_data.t + xoffsets[i], disc_cells_data[channel], '.', alpha=0.1, color=color)
 
             # add line average
-            line = plot_mean(disc_cells_df.t + xoffsets[i], (disc_cells_df[channel]),
+            line = plot_mean(disc_cells_data.t + xoffsets[i], (disc_cells_data[channel]),
                                    ax=ax, label='Disc {:d}'.format(i), ma_type=ma_type, window_size=window_size,
                                    line_color=color, line_width=3, line_alpha=0.5)
             handles.append(line[0]), labels.append('Disc {:d}'.format(i))

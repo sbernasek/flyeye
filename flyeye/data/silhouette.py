@@ -124,7 +124,7 @@ class SilhouetteData(Silhouette):
 
     Attributes:
 
-        df (pd.DataFrame) - cell measurement data
+        data (pd.DataFrame) - cell measurement data
 
     Inherited attributes:
 
@@ -157,20 +157,20 @@ class SilhouetteData(Silhouette):
     @property
     def labels(self):
         """ pd.Series of labels keyed by (layer_id, segment_id). """
-        return self.df.set_index(['layer', 'segment_id'])['label']
+        return self.data.set_index(['layer', 'segment_id'])['label']
 
     def compile_measurements(self):
         """ Compile measurements from all layers (slow access). """
         labels = self.read_labels()
-        self.df = self.read_contours(labels)
+        self.data = self.read_contours(labels)
 
     def save_measurements(self):
         """ Save serialized measurements for fast access. """
-        self.df.to_json(join(self.path, 'measurements.json'))
+        self.data.to_json(join(self.path, 'measurements.json'))
 
     def load_measurements(self):
         """ Load serialized measurements (fast access). """
-        self.df = pd.read_json(join(self.path, 'measurements.json'))
+        self.data = pd.read_json(join(self.path, 'measurements.json'))
 
     def load(self, recompile=False):
         """
@@ -270,7 +270,7 @@ class SilhouetteData(Silhouette):
 
         Returns:
 
-            df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours
+            data (pd.DataFrame) - data.cells.Cells compatible dataframe of contours
 
         """
 
@@ -316,12 +316,12 @@ class SilhouetteData(Silhouette):
         columns += keys
         columns += ['{:s}_std'.format(k) for k in keys]
         columns += ['layer', 'label']
-        df = pd.DataFrame(contours, columns=columns)
+        data = pd.DataFrame(contours, columns=columns)
 
         # delete duplicate RGB channel labels
         for i, c in enumerate('rgb'):
-            if 'ch{:d}'.format(i) in df.columns:
-                df.drop(c, axis=1, inplace=True)
-                df.drop(c+'_std', axis=1, inplace=True)
+            if 'ch{:d}'.format(i) in data.columns:
+                data.drop(c, axis=1, inplace=True)
+                data.drop(c+'_std', axis=1, inplace=True)
 
-        return df
+        return data

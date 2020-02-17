@@ -56,8 +56,8 @@ class TestExperiment(TestCase):
         cells = self.exp.get_cells(['pre', 'r8'])
         self.assertTrue(isinstance(cells, Cells))
 
-    def test_get_early_neuron_df(self):
+    def test_get_early_neuron_data(self):
         """ Get early neuron dataframe. """
-        df = self.exp.get_early_neuron_df()
-        self.assertTrue(isinstance(df, DataFrame))
+        data = self.exp.get_early_neuron_data()
+        self.assertTrue(isinstance(data, DataFrame))
 

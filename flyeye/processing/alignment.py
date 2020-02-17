@@ -340,7 +340,7 @@ class CellsAlignment(Alignment):
 
     Attributes:
 
-        df (pd.DataFrame) - aligned cells data
+        data (pd.DataFrame) - aligned cells data
 
     Inherited attributes:
 
@@ -356,9 +356,9 @@ class CellsAlignment(Alignment):
 
     """
 
-    def __init__(self, df,
-                 reference_df=None,
-                 channel='ch1_norm',
+    def __init__(self, data,
+                 reference_data=None,
+                 channel='ch1_normalized',
                  basis='t',
                  metric='crosscorrelation',
                  window_size=None):
@@ -367,9 +367,9 @@ class CellsAlignment(Alignment):
 
         Args:
 
-            df (pd.DataFrame) - aligned cells data
+            data (pd.DataFrame) - aligned cells data
 
-            reference_df (pd.DataFrame) - reference cells data
+            reference_data (pd.DataFrame) - reference cells data
 
             channel (str or int) - cells attribute used as alignment values
 
@@ -381,9 +381,9 @@ class CellsAlignment(Alignment):
         """
 
         # extract timeseries
-        self.df = df
-        t, x = df[basis].values, df[channel].values
-        t_ref, x_ref = reference_df[basis].values, reference_df[channel].values
+        self.data = data
+        t, x = data[basis].values, data[channel].values
+        t_ref, x_ref = reference_data[basis].values, reference_data[channel].values
 
         # set window size
         if window_size is None:
@@ -419,12 +419,12 @@ class DiscAlignment(CellsAlignment):
 
         score (float) - computed metric for quality of alignment
 
-        df (pd.DataFrame) - aligned cells data
+        data (pd.DataFrame) - aligned cells data
 
     """
 
     def __init__(self, disc, reference_disc,
-                 channel='ch1_norm',
+                 channel='ch1_normalized',
                  metric='crosscorrelation',
                  window_size=None):
         """
@@ -448,16 +448,16 @@ class DiscAlignment(CellsAlignment):
         self.disc = deepcopy(disc)
 
         # select precursor dataframes
-        precursor_df = disc.select_cell_type('pre').df
-        reference_precursor_df = reference_disc.select_cell_type('pre').df
+        precursor_data = disc.select_cell_type('pre').data
+        reference_precursor_data = reference_disc.select_cell_type('pre').data
 
         # if no precursors were found, check for 'wpre'
-        if len(precursor_df) == 0:
-            precursor_df = disc.select_cell_type('wpre').df
-            reference_precursor_df = reference_disc.select_cell_type('wpre').df
+        if len(precursor_data) == 0:
+            precursor_data = disc.select_cell_type('wpre').data
+            reference_precursor_data = reference_disc.select_cell_type('wpre').data
 
         # initialize alignment object (discs must be aligned on time)
-        CellsAlignment.__init__(self, precursor_df, reference_df=reference_precursor_df, channel=channel, basis='t', metric=metric,  window_size=window_size)
+        CellsAlignment.__init__(self, precursor_data, reference_data=reference_precursor_data, channel=channel, basis='t', metric=metric,  window_size=window_size)
 
         # update time lags
         self.space_lag = self.lag / disc.hours_per_pixel
@@ -486,8 +486,8 @@ class DiscAlignment(CellsAlignment):
 
         """
         disc = deepcopy(disc)
-        disc.df.centroid_x += (space_lag - disc.df.centroid_x.min())
-        disc.df.t += (time_lag - disc.df.t.min())
+        disc.data.centroid_x += (space_lag - disc.data.centroid_x.min())
+        disc.data.t += (time_lag - disc.data.t.min())
         return disc
 
     def get_aligned_disc(self):
@@ -592,7 +592,7 @@ class MultiExperimentAlignment:
 
     @classmethod
     def _align_experiments(cls, experiments,
-                           channel='ch1_norm', **kwargs):
+                           channel='ch1_normalized', **kwargs):
         """
         Align all experiments with the first experiment.
 
@@ -611,15 +611,15 @@ class MultiExperimentAlignment:
         """
         reference = cls.aggregate_discs(experiments[0]).select_cell_type('pre')
 
-        ref_initial_offset = reference.df.t.min()
+        ref_initial_offset = reference.data.t.min()
 
         for experiment in experiments[1:]:
             aggregate_discs = cls.aggregate_discs(experiment).select_cell_type('pre')
 
             # shift to zero
-            initial_offset = aggregate_discs.df.t.min()
+            initial_offset = aggregate_discs.data.t.min()
 
-            alignment = CellsAlignment(aggregate_discs.df, reference.df, channel=channel, basis='t', **kwargs)
+            alignment = CellsAlignment(aggregate_discs.data, reference.data, channel=channel, basis='t', **kwargs)
             experiment.apply_lag(alignment.lag+ref_initial_offset-initial_offset)
         return experiments
 

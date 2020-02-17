@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
 from .discs import Disc
-from .cells import Cells, format_channel
+from .cells import Cells
+
+from ..utilities.iteration import Iterator
+from ..utilities.string_handling import format_channel
 from ..processing.triangulation import Triangulation
 from ..processing.alignment import DiscAlignment, ExperimentAlignment
 from ..analysis.correlation import SpatialCorrelation
@@ -26,7 +29,7 @@ class Experiment:
 
     def __init__(self, dirpath, normalization,
                  auto_alignment=True,
-                 align_by='ch1_norm',
+                 align_by='ch1_normalized',
                  **kwargs):
         """
         Instantiate object representing all discs obtained under a single set of conditions.
@@ -45,7 +48,6 @@ class Experiment:
 
         """
         self.discs = self.load(dirpath, normalization=normalization, **kwargs)
-        self.count = 0
 
         # align discs
         if auto_alignment:
@@ -58,14 +60,7 @@ class Experiment:
 
     def __iter__(self):
         """ Iterate over discs. """
-        return self
-
-    def __next__(self):
-        if self.count >= self.num_discs:
-            raise StopIteration
-        else:
-            self.count += 1
-            return self.discs[self.count - 1]
+        return Iterator(list(self.discs.values()))
 
     @property
     def num_discs(self):
@@ -75,7 +70,7 @@ class Experiment:
     @property
     def num_progenitors(self):
         """ Number of progenitor measurements in experiment. """
-        return len(self.get_cells('pre').df)
+        return len(self.get_cells('pre').data)
 
     @staticmethod
     def load(dirpath, normalization, **kwargs):
@@ -181,7 +176,7 @@ class Experiment:
 
         # get time of first R8
         reference = self.discs[disc_id]
-        t = sorted(reference.select_cell_type('r8').df.t.values)[1]
+        t = sorted(reference.select_cell_type('r8').data.t.values)[1]
 
         # apply lag
         self.apply_lag(lag=-t)
@@ -204,7 +199,7 @@ class Experiment:
 
         # assign disc_id
         for disc_id, disc in self.discs.items():
-            disc.df['disc_id'] = disc_id
+            disc.data['disc_id'] = disc_id
 
         # get all cells
         cells = np.sum(list(self.discs.values()))
@@ -238,7 +233,7 @@ class Experiment:
 
         Returns:
 
-            df (DataFrame) - cells concurrent with reference cell type
+            data (DataFrame) - cells concurrent with reference cell type
 
         """
 
@@ -250,23 +245,23 @@ class Experiment:
 
             # select reference cells
             ref = disc.select_cell_type(reference_types)
-            ref.df['disc_id'] = disc_id
-            n_current = len(ref.df)
+            ref.data['disc_id'] = disc_id
+            n_current = len(ref.data)
             if n_current == 0:
                 continue
 
             # get time of first reference cell
-            tmin = ref.df.iloc[upper_slip]['t'] - lower_slip
+            tmin = ref.data.iloc[upper_slip]['t'] - lower_slip
 
             # get time of Nth (or last) reference cell
             if n_current >= N:
-                tmax = ref.df.iloc[N-1]['t']
+                tmax = ref.data.iloc[N-1]['t']
             else:
-                tmax = ref.df.iloc[-1]['t']
+                tmax = ref.data.iloc[-1]['t']
 
             # select concurrent progenitors and reference cells
             pre = disc.select_cell_type('pre')
-            pre.df['disc_id'] = disc_id
+            pre.data['disc_id'] = disc_id
             pre = pre.select_by_position(tmin=tmin, tmax=tmax)
             ref = ref.select_by_position(tmin=tmin, tmax=tmax)
 
@@ -275,20 +270,20 @@ class Experiment:
             references += ref
 
         # label precursors as multipotent
-        progenitors.df['Population'] = 'Multipotent'
-        progenitors.df['original_idx'] = progenitors.df.index
+        progenitors.data['Population'] = 'Multipotent'
+        progenitors.data['original_idx'] = progenitors.data.index
 
         # label neurons as differentiated
-        references.df['Population'] = 'Differentiated'
-        references.df['original_idx'] = references.df.index
+        references.data['Population'] = 'Differentiated'
+        references.data['original_idx'] = references.data.index
 
         # label with corresponding reference cell type and append to data
-        df = pd.concat((progenitors.df, references.df))
-        df['ReferenceType'] = '/'.join([n.upper() for n in reference_types])
+        data = pd.concat((progenitors.data, references.data))
+        data['ReferenceType'] = '/'.join([n.upper() for n in reference_types])
 
-        return df
+        return data
 
-    def get_early_neuron_df(self,
+    def get_early_neuron_data(self,
                           N=10,
                           lower_slip=0,
                           upper_slip=1):
@@ -305,17 +300,17 @@ class Experiment:
 
         Returns:
 
-            df (DataFrame) - measurement data for early R cells and concurrent progenitors
+            data (DataFrame) - measurement data for early R cells and concurrent progenitors
 
         """
 
         cell_types = [['r8'], ['r2', 'r5'], ['r3', 'r4'], ['r1', 'r6'], ['r7']]
 
-        df = pd.DataFrame()
+        data = pd.DataFrame()
         for types in cell_types:
             data = self.select_by_concurrency(types, N, lower_slip, upper_slip)
-            df = pd.concat([df, data])
-        return df
+            data = pd.concat([data, data])
+        return data
 
     def get_spatial_correlations(self, channel,
                                  cell_type='pre',

@@ -5,7 +5,8 @@ from scipy.stats import norm
 
 from .silhouette import SilhouetteData
 from .image import ImageStack
-from .cells import Cells, format_channel
+from .cells import Cells
+from ..utilities.string_handling import format_channel
 from ..dynamics.averages import detrend_signal
 from ..processing.triangulation import Triangulation
 
@@ -53,7 +54,7 @@ class Disc(Cells, DiscProperties):
 
         normalization (str or int) - channel used to normalize intensities
 
-        df (pd.DataFrame) - cell measurement data
+        data (pd.DataFrame) - cell measurement data
 
     Properties:
 
@@ -88,7 +89,7 @@ class Disc(Cells, DiscProperties):
 
         """
 
-        Cells.__init__(self, silhouette.df, normalization=normalization)
+        Cells.__init__(self, silhouette.data, normalization=normalization)
 
         # set sihouette attribute
         self.silhouette = silhouette
@@ -118,7 +119,7 @@ class Disc(Cells, DiscProperties):
         self.furrow_velocity = furrow_velocity
         self.triangulation = None
         r8_neurons = self.select_cell_type('r8')
-        if len(r8_neurons.df) > 0:
+        if len(r8_neurons.data) > 0:
             self.triangulation = Triangulation(self, threshold=1.75, furrow_velocity=furrow_velocity)
 
         # apply triangulation to compute estimated developmental times
@@ -182,7 +183,7 @@ class Disc(Cells, DiscProperties):
     def standardize_labels(self):
         """ Convert all alternate precursor labels to 'pre' """
         names = ['p', 'prepre', 'v']
-        self.df.loc[self.df.label.isin(names), 'label'] = 'pre'
+        self.data.loc[self.data.label.isin(names), 'label'] = 'pre'
 
     def flip_about_xy(self, save=False):
         """
@@ -193,8 +194,8 @@ class Disc(Cells, DiscProperties):
             save (bool) - if True, save new orientation to silhouette file
 
         """
-        ymax, ymin = self.df.centroid_y.max(), self.df.centroid_y.min()
-        self.df['centroid_y'] = ymax - self.df.centroid_y + ymin
+        ymax, ymin = self.data.centroid_y.max(), self.data.centroid_y.min()
+        self.data['centroid_y'] = ymax - self.data.centroid_y + ymin
 
         # update silhouette file
         if save:
@@ -209,11 +210,11 @@ class Disc(Cells, DiscProperties):
             save (bool) - if True, save new orientation to silhouette file
 
         """
-        xmax, xmin = self.df.centroid_x.max(), self.df.centroid_x.min()
-        self.df['centroid_x'] = xmax - self.df.centroid_x + xmin
-        if 't' in self.df.keys():
-            tmax, tmin = self.df.t.max(), self.df.t.min()
-            self.df['t'] = tmax - self.df.t + tmin
+        xmax, xmin = self.data.centroid_x.max(), self.data.centroid_x.min()
+        self.data['centroid_x'] = xmax - self.data.centroid_x + xmin
+        if 't' in self.data.keys():
+            tmax, tmin = self.data.t.max(), self.data.t.min()
+            self.data['t'] = tmax - self.data.t + tmin
 
         # update silhouette file
         if save:
@@ -226,7 +227,7 @@ class Disc(Cells, DiscProperties):
         else:
             hours_per_pixel = self.triangulation.hours_per_pixel
         self.hours_per_pixel = hours_per_pixel
-        self.df['t'] = self.df['centroid_x'] * self.hours_per_pixel
+        self.data['t'] = self.data['centroid_x'] * self.hours_per_pixel
 
     def apply_lag(self, offset=None):
         """
@@ -243,13 +244,13 @@ class Disc(Cells, DiscProperties):
 
         if offset == 'first_r8':
             r8_neurons = self.select_cell_type('r8')
-            if len(r8_neurons.df) > 0:
-                offset = -r8_neurons.df.t.min()
+            if len(r8_neurons.data) > 0:
+                offset = -r8_neurons.data.t.min()
             else:
                 offset = 0
 
-        self.df['t'] += offset
-        self.df['centroid_x'] += offset / self.hours_per_pixel
+        self.data['t'] += offset
+        self.data['centroid_x'] += offset / self.hours_per_pixel
 
     def normalize_expression(self, max_value):
         """
@@ -261,8 +262,8 @@ class Disc(Cells, DiscProperties):
 
         """
         for channel in self.channels:
-            self.df[channel] /= max_value
-            self.df[channel+'_std'] /= max_value
+            self.data[channel] /= max_value
+            self.data[channel+'_std'] /= max_value
 
     def normalize_by_reference(self, reference):
         """
@@ -275,7 +276,8 @@ class Disc(Cells, DiscProperties):
         """
         for channel in self.channels:
             if channel != reference:
-                self.df[channel+'_norm'] = self.df[channel]/self.df[reference]
+                channel_name = channel+'_normalized'
+                self.data[channel_name] = self.data[channel]/self.data[reference]
 
     def set_ratio(self, num, den):
         """
@@ -284,9 +286,9 @@ class Disc(Cells, DiscProperties):
 
         num, den = format_channel(num), format_channel(den)
 
-        if self.df[den].max() != 0:
-            self.df['logratio'] = np.log2(self.df[num]/self.df[den])
-            self.df['ratio'] = self.df[num]/self.df[den]
+        if self.data[den].max() != 0:
+            self.data['logratio'] = np.log2(self.data[num]/self.data[den])
+            self.data['ratio'] = self.data[num]/self.data[den]
             self.detrend(channels=('logratio',))
 
         else:
@@ -300,12 +302,12 @@ class Disc(Cells, DiscProperties):
 
             channels (iterable) - channels to be detrended
 
-            order (int) - polyorder for local trendfitting
+            order (int) - polyorder for local trendataitting
 
         """
 
         fluctuations = []
-        for cell_type in self.df.label.unique():
+        for cell_type in self.data.label.unique():
 
             # select cells of specified type
             cells = self.select_cell_type(cell_type)
@@ -314,11 +316,11 @@ class Disc(Cells, DiscProperties):
             for ch in channels:
 
                 # skip missing channels
-                if ch not in self.df.columns:
+                if ch not in self.data.columns:
                     continue
 
                 # get samples for current cell type and channel
-                x = cells.df[ch].values
+                x = cells.data[ch].values
 
                 # determine window size for lowpass filter
                 if cell_type == 'pre':
@@ -351,12 +353,12 @@ class Disc(Cells, DiscProperties):
 
             # append cells fluctuations dataframe to list
             data = np.array(data).T
-            data = data.reshape((len(cells.df.index), len(columns)))
-            df = pd.DataFrame(data=data, index=cells.df.index, columns=columns)
-            fluctuations.append(df)
+            data = data.reshape((len(cells.data.index), len(columns)))
+            data = pd.DataFrame(data=data, index=cells.data.index, columns=columns)
+            fluctuations.append(data)
 
         # join measurements with residuals on measurement index
-        self.df = self.df.join(pd.concat(fluctuations))
+        self.data = self.data.join(pd.concat(fluctuations))
 
     def get_multipotent_layers(self, q=.9):
         """
@@ -372,6 +374,6 @@ class Disc(Cells, DiscProperties):
 
         """
         progenitors = self.select_cell_type('pre')
-        layers = progenitors.df.layer.values
+        layers = progenitors.data.layer.values
         bounds = norm(*norm.fit(layers)).ppf([(1-q)/2, (1+q)/2])
         return np.round(bounds).astype(int)

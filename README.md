@@ -27,6 +27,9 @@ Required:
  - [Scipy](https://www.scipy.org/)
  - [Pandas](https://pandas.pydata.org/)
  - [Matplotlib](https://matplotlib.org/)
+
+Optional:
+
  - [AstroML](https://pypi.org/project/astroML/)
  - [AstroML Addons](https://github.com/astroML/astroML_addons)
 
