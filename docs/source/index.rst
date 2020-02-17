@@ -7,13 +7,13 @@
 FlyEye Analysis
 ===============
 
-**FlyEye Analysis** is part of the NU FlyEye platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using FlyEye Silhouette.
+**FlyEye Analysis** is part of the NU FlyEye platform for studying gene expression in *Drosophila* imaginal discs. The analysis package helps users analyze data measured using `FlyEye Silhouette <https://www.silhouette.amaral.northwestern.edu/help/>`_.
 
 Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 
-   - **Dynamic Measurements.** Infer expression dynamics from static data
-
    - **Data Querying.** Select cells by developmental age and cell type
+
+   - **Dynamic Measurements.** Infer expression dynamics from static data
 
    - **Dynamic Analysis.** Analyze and visualize expression dynamics
 
