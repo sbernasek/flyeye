@@ -1,3 +1,4 @@
 v0.1-beta, Sept. 14, 2018 -- Initial release.
 v0.1, Dec. 2019 -- Code release to support manuscript.
 v0.2, Jan. 25, 2020 -- Added support for discrete resampling.
+v0.3, Feb. 17, 2020 -- Aligned syntax with Fly-QMA.
