@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>flyeye.data.discs &#8212; flyeye v0.2 documentation</title>
+    <title>flyeye.data.discs &#8212; flyeye v0.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -40,7 +40,8 @@
 
 <span class="kn">from</span> <span class="nn">.silhouette</span> <span class="k">import</span> <span class="n">SilhouetteData</span>
 <span class="kn">from</span> <span class="nn">.image</span> <span class="k">import</span> <span class="n">ImageStack</span>
-<span class="kn">from</span> <span class="nn">.cells</span> <span class="k">import</span> <span class="n">Cells</span><span class="p">,</span> <span class="n">format_channel</span>
+<span class="kn">from</span> <span class="nn">.cells</span> <span class="k">import</span> <span class="n">Cells</span>
+<span class="kn">from</span> <span class="nn">..utilities.string_handling</span> <span class="k">import</span> <span class="n">format_channel</span>
 <span class="kn">from</span> <span class="nn">..dynamics.averages</span> <span class="k">import</span> <span class="n">detrend_signal</span>
 <span class="kn">from</span> <span class="nn">..processing.triangulation</span> <span class="k">import</span> <span class="n">Triangulation</span>
 
@@ -88,7 +89,7 @@
 
 <span class="sd">        normalization (str or int) - channel used to normalize intensities</span>
 
-<span class="sd">        df (pd.DataFrame) - cell measurement data</span>
+<span class="sd">        data (pd.DataFrame) - cell measurement data</span>
 
 <span class="sd">    Properties:</span>
 
@@ -123,7 +124,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">Cells</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="n">Cells</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span>
 
         <span class="c1"># set sihouette attribute</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">silhouette</span> <span class="o">=</span> <span class="n">silhouette</span>
@@ -153,7 +154,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">furrow_velocity</span> <span class="o">=</span> <span class="n">furrow_velocity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triangulation</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">r8_neurons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;r8&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">triangulation</span> <span class="o">=</span> <span class="n">Triangulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.75</span><span class="p">,</span> <span class="n">furrow_velocity</span><span class="o">=</span><span class="n">furrow_velocity</span><span class="p">)</span>
 
         <span class="c1"># apply triangulation to compute estimated developmental times</span>
@@ -217,7 +218,7 @@
 <div class="viewcode-block" id="Disc.standardize_labels"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.standardize_labels">[docs]</a>    <span class="k">def</span> <span class="nf">standardize_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Convert all alternate precursor labels to &#39;pre&#39; &quot;&quot;&quot;</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;prepre&#39;</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pre&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">names</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pre&#39;</span></div>
 
 <div class="viewcode-block" id="Disc.flip_about_xy"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.flip_about_xy">[docs]</a>    <span class="k">def</span> <span class="nf">flip_about_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -228,8 +229,8 @@
 <span class="sd">            save (bool) - if True, save new orientation to silhouette file</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="n">ymin</span>
+        <span class="n">ymax</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;centroid_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_y</span> <span class="o">+</span> <span class="n">ymin</span>
 
         <span class="c1"># update silhouette file</span>
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
@@ -244,11 +245,11 @@
 <span class="sd">            save (bool) - if True, save new orientation to silhouette file</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+</span> <span class="n">xmin</span>
-        <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">tmax</span><span class="p">,</span> <span class="n">tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">tmin</span>
+        <span class="n">xmax</span><span class="p">,</span> <span class="n">xmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+</span> <span class="n">xmin</span>
+        <span class="k">if</span> <span class="s1">&#39;t&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">tmax</span><span class="p">,</span> <span class="n">tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmax</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="n">tmin</span>
 
         <span class="c1"># update silhouette file</span>
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
@@ -261,7 +262,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">hours_per_pixel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulation</span><span class="o">.</span><span class="n">hours_per_pixel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span> <span class="o">=</span> <span class="n">hours_per_pixel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span></div>
 
 <div class="viewcode-block" id="Disc.apply_lag"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.apply_lag">[docs]</a>    <span class="k">def</span> <span class="nf">apply_lag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -278,13 +279,13 @@
 
         <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="s1">&#39;first_r8&#39;</span><span class="p">:</span>
             <span class="n">r8_neurons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;r8&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="n">r8_neurons</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;centroid_x&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">offset</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span></div>
 
 <div class="viewcode-block" id="Disc.normalize_expression"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_expression">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -296,8 +297,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_std&#39;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_std&#39;</span><span class="p">]</span> <span class="o">/=</span> <span class="n">max_value</span></div>
 
 <div class="viewcode-block" id="Disc.normalize_by_reference"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.normalize_by_reference">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_by_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -310,7 +311,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">channel</span> <span class="o">!=</span> <span class="n">reference</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_norm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">reference</span><span class="p">]</span></div>
+                <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel</span><span class="o">+</span><span class="s1">&#39;_normalized&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">reference</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Disc.set_ratio"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.set_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">set_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">den</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -319,9 +321,9 @@
 
         <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="n">format_channel</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="n">format_channel</span><span class="p">(</span><span class="n">den</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;logratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">den</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">den</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;logratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">den</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">den</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="n">channels</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;logratio&#39;</span><span class="p">,))</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -335,12 +337,12 @@
 
 <span class="sd">            channels (iterable) - channels to be detrended</span>
 
-<span class="sd">            order (int) - polyorder for local trendfitting</span>
+<span class="sd">            order (int) - polyorder for local trendataitting</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">fluctuations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">cell_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">cell_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
 
             <span class="c1"># select cells of specified type</span>
             <span class="n">cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="n">cell_type</span><span class="p">)</span>
@@ -349,11 +351,11 @@
             <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
 
                 <span class="c1"># skip missing channels</span>
-                <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="k">continue</span>
 
                 <span class="c1"># get samples for current cell type and channel</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
                 <span class="c1"># determine window size for lowpass filter</span>
                 <span class="k">if</span> <span class="n">cell_type</span> <span class="o">==</span> <span class="s1">&#39;pre&#39;</span><span class="p">:</span>
@@ -386,12 +388,12 @@
 
             <span class="c1"># append cells fluctuations dataframe to list</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cells</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)))</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">cells</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
-            <span class="n">fluctuations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cells</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">cells</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+            <span class="n">fluctuations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="c1"># join measurements with residuals on measurement index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">fluctuations</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">fluctuations</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Disc.get_multipotent_layers"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.discs.Disc.get_multipotent_layers">[docs]</a>    <span class="k">def</span> <span class="nf">get_multipotent_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=.</span><span class="mi">9</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -407,7 +409,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">progenitors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span>
-        <span class="n">layers</span> <span class="o">=</span> <span class="n">progenitors</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="n">progenitors</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">layer</span><span class="o">.</span><span class="n">values</span>
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="o">*</span><span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">layers</span><span class="p">))</span><span class="o">.</span><span class="n">ppf</span><span class="p">([(</span><span class="mi">1</span><span class="o">-</span><span class="n">q</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">q</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div></div>
 </pre></div>

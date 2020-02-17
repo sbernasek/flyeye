@@ -20,5 +20,8 @@ Dependencies:
  - `Scipy <https://www.scipy.org/>`_
  - `Pandas <https://pandas.pydata.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
+
+Optional (for frequency detection):
+
  - `AstroML <https://pypi.org/project/astroML/>`_
  - `AstroML Addons <https://github.com/astroML/astroML_addons>`_

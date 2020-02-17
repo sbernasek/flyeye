@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Data Module &#8212; flyeye v0.2 documentation</title>
+    <title>Data Module &#8212; flyeye v0.3 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -140,7 +140,7 @@
 <p>Measurement data must be read on a layer-by-layer basis the first time a Silhouette object is instantiated. Following this initial reading, the aggregated measurement data are serialized and stored within the silhouette file. These serialized measurements may then be accessed directly during future use. The recompile flag indicates whether the serialized measurements should be ignored upon instantiation.</p>
 <p>Attributes:</p>
 <blockquote>
-<div>df (pd.DataFrame) - cell measurement data</div></blockquote>
+<div>data (pd.DataFrame) - cell measurement data</div></blockquote>
 <p>Inherited attributes:</p>
 <blockquote>
 <div><p>path (str) - path to Silhouette file</p>
@@ -199,7 +199,7 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>df (pd.DataFrame) - data.cells.Cells compatible dataframe of contours</div></blockquote>
+<div>data (pd.DataFrame) - data.cells.Cells compatible dataframe of contours</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -255,11 +255,11 @@
 
 <dl class="class">
 <dt id="flyeye.data.cells.Cells">
-<em class="property">class </em><code class="descclassname">flyeye.data.cells.</code><code class="descname">Cells</code><span class="sig-paren">(</span><em>df=None</em>, <em>normalization=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">flyeye.data.cells.</code><code class="descname">Cells</code><span class="sig-paren">(</span><em>data=None</em>, <em>normalization=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#Cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.Cells" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object represents a population of cells. Each cell is completely described by a single record in a DataFrame of cell measurements. These measurements include cell positions, expression levels, and cell type annotations. Object may contain cells of one or more cell types.</p>
 <p>Attributes:</p>
 <blockquote>
-<div><p>df (pd.DataFrame) - cell measurement data</p>
+<div><p>data (pd.DataFrame) - cell measurement data</p>
 <p>normalization (str or int) - channel used to normalize intensities</p>
 </div></blockquote>
 <dl class="staticmethod">
@@ -424,18 +424,6 @@
 
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.data.cells.format_channel">
-<code class="descclassname">flyeye.data.cells.</code><code class="descname">format_channel</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#format_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.format_channel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns string representation of &lt;channel&gt;.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="flyeye.data.cells.standardize_channels">
-<code class="descclassname">flyeye.data.cells.</code><code class="descname">standardize_channels</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/cells.html#standardize_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.cells.standardize_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standardize all channel names.</p>
-</dd></dl>
-
 </div>
 <div class="section" id="discs">
 <h2>Discs<a class="headerlink" href="#discs" title="Permalink to this headline">¶</a></h2>
@@ -455,7 +443,7 @@
 <p>Inherited Attributes:</p>
 <blockquote>
 <div><p>normalization (str or int) - channel used to normalize intensities</p>
-<p>df (pd.DataFrame) - cell measurement data</p>
+<p>data (pd.DataFrame) - cell measurement data</p>
 </div></blockquote>
 <p>Properties:</p>
 <blockquote>
@@ -485,7 +473,7 @@
 <p>Args:</p>
 <blockquote>
 <div><p>channels (iterable) - channels to be detrended</p>
-<p>order (int) - polyorder for local trendfitting</p>
+<p>order (int) - polyorder for local trendataitting</p>
 </div></blockquote>
 </dd></dl>
 
@@ -607,7 +595,7 @@
 <p>An Experiment is a set of one or more Disc objects collected under the same experimental conditions. Measurements are often aggregated between discs and compared at this level.</p>
 <span class="target" id="module-flyeye.data.experiments"></span><dl class="class">
 <dt id="flyeye.data.experiments.Experiment">
-<em class="property">class </em><code class="descclassname">flyeye.data.experiments.</code><code class="descname">Experiment</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>auto_alignment=True</em>, <em>align_by='ch1_norm'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">flyeye.data.experiments.</code><code class="descname">Experiment</code><span class="sig-paren">(</span><em>dirpath</em>, <em>normalization</em>, <em>auto_alignment=True</em>, <em>align_by='ch1_normalized'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object representing multiple eye discs obtained under a single set of conditions.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -656,8 +644,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="flyeye.data.experiments.Experiment.get_early_neuron_df">
-<code class="descname">get_early_neuron_df</code><span class="sig-paren">(</span><em>N=10</em>, <em>lower_slip=0</em>, <em>upper_slip=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_early_neuron_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_early_neuron_df" title="Permalink to this definition">¶</a></dt>
+<dt id="flyeye.data.experiments.Experiment.get_early_neuron_data">
+<code class="descname">get_early_neuron_data</code><span class="sig-paren">(</span><em>N=10</em>, <em>lower_slip=0</em>, <em>upper_slip=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/experiments.html#Experiment.get_early_neuron_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.experiments.Experiment.get_early_neuron_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile Dataframe of early R cells and concurrent progenitors.</p>
 <p>Args:</p>
 <blockquote>
@@ -667,7 +655,7 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>df (DataFrame) - measurement data for early R cells and concurrent progenitors</div></blockquote>
+<div>data (DataFrame) - measurement data for early R cells and concurrent progenitors</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -741,7 +729,7 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>df (DataFrame) - cells concurrent with reference cell type</div></blockquote>
+<div>data (DataFrame) - cells concurrent with reference cell type</div></blockquote>
 </dd></dl>
 
 <dl class="method">
