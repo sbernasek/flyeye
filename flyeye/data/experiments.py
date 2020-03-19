@@ -308,8 +308,8 @@ class Experiment:
 
         data = pd.DataFrame()
         for types in cell_types:
-            data = self.select_by_concurrency(types, N, lower_slip, upper_slip)
-            data = pd.concat([data, data])
+            x = self.select_by_concurrency(types, N, lower_slip, upper_slip)
+            data = pd.concat([data, x])
         return data
 
     def get_spatial_correlations(self, channel,
