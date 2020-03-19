@@ -10,7 +10,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='flyeye',
-    version='0.3',
+    version='0.4',
     author='Sebastian Bernasek',
     author_email='sebastian@u.northwestern.com',
     packages=find_packages(exclude=('tests',)),
