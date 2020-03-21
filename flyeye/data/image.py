@@ -149,6 +149,21 @@ class ScalarField:
             im = np.log2(self.im/image.im)
         return ScalarField(im)
 
+    @property
+    def max(self):
+        """ Maximum pixel value. """
+        return self.im.max()
+
+    @property
+    def min(self):
+        """ Minimum pixel value. """
+        return self.im.min()
+
+    @property
+    def abs_max(self):
+        """ Maximum absolute pixel value. """
+        return np.abs([self.min, self.max]).max()
+    
     @staticmethod
     def from_8bit(im):
         """ Instantiate from 8-bit image. """
@@ -187,6 +202,24 @@ class ScalarField:
     def rotate(self, angle):
         """ Apply rotation to image. """
         self.im = self._rotate(self.im, angle=angle)
+
+    def apply_colormap(self, cmap, vmin=0, vmax=2):
+        """
+        Render image to RGB format using provided colormap.
+
+        Args:
+
+            cmap (matplotlib.colors.ColorMap)
+
+            vmin, vmax (int) - color map scale
+
+        Returns:
+
+            im (np.ndarray[float]) - RGB image
+
+        """
+        norm = Normalize(vmin, vmax)
+        return cmap(norm(self.im))
 
     @staticmethod
     def _get_crop_indices(im, xlow=0, xhigh=1, ylow=0, yhigh=1):
