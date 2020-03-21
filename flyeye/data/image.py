@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from glob import glob
 from matplotlib import patches
+from matplotlib.colors import Normalize
 import matplotlib.image as mpimg
 from scipy.ndimage import filters, rotate
 from scipy.ndimage import grey_closing, median_filter
