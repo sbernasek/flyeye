@@ -16,6 +16,14 @@ We recommend reading the sections below before working with your own microscopy 
    The initial release of **NU FlyEye Silhouette** only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.
 
 
+Pipeline Overview
+-----------------
+
+.. figure:: graphics/pipeline.png
+   :align: center
+   :alt: flyeye-pipeline
+
+
 Preparing Images
 ----------------
 
