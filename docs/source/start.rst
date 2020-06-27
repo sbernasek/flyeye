@@ -13,14 +13,6 @@ The fastest way to gain familiarity with **FlyEye Analysis** is to start with a 
 We recommend reading the sections below before working with your own microscopy data.
 
 
-Pipeline Overview
------------------
-
-.. figure:: graphics/pipeline.png
-   :align: center
-   :alt: flyeye-pipeline
-
-
 Preparing Images
 ----------------
 
