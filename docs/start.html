@@ -39,10 +39,6 @@
 <span id="start"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>The fastest way to gain familiarity with <strong>FlyEye Analysis</strong> is to start with a working example. Please feel free to use the data from <a class="reference external" href="https://github.com/sebastianbernasek/pnt_yan_ratio">our study</a> of Pnt and Yan expression during eye development.</p>
 <p>We recommend reading the sections below before working with your own microscopy data.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The initial release of <strong>NU FlyEye Silhouette</strong> only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.</p>
-</div>
 <div class="section" id="pipeline-overview">
 <h2>Pipeline Overview<a class="headerlink" href="#pipeline-overview" title="Permalink to this headline">¶</a></h2>
 <div class="figure align-center">
@@ -52,6 +48,10 @@
 <div class="section" id="preparing-images">
 <h2>Preparing Images<a class="headerlink" href="#preparing-images" title="Permalink to this headline">¶</a></h2>
 <p><strong>FlyEye Analysis</strong> supports analysis of expression data contained in <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the <strong>FlyEye Silhouette</strong> documentation for tips on generating <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> files from your microscopy data.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The initial release of <strong>NU FlyEye Silhouette</strong> only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.</p>
+</div>
 <p>The <code class="docutils literal notranslate"><span class="pre">.silhouette</span></code> filetype includes reporter level measurements and an image for each layer in a 3D image stack. A single file containing all measurement annotations is also included. The contents are structured as:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>example.silhouette
 ├── feud.json        <span class="c1"># image stack metadata</span>
