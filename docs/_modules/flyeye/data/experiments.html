@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>flyeye.data.experiments &#8212; flyeye v0.3 documentation</title>
+    <title>flyeye.data.experiments &#8212; flyeye v0.4 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -343,8 +343,8 @@
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="n">cell_types</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_concurrency</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">lower_slip</span><span class="p">,</span> <span class="n">upper_slip</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">])</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_concurrency</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">lower_slip</span><span class="p">,</span> <span class="n">upper_slip</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="Experiment.get_spatial_correlations"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.experiments.Experiment.get_spatial_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">get_spatial_correlations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span>

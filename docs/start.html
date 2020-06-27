@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Getting Started &#8212; flyeye v0.3 documentation</title>
+    <title>Getting Started &#8212; flyeye v0.4 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -42,6 +42,12 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The initial release of <strong>NU FlyEye Silhouette</strong> only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.</p>
+</div>
+<div class="section" id="pipeline-overview">
+<h2>Pipeline Overview<a class="headerlink" href="#pipeline-overview" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center">
+<img alt="flyeye-pipeline" src="_images/pipeline.png" />
+</div>
 </div>
 <div class="section" id="preparing-images">
 <h2>Preparing Images<a class="headerlink" href="#preparing-images" title="Permalink to this headline">¶</a></h2>
@@ -145,6 +151,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">INSTALLATION</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">GETTING STARTED</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pipeline-overview">Pipeline Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#preparing-images">Preparing Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#organizing-data">Organizing Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#loading-data">Loading Data</a></li>

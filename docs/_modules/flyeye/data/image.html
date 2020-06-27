@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>flyeye.data.image &#8212; flyeye v0.3 documentation</title>
+    <title>flyeye.data.image &#8212; flyeye v0.4 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -38,6 +38,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">patches</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="k">import</span> <span class="n">Normalize</span>
 <span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">filters</span><span class="p">,</span> <span class="n">rotate</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">grey_closing</span><span class="p">,</span> <span class="n">median_filter</span>
@@ -184,6 +185,21 @@
             <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">/</span><span class="n">image</span><span class="o">.</span><span class="n">im</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Maximum pixel value. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Minimum pixel value. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">abs_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Maximum absolute pixel value. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    
 <div class="viewcode-block" id="ScalarField.from_8bit"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.from_8bit">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_8bit</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Instantiate from 8-bit image. &quot;&quot;&quot;</span>
@@ -222,6 +238,24 @@
 <div class="viewcode-block" id="ScalarField.rotate"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Apply rotation to image. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="n">angle</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScalarField.apply_colormap"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.image.ScalarField.apply_colormap">[docs]</a>    <span class="k">def</span> <span class="nf">apply_colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render image to RGB format using provided colormap.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            cmap (matplotlib.colors.ColorMap)</span>
+
+<span class="sd">            vmin, vmax (int) - color map scale</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            im (np.ndarray[float]) - RGB image</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmap</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">im</span><span class="p">))</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_crop_indices</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">xlow</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xhigh</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ylow</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yhigh</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>

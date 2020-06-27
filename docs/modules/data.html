@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Data Module &#8212; flyeye v0.3 documentation</title>
+    <title>Data Module &#8212; flyeye v0.4 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -877,6 +877,26 @@ im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</p>
 <div><p>im (np.ndarray[float32]) - scalar values, (X,Y)</p>
 <p>fig (matplotlib.figure.Figure) - image rendering</p>
 </div></blockquote>
+<dl class="attribute">
+<dt id="flyeye.data.image.ScalarField.abs_max">
+<code class="descname">abs_max</code><a class="headerlink" href="#flyeye.data.image.ScalarField.abs_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum absolute pixel value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flyeye.data.image.ScalarField.apply_colormap">
+<code class="descname">apply_colormap</code><span class="sig-paren">(</span><em>cmap</em>, <em>vmin=0</em>, <em>vmax=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.apply_colormap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.apply_colormap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render image to RGB format using provided colormap.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>cmap (matplotlib.colors.ColorMap)</p>
+<p>vmin, vmax (int) - color map scale</p>
+</div></blockquote>
+<p>Returns:</p>
+<blockquote>
+<div>im (np.ndarray[float]) - RGB image</div></blockquote>
+</dd></dl>
+
 <dl class="method">
 <dt id="flyeye.data.image.ScalarField.apply_filter">
 <code class="descname">apply_filter</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.apply_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.apply_filter" title="Permalink to this definition">¶</a></dt>
@@ -902,6 +922,18 @@ im (np.ndarray[float32]) - RGB pixel values, (X,Y,3)</p>
 <dt id="flyeye.data.image.ScalarField.get_crop_indices">
 <code class="descname">get_crop_indices</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/data/image.html#ScalarField.get_crop_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.data.image.ScalarField.get_crop_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute image index boundaries from fractional bounds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.image.ScalarField.max">
+<code class="descname">max</code><a class="headerlink" href="#flyeye.data.image.ScalarField.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum pixel value.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flyeye.data.image.ScalarField.min">
+<code class="descname">min</code><a class="headerlink" href="#flyeye.data.image.ScalarField.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum pixel value.</p>
 </dd></dl>
 
 <dl class="method">
