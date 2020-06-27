@@ -22,6 +22,14 @@ Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
 Check out our `guide <https://sebastianbernasek.github.io/flyeye/start.html>`_ for tips on getting started with analyzing your own microscopy data.
 
 
+Pipeline Overview
+-----------------
+
+.. figure:: graphics/pipeline.png
+   :align: center
+   :alt: flyeye-pipeline
+
+
 .. toctree::
    :hidden:
    :maxdepth: 2
