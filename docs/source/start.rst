@@ -12,9 +12,6 @@ The fastest way to gain familiarity with **FlyEye Analysis** is to start with a 
 
 We recommend reading the sections below before working with your own microscopy data.
 
-.. Note::
-   The initial release of **NU FlyEye Silhouette** only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.
-
 
 Pipeline Overview
 -----------------
@@ -28,6 +25,10 @@ Preparing Images
 ----------------
 
 **FlyEye Analysis** supports analysis of expression data contained in ``.silhouette`` files. Each of these files corresponds to a single eye disc that has been marked with fluorescent reporters, dissected, imaged, segmented, and annotated. See the **FlyEye Silhouette** documentation for tips on generating ``.silhouette`` files from your microscopy data.
+
+.. Note::
+   The initial release of **NU FlyEye Silhouette** only supports three-channel (e.g. RGB) microscopy data. One of these reporter colors must be reserved for a nuclear marker in order to facilitate segmentation. This leaves at most two reporter channels available for measuring gene expression in any one experiment. However, in anticipation of future versions FlyEye Silhouette supporting additional channels, FlyEye Analysis was designed to support any number of reporter colors. Individual channels are therefore referred to by zero-indexed integer values (e.g. 0, 1, 2) rather than color names. For convenience, any user-provided string values of red, green, and blue (as well as r, g, and b) are automatically mapped to integer values 0, 1, and 2 respectively.
+
 
 The ``.silhouette`` filetype includes reporter level measurements and an image for each layer in a 3D image stack. A single file containing all measurement annotations is also included. The contents are structured as:
 

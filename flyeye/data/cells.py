@@ -82,7 +82,7 @@ class Cells(CellProperties):
 
     def __add__(self, cells):
         """ Concatenate second Cell instance. """
-        cells = Cells(pd.concat((self.data, cells.data)), self.normalization)
+        cells = Cells(pd.concat((self.data, cells.data), sort=True), self.normalization)
         cells.sort(by='t')
         return cells
 
