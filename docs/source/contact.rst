@@ -8,4 +8,4 @@ Contact Us
 
 The **NU FlyEye** platform is developed by the `Amaral <https://amaral.northwestern.edu/>`_ lab at Northwestern University. Contact us via email with any questions regarding the platform and its applications.
 
-For code-specific inquiries, feature requests, or bug reports, please don't hesitate to reach out to the primary author via `GitHub <https://github.com/sebastianbernasek>`_.
+For code-specific inquiries, feature requests, or bug reports, please don't hesitate to reach out to the primary author via `GitHub <https://github.com/sbernasek>`_.

@@ -10,12 +10,12 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='flyeye',
-    version='0.4',
+    version='0.5',
     author='Sebastian Bernasek',
     author_email='sebastian@u.northwestern.com',
     packages=find_packages(exclude=('tests',)),
     scripts=[],
-    url='https://sebastianbernasek.github.io/flyeye/',
+    url='https://sbernasek.github.io/flyeye/',
     license='MIT',
     description='Analysis package for FlyEye Silhouette data.',
     long_description=long_description,

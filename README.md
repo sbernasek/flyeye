@@ -14,7 +14,7 @@ Given one or more ``.silhouette`` files, FlyEye Analysis facilitates:
    - **Spatial Analysis.** Detect and quantify spatial expression patterns
 
 
-Please refer to the [documentation](https://sebastianbernasek.github.io/flyeye/index.html#) page for tips on getting started with analyzing your data.
+Please refer to the [documentation](https://sbernasek.github.io/flyeye/index.html#) page for tips on getting started with analyzing your data.
 
 
 Dependencies
@@ -45,7 +45,7 @@ The simplest method is to install via ``pip``:
 Examples
 ========
 
-For an example of a complete project utilizing the entire **NU FlyEye** platform, please refer to [our study](https://github.com/sebastianbernasek/pnt_yan_ratio) of Pointed and Yan expression during retinal patterning.
+For an example of a complete project utilizing the entire **NU FlyEye** platform, please refer to [our study](https://github.com/sbernasek/pnt_yan_ratio) of Pointed and Yan expression during retinal patterning.
 
 
 Authors
