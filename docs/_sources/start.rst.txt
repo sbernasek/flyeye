@@ -8,7 +8,7 @@
 Getting Started
 ===============
 
-The fastest way to gain familiarity with **FlyEye Analysis** is to start with a working example. Please feel free to use the data from `our study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during eye development.
+The fastest way to gain familiarity with **FlyEye Analysis** is to start with a working example. Please feel free to use the data from `our study <https://github.com/sbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during eye development.
 
 We recommend reading the sections below before working with your own microscopy data.
 

@@ -82,4 +82,4 @@ Plot expression heterogeneity dynamics:
 Additional Examples
 -------------------
 
-For additional usage examples, please refer to our `study <https://github.com/sebastianbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during photoreceptor specification.
+For additional usage examples, please refer to our `study <https://github.com/sbernasek/pnt_yan_ratio>`_ of Pnt and Yan expression during photoreceptor specification.
