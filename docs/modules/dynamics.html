@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Dynamics Module &#8212; flyeye v0.5 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Analysis Module" href="analysis.html" />
@@ -34,16 +33,16 @@
 
           <div class="body" role="main">
             
-  <img alt="nulogo" class="align-right" id="dynamics" src="../_images/Northwestern_purple_RGB1.png" style="width: 30%;" />
-<div class="section" id="dynamics-module">
+  <img alt="nulogo" class="align-right" id="dynamics" src="../_images/Northwestern_purple_RGB.png" style="width: 30%;" />
+<section id="dynamics-module">
 <h1>Dynamics Module<a class="headerlink" href="#dynamics-module" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">flyeye.dynamics</span></code> provides methods for analyzing and visualizing protein expression dynamics.</p>
-<div class="section" id="moving-averages">
+<section id="moving-averages">
 <h2>Moving Averages<a class="headerlink" href="#moving-averages" title="Permalink to this headline">¶</a></h2>
 <p>Tools for evaluating the moving average of empirical timeseries data.</p>
-<span class="target" id="module-flyeye.dynamics.averages"></span><dl class="function">
-<dt id="flyeye.dynamics.averages.apply_custom_roller">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">apply_custom_roller</code><span class="sig-paren">(</span><em>func</em>, <em>x</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#apply_custom_roller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.apply_custom_roller" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-flyeye.dynamics.averages"></span><dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.apply_custom_roller">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">apply_custom_roller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#apply_custom_roller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.apply_custom_roller" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply function to rolling window.</p>
 <p>Args:</p>
 <blockquote>
@@ -53,12 +52,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>fx (np.ndarray) - function output for each window, N/resolution x N_out</div></blockquote>
+<div><p>fx (np.ndarray) - function output for each window, N/resolution x N_out</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.bootstrap">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">bootstrap</code><span class="sig-paren">(</span><em>x</em>, <em>func=&lt;function mean&gt;</em>, <em>confidence=95</em>, <em>N=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.bootstrap">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">bootstrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">func=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">confidence=95</span></em>, <em class="sig-param"><span class="pre">N=1000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#bootstrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.bootstrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns point estimate obtained by parametric bootstrap.</p>
 <p>Args:</p>
 <blockquote>
@@ -69,12 +69,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>interval (np.ndarray) - confidence interval bounds</div></blockquote>
+<div><p>interval (np.ndarray) - confidence interval bounds</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.detrend_signal">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">detrend_signal</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=99</em>, <em>order=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#detrend_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.detrend_signal" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.detrend_signal">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">detrend_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#detrend_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.detrend_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detrend and scale fluctuations using first-order univariate spline.</p>
 <p>Args:</p>
 <blockquote>
@@ -89,9 +90,9 @@
 </div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_binned_mean">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_binned_mean</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_binned_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_binned_mean" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_binned_mean">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_binned_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_binned_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_binned_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns mean values within non-overlapping sequential windows.</p>
 <p>Args:</p>
 <blockquote>
@@ -100,12 +101,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>means (np.ndarray) - bin means, N/W x 1</div></blockquote>
+<div><p>means (np.ndarray) - bin means, N/W x 1</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_rolling_gaussian">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_gaussian</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_gaussian" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_rolling_gaussian">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_rolling_gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_gaussian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_gaussian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns gaussian fit within sliding window.</p>
 <p>Args:</p>
 <blockquote>
@@ -115,12 +117,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>model (scipy.stats.norm)</div></blockquote>
+<div><p>model (scipy.stats.norm)</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_rolling_mean">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_mean</code><span class="sig-paren">(</span><em>x</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_rolling_mean">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_rolling_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute rolling mean. This implementation permits flexible sampling intervals and multi-dimensional time series, but is slower than get_running_mean for 1D time series.</p>
 <p>Args:</p>
 <blockquote>
@@ -129,12 +132,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>means (np.ndarray) - moving average of x, N/resolution x 1</div></blockquote>
+<div><p>means (np.ndarray) - moving average of x, N/resolution x 1</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_rolling_mean_interval">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_mean_interval</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>confidence=95</em>, <em>nbootstraps=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean_interval" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_rolling_mean_interval">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_rolling_mean_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbootstraps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_mean_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_mean_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate confidence interval for moving average of ordered values.</p>
 <p>Args:</p>
 <blockquote>
@@ -146,12 +150,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>interval (np.ndarray) - confidence interval bounds, N/resolution x 2</div></blockquote>
+<div><p>interval (np.ndarray) - confidence interval bounds, N/resolution x 2</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_rolling_window">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_rolling_window</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>resolution=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_window" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_rolling_window">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_rolling_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_rolling_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_rolling_window" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array slices within a rolling window.</p>
 <p>Args:</p>
 <blockquote>
@@ -161,12 +166,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>windows (np.ndarray) - sampled values, N/resolution x W</div></blockquote>
+<div><p>windows (np.ndarray) - sampled values, N/resolution x W</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.get_running_mean">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">get_running_mean</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_running_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_running_mean" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.get_running_mean">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">get_running_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#get_running_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.get_running_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns running mean for a 1D vector. This is the fastest implementation, but is limited to one-dimensional arrays and doesn’t permit interval specification.</p>
 <p>Args:</p>
 <blockquote>
@@ -175,12 +181,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>means (np.ndarray) - moving average of x</div></blockquote>
+<div><p>means (np.ndarray) - moving average of x</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.savgol">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">savgol</code><span class="sig-paren">(</span><em>x</em>, <em>window_size=100</em>, <em>polyorder=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#savgol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.savgol" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.savgol">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">savgol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polyorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#savgol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.savgol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform Savitzky-Golay filtration of 1-D array.</p>
 <p>Args:</p>
 <blockquote>
@@ -190,12 +197,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>trend (np.ndarray) - smoothed values</div></blockquote>
+<div><p>trend (np.ndarray) - smoothed values</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.averages.subsample">
-<code class="descclassname">flyeye.dynamics.averages.</code><code class="descname">subsample</code><span class="sig-paren">(</span><em>x</em>, <em>frac=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#subsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.averages.subsample" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.averages.subsample">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.averages.</span></span><span class="sig-name descname"><span class="pre">subsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/averages.html#subsample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.averages.subsample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample array with replacement.</p>
 <p>Args:</p>
 <blockquote>
@@ -204,16 +212,17 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>sample (np.ndarray) - subsampled values</div></blockquote>
+<div><p>sample (np.ndarray) - subsampled values</p>
+</div></blockquote>
 </dd></dl>
 
-</div>
-<div class="section" id="id1">
+</section>
+<section id="id1">
 <h2>Moving Averages<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Tools for resampling discretized data.</p>
-<span class="target" id="module-flyeye.dynamics.resampling"></span><dl class="class">
-<dt id="flyeye.dynamics.resampling.DiscResampler">
-<em class="property">class </em><code class="descclassname">flyeye.dynamics.resampling.</code><code class="descname">DiscResampler</code><span class="sig-paren">(</span><em>cells</em>, <em>variable</em>, <em>window_size=250</em>, <em>resolution=10</em>, <em>nbootstraps=1000</em>, <em>confidence=95</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-flyeye.dynamics.resampling"></span><dl class="py class">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.resampling.</span></span><span class="sig-name descname"><span class="pre">DiscResampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbootstraps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for evaluating the moving average across multiple discrete populations of cells. Measurements are resampled from pools of cells generated by resampling the discrete populations.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -225,15 +234,15 @@
 <p>confidence (float) - confidence interval, 0 to 100</p>
 <p>point_estimates (np.ndarray[float]) - array of point estimates within each window</p>
 </div></blockquote>
-<dl class="method">
-<dt id="flyeye.dynamics.resampling.DiscResampler.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>f</em>, <em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.apply" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.apply">
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies function &lt;f&gt; to rolling window over &lt;x&gt;.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.resampling.DiscResampler.bootstrap">
-<code class="descname">bootstrap</code><span class="sig-paren">(</span><em>idx</em>, <em>variable</em>, <em>f=&lt;function mean&gt;</em>, <em>nbootstraps=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.bootstrap">
+<span class="sig-name descname"><span class="pre">bootstrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx</span></em>, <em class="sig-param"><span class="pre">variable</span></em>, <em class="sig-param"><span class="pre">f=&lt;function</span> <span class="pre">mean&gt;</span></em>, <em class="sig-param"><span class="pre">nbootstraps=1000</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.bootstrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.bootstrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns list of point estimates obtained by resampling eye discs.</p>
 <p>Args:</p>
 <blockquote>
@@ -243,54 +252,57 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>point_estimates (list) - point estimates obtained by resampling eye discs</div></blockquote>
+<div><p>point_estimates (list) - point estimates obtained by resampling eye discs</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="flyeye.dynamics.resampling.DiscResampler.confidence_interval">
-<code class="descname">confidence_interval</code><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.confidence_interval" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.confidence_interval">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">confidence_interval</span></span><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.confidence_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>95% confidence interval for rolling average of variable.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.resampling.DiscResampler.generate_point_estimates">
-<code class="descname">generate_point_estimates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.generate_point_estimates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.generate_point_estimates" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.generate_point_estimates">
+<span class="sig-name descname"><span class="pre">generate_point_estimates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.generate_point_estimates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.generate_point_estimates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an array of point estimates within each window.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="flyeye.dynamics.resampling.DiscResampler.mean">
-<code class="descname">mean</code><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.mean" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.mean">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rolling average of variable.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.resampling.DiscResampler.roll">
-<code class="descname">roll</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.roll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.roll" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.roll">
+<span class="sig-name descname"><span class="pre">roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.roll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.roll" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns rolling window over &lt;x&gt;.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.resampling.DiscResampler.subsample_discs">
-<code class="descname">subsample_discs</code><span class="sig-paren">(</span><em>values_per_disc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.subsample_discs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.subsample_discs" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.resampling.DiscResampler.subsample_discs">
+<span class="sig-name descname"><span class="pre">subsample_discs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values_per_disc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/resampling.html#DiscResampler.subsample_discs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.resampling.DiscResampler.subsample_discs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subsample discs within the specified set of positional indices, then cells within them.</p>
 <p>Args:</p>
 <blockquote>
-<div>values_per_disc (dict) - dictionary of values keyed by disc indices</div></blockquote>
+<div><p>values_per_disc (dict) - dictionary of values keyed by disc indices</p>
+</div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>sample (np.ndarray[float]) - sample randomized within and between discs</div></blockquote>
+<div><p>sample (np.ndarray[float]) - sample randomized within and between discs</p>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="timeseries-visualization">
+</section>
+<section id="timeseries-visualization">
 <h2>Timeseries Visualization<a class="headerlink" href="#timeseries-visualization" title="Permalink to this headline">¶</a></h2>
 <p>Tools for visualizing empirical timeseries data.</p>
-<span class="target" id="module-flyeye.dynamics.visualization"></span><dl class="class">
-<dt id="flyeye.dynamics.visualization.IntervalPlot">
-<em class="property">class </em><code class="descclassname">flyeye.dynamics.visualization.</code><code class="descname">IntervalPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y_lower</em>, <em>y_upper</em>, <em>y=None</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-flyeye.dynamics.visualization"></span><dl class="py class">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.IntervalPlot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.visualization.</span></span><span class="sig-name descname"><span class="pre">IntervalPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object describes the 95% confidence interval for a 1D timeseries.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -300,9 +312,9 @@
 <p>y (np.ndarray) - mean or median value for dependent variable</p>
 <p>ax (matplotlib.axes.AxesSubplot)</p>
 </div></blockquote>
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.IntervalPlot.average">
-<code class="descname">average</code><span class="sig-paren">(</span><em>smooth=True</em>, <em>color='k'</em>, <em>alpha=1</em>, <em>lw=1</em>, <em>linestyle=None</em>, <em>**addtl</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.average" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.IntervalPlot.average">
+<span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">addtl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot moving average of x and y data.</p>
 <p>Args:</p>
 <blockquote>
@@ -311,18 +323,19 @@
 </div></blockquote>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.IntervalPlot.interval">
-<code class="descname">interval</code><span class="sig-paren">(</span><em>color='k'</em>, <em>alpha=0.5</em>, <em>**additional</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.interval" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.IntervalPlot.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">additional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot confidence interval for moving average of x and y data.</p>
 <p>Args:</p>
 <blockquote>
-<div>color, alpha - formatting parameters</div></blockquote>
+<div><p>color, alpha - formatting parameters</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.IntervalPlot.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>average=True</em>, <em>interval=False</em>, <em>line_kw={}</em>, <em>interval_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.plot" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.IntervalPlot.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#IntervalPlot.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.IntervalPlot.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot timeseries data.</p>
 <p>Args:</p>
 <blockquote>
@@ -335,9 +348,9 @@
 
 </dd></dl>
 
-<dl class="class">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot">
-<em class="property">class </em><code class="descclassname">flyeye.dynamics.visualization.</code><code class="descname">TimeseriesPlot</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.visualization.</span></span><span class="sig-name descname"><span class="pre">TimeseriesPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object describes a 1D timeseries.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -345,9 +358,9 @@
 <p>y (np.ndarray) - dependent variable</p>
 <p>ax (matplotlib.axes.AxesSubplot)</p>
 </div></blockquote>
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot.average">
-<code class="descname">average</code><span class="sig-paren">(</span><em>ma_type='savgol'</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>smooth=True</em>, <em>color='k'</em>, <em>alpha=1</em>, <em>lw=1</em>, <em>linestyle=None</em>, <em>**addtl</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.average" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot.average">
+<span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ma_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'savgol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">additional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot moving average of x and y data.</p>
 <p>Args:</p>
 <blockquote>
@@ -359,15 +372,15 @@
 </div></blockquote>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot.create_figure">
-<code class="descname">create_figure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.create_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.create_figure" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot.create_figure">
+<span class="sig-name descname"><span class="pre">create_figure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.create_figure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.create_figure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instantiate figure.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot.interval">
-<code class="descname">interval</code><span class="sig-paren">(</span><em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=25</em>, <em>nbootstraps=1000</em>, <em>confidence=95</em>, <em>color='k'</em>, <em>alpha=0.5</em>, <em>**additional</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.interval" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ma_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sliding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbootstraps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">additional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot confidence interval for moving average of x and y data.</p>
 <p>Args:</p>
 <blockquote>
@@ -380,9 +393,9 @@
 </div></blockquote>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>scatter=False</em>, <em>average=True</em>, <em>interval=False</em>, <em>marker_kw={}</em>, <em>line_kw={}</em>, <em>interval_kw={}</em>, <em>ma_kw={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.plot" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ma_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot timeseries data.</p>
 <p>Args:</p>
 <blockquote>
@@ -396,9 +409,9 @@
 </div></blockquote>
 </dd></dl>
 
-<dl class="method">
-<dt id="flyeye.dynamics.visualization.TimeseriesPlot.scatter">
-<code class="descname">scatter</code><span class="sig-paren">(</span><em>color='k'</em>, <em>alpha=1</em>, <em>s=1</em>, <em>rasterized=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.scatter" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.TimeseriesPlot.scatter">
+<span class="sig-name descname"><span class="pre">scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">additional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#TimeseriesPlot.scatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.TimeseriesPlot.scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scatterplot markers for x and y data.</p>
 <p>Args:</p>
 <blockquote>
@@ -411,9 +424,9 @@
 
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.visualization.plot_mean">
-<code class="descclassname">flyeye.dynamics.visualization.</code><code class="descname">plot_mean</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax</em>, <em>label=None</em>, <em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=1</em>, <em>line_color='k'</em>, <em>line_width=1</em>, <em>line_alpha=1</em>, <em>linestyle=None</em>, <em>markersize=2</em>, <em>smooth=False</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#plot_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.plot_mean" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.plot_mean">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.visualization.</span></span><span class="sig-name descname"><span class="pre">plot_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ma_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sliding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#plot_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.plot_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot moving average.</p>
 <p>Args:</p>
 <blockquote>
@@ -428,12 +441,13 @@
 </div></blockquote>
 <p>Returns:</p>
 <blockquote>
-<div>line (matplotlib.lines.Line2D)</div></blockquote>
+<div><p>line (matplotlib.lines.Line2D)</p>
+</div></blockquote>
 </dd></dl>
 
-<dl class="function">
-<dt id="flyeye.dynamics.visualization.plot_mean_interval">
-<code class="descclassname">flyeye.dynamics.visualization.</code><code class="descname">plot_mean_interval</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>ax</em>, <em>ma_type='sliding'</em>, <em>window_size=100</em>, <em>resolution=10</em>, <em>nbootstraps=1000</em>, <em>confidence=95</em>, <em>color='grey'</em>, <em>alpha=0.25</em>, <em>error_bars=False</em>, <em>lw=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#plot_mean_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flyeye.dynamics.visualization.plot_mean_interval" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="flyeye.dynamics.visualization.plot_mean_interval">
+<span class="sig-prename descclassname"><span class="pre">flyeye.dynamics.visualization.</span></span><span class="sig-name descname"><span class="pre">plot_mean_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ma_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sliding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbootstraps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flyeye/dynamics/visualization.html#plot_mean_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flyeye.dynamics.visualization.plot_mean_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds confidence interval for line average (sliding window or binned) to existing axes.</p>
 <p>Args:</p>
 <blockquote>
@@ -448,8 +462,8 @@
 </div></blockquote>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -506,17 +520,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>

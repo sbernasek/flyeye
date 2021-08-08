@@ -4,27 +4,24 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search &#8212; flyeye v0.5 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installation &#8212; flyeye v0.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/searchtools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
-  <script src="searchindex.js" defer></script>
-  
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="start.html" />
+    <link rel="prev" title="FlyEye Analysis" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
 
   </head><body>
   
@@ -36,35 +33,31 @@
 
           <div class="body" role="main">
             
-  <h1 id="search-documentation">Search</h1>
-  
-  <div id="fallback" class="admonition warning">
-  <script>$('#fallback').hide();</script>
-  <p>
-    Please activate JavaScript to enable the search
-    functionality.
-  </p>
-  </div>
-  
-  
-  <p>
-    Searching for multiple words only shows matches that contain
-    all words.
-  </p>
-  
-  
-  <form action="" method="get">
-    <input type="text" name="q" aria-labelledby="search-documentation" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-    <input type="submit" value="search" />
-    <span id="search-progress" style="padding-left: 10px"></span>
-  </form>
-  
-  
-  
-  <div id="search-results">
-  
-  </div>
-  
+  <img alt="nulogo" class="align-right" src="_images/Northwestern_purple_RGB.png" style="width: 30%;" />
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>The simplest method is to install via PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install flyeye
+</pre></div>
+</div>
+<p>Dependencies:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Python 3.6+</p></li>
+<li><p><a class="reference external" href="https://www.scipy.org/">Scipy</a></p></li>
+<li><p><a class="reference external" href="https://pandas.pydata.org/">Pandas</a></p></li>
+<li><p><a class="reference external" href="https://matplotlib.org/">Matplotlib</a></p></li>
+</ul>
+</div></blockquote>
+<p>Optional (for frequency detection):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/astroML/">AstroML</a></p></li>
+<li><p><a class="reference external" href="https://github.com/astroML/astroML_addons">AstroML Addons</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+
 
           </div>
           
@@ -94,8 +87,8 @@
 
 
 <h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">INSTALLATION</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">INSTALLATION</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start.html">GETTING STARTED</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">EXAMPLE USAGE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">DOCUMENTATION</a></li>
@@ -106,9 +99,21 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">FlyEye Analysis</a></li>
+      <li>Next: <a href="start.html" title="next chapter">Getting Started</a></li>
   </ul></li>
 </ul>
 </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -124,6 +129,9 @@
     <div class="footer">
       &copy;2020, Amaral Lab.
       
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
 
     

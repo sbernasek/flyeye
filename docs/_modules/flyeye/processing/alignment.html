@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flyeye.processing.alignment &#8212; flyeye v0.5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for flyeye.processing.alignment</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">add</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+
+<span class="kn">from</span> <span class="nn">..dynamics.averages</span> <span class="kn">import</span> <span class="n">get_running_mean</span><span class="p">,</span> <span class="n">get_rolling_mean</span>
+
+
+<div class="viewcode-block" id="Alignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.Alignment">[docs]</a><span class="k">class</span> <span class="nc">Alignment</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for alignment of a 1-D timeseries with another.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        t, x (np.ndarray) - timeseries to be aligned</span>
+
+<span class="sd">        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned</span>
+
+<span class="sd">        window_size (int) - window size used for local smoothing</span>
+
+<span class="sd">        lag (float) - computed time shift for optimal alignment</span>
+
+<span class="sd">        score (float) - computed metric for quality of alignment</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+                 <span class="n">t_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+                 <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for alignment of one timeseries with another.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            t (np.ndarray) - timepoints of timeseries to be aligned</span>
+
+<span class="sd">            x (np.ndarray) - values of timeseries to be aligned</span>
+
+<span class="sd">            t_ref (np.ndarray) - timepoints of reference</span>
+
+<span class="sd">            x_ref (np.ndarray) - values of reference</span>
+
+<span class="sd">            metric (str) - name of alignment criterion</span>
+
+<span class="sd">            window_size (int) - window size used for local smoothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_position</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="n">window_size</span>
+        <span class="k">if</span> <span class="n">t_ref</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">x_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">t_ref</span><span class="p">,</span> <span class="n">x_ref</span> <span class="o">=</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_position</span><span class="p">(</span><span class="n">t_ref</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">)</span>
+        <span class="n">lag</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">align</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lag</span> <span class="o">=</span> <span class="n">lag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+
+    <span class="k">def</span> <span class="nf">_get_alignnment_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return new Alignment instance. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Alignment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_ref</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_sort</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort timeseries by time.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            t (np.ndarray) - timepoints</span>
+
+<span class="sd">            x (np.ndarray) - values</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            ts, xs (np.ndarray) - time-sorted timepoints and values</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sort_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="n">sort_ind</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">sort_ind</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_align_zero</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Shift values so minimum is zero. &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">-=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_initialize_position</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">t_</span><span class="p">,</span> <span class="n">x_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sort vector and shift to zero start position. &quot;&quot;&quot;</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sort</span><span class="p">(</span><span class="n">t_</span><span class="p">,</span> <span class="n">x_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_align_zero</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">x</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_regular_timepoints</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Construct array of regularly sampled timepoints. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">step</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_interpolate</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">t_regular</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Interpolate values onto regularly sampled timepoints. &quot;&quot;&quot;</span>
+        <span class="n">interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interp</span><span class="p">(</span><span class="n">t_regular</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_smooth</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+                <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return moving average interpolated onto regular timepoints. &quot;&quot;&quot;</span>
+
+        <span class="c1"># evaluate moving average</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">get_rolling_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+
+        <span class="c1"># interpolate onto regulat timepoints</span>
+        <span class="n">tsr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_regular_timepoints</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">xsr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_interpolate</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">tsr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tsr</span><span class="p">,</span> <span class="n">xsr</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_zscore</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Z-score values. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_unit_scale</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Re-scale by maximum value. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_crosscorrelation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Evaluate normalized crosscorrelation between z-scored vectors. &quot;&quot;&quot;</span>
+        <span class="n">xz</span><span class="p">,</span> <span class="n">yz</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_zscore</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_zscore</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">xz</span><span class="p">,</span> <span class="n">yz</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_crossvariogram</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Evaluate nonnormalized correlation between unit-scaled vectors. &quot;&quot;&quot;</span>
+        <span class="n">xu</span><span class="p">,</span> <span class="n">yu</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">xu</span><span class="p">,</span> <span class="n">yu</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_slide_with_extrapolation</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Apply function over slices in which y rolls across x. Outer-bounds of y are filled with its min/max values. &quot;&quot;&quot;</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">x_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">n</span><span class="p">):</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_slide_full</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Apply function over slices in which y rolls over x. Behavior is quivalent to &#39;full&#39; mode in np.correlate. &quot;&quot;&quot;</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">evals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+                <span class="n">func_eval</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">):],</span> <span class="n">x</span><span class="p">[:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+                <span class="n">evals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_eval</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">m</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="n">func_eval</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">y</span><span class="p">[(</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">):(</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[(</span><span class="n">i</span> <span class="o">-</span> <span class="n">m</span><span class="o">-</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):])</span>
+                <span class="n">evals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_eval</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func_eval</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">x_ref</span><span class="p">[:</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">)],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+                <span class="n">evals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_eval</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">evals</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_inverse_distance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Evaluate inverse distance between unit-scaled vectors. &quot;&quot;&quot;</span>
+        <span class="n">get_inverse_distance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x2</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_slide_with_extrapolation</span><span class="p">(</span><span class="n">get_inverse_distance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scores</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_inverse_squared_distance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Evaluate squared inverse distance between unit-scaled vectors. &quot;&quot;&quot;</span>
+        <span class="n">get_inverse_squared_distance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="p">(((</span><span class="n">x1</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_slide_with_extrapolation</span><span class="p">(</span><span class="n">get_inverse_squared_distance</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_unit_scale</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scores</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_lag_vector</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns ordered vector of lag times. Lags are shifted by minimums in order to account for first timepoint being shifted above zero by smoothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">t_ref</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">t_ref</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="o">-</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span> <span class="n">t_ref</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_maximize</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns lag that maximizes scoring metric, along with corresponding score. &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">lags</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">scores</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Alignment.get_smoothed_scores"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.Alignment.get_smoothed_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_smoothed_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+                            <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                            <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns smoothed alignment scores. &quot;&quot;&quot;</span>
+
+        <span class="c1"># interpolate rolling averages onto regular grid</span>
+        <span class="n">t_ref</span><span class="p">,</span> <span class="n">x_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_ref</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># evaluate scores</span>
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;crosscorrelation&#39;</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_crosscorrelation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;crossvariogram&#39;</span> <span class="ow">or</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;variogram&#39;</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_crossvariogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;inverse_distance&#39;</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inverse_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;inverse_squared_distance&#39;</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inverse_squared_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Alignment metric not recognized.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">scores</span></div>
+
+<div class="viewcode-block" id="Alignment.align"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.Alignment.align">[docs]</a>    <span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+              <span class="n">window_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+              <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run alignment to determine optimal lag.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            metric (str) - name of alignment criterion</span>
+
+<span class="sd">            window_size (int) - window size for local smoothing</span>
+
+<span class="sd">            dt (float) - resolution</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            lag (float) - time shift that maximizes quality of alignment</span>
+
+<span class="sd">            score (float) - quality of alignment</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get smoothed metric vectors</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_smoothed_scores</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+        <span class="c1"># find lag that maximizes metric</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lag_vector</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="n">lag</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maximize</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lag</span><span class="p">,</span> <span class="n">score</span></div>
+
+<div class="viewcode-block" id="Alignment.plot_scores"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.Alignment.plot_scores">[docs]</a>    <span class="k">def</span> <span class="nf">plot_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+                    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">window_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot quality of alignment versus lag time.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            metric (str) - name of alignment criterion</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">            window_size (int) - window size for local smoothing</span>
+
+<span class="sd">            dt (float) - resolution</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># create axes if none provided</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">window_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span>
+
+        <span class="c1"># get correlations</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_smoothed_scores</span><span class="p">(</span><span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lag_vector</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+
+        <span class="c1"># plot correlation as a function of lag</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># add maximum</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_maximize</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">scores</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
+
+        <span class="c1"># format plot</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Lag&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">metric</span><span class="o">==</span><span class="s1">&#39;crosscorrelation&#39;</span> <span class="ow">or</span> <span class="n">metric</span><span class="o">==</span><span class="s1">&#39;crossvariogram&#39;</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Alignment.plot_alignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.Alignment.plot_alignment">[docs]</a>    <span class="k">def</span> <span class="nf">plot_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">scatter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">trend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot aligned time series.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            scatter (bool) - if True, show individual samples</span>
+
+<span class="sd">            trend (bool) - if True, show moving average</span>
+
+<span class="sd">            ax (matplotlib.axes.AxesSubplot)</span>
+
+<span class="sd">            window_size (int) - window size for local smoothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># add datapoints to plot</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">scatter</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;.r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_ref</span><span class="p">,</span> <span class="s1">&#39;.k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="c1"># add moving averages to plot</span>
+        <span class="k">if</span> <span class="n">trend</span><span class="p">:</span>
+            <span class="n">smooth</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_running_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+            <span class="n">red_line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lag</span><span class="p">),</span> <span class="n">smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">black_line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_ref</span><span class="p">),</span> <span class="n">smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_ref</span><span class="p">),</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># format plot</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="n">black_line</span><span class="p">,</span> <span class="n">red_line</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">,</span> <span class="s1">&#39;aligned&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CellsAlignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.CellsAlignment">[docs]</a><span class="k">class</span> <span class="nc">CellsAlignment</span><span class="p">(</span><span class="n">Alignment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for alignment of one group of cells with another.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        data (pd.DataFrame) - aligned cells data</span>
+
+<span class="sd">    Inherited attributes:</span>
+
+<span class="sd">        t, x (np.ndarray) - timeseries to be aligned</span>
+
+<span class="sd">        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned</span>
+
+<span class="sd">        window_size (int) - window size used for local smoothing</span>
+
+<span class="sd">        lag (float) - computed time shift for optimal alignment</span>
+
+<span class="sd">        score (float) - computed metric for quality of alignment</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
+                 <span class="n">reference_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;ch1_normalized&#39;</span><span class="p">,</span>
+                 <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span>
+                 <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+                 <span class="n">window_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for alignment of one group of cells with another.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            data (pd.DataFrame) - aligned cells data</span>
+
+<span class="sd">            reference_data (pd.DataFrame) - reference cells data</span>
+
+<span class="sd">            channel (str or int) - cells attribute used as alignment values</span>
+
+<span class="sd">            basis (str) - cells attribute  used as alignment timepoints</span>
+
+<span class="sd">            metric (str) - name of alignment criterion</span>
+
+<span class="sd">            window_size (int) - window size used for local smoothing (# of cells)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># extract timeseries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">basis</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">t_ref</span><span class="p">,</span> <span class="n">x_ref</span> <span class="o">=</span> <span class="n">reference_data</span><span class="p">[</span><span class="n">basis</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">reference_data</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># set window size</span>
+        <span class="k">if</span> <span class="n">window_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window_size</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="c1"># perform alignment</span>
+        <span class="n">Alignment</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">t_ref</span><span class="p">,</span> <span class="n">x_ref</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiscAlignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.DiscAlignment">[docs]</a><span class="k">class</span> <span class="nc">DiscAlignment</span><span class="p">(</span><span class="n">CellsAlignment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for alignment of one Disc instance with another.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        disc (data.discs.Disc) - copy of aligned disc instance</span>
+
+<span class="sd">        hours_per_pixel (float) - distance to time scaling factor</span>
+
+<span class="sd">        space_lag (float) - computed time shift for optimal alignment (x-units)</span>
+
+<span class="sd">        time_lag (float) - computed time shift for optimal alignment (t-units)</span>
+
+<span class="sd">    Inherited attributes:</span>
+
+<span class="sd">        t, x (np.ndarray) - timeseries to be aligned</span>
+
+<span class="sd">        t_ref, x_ref (np.ndarray) - reference to which timeseries is aligned</span>
+
+<span class="sd">        window_size (int) - window size used for local smoothing</span>
+
+<span class="sd">        lag (float) - computed time shift for optimal alignment</span>
+
+<span class="sd">        score (float) - computed metric for quality of alignment</span>
+
+<span class="sd">        data (pd.DataFrame) - aligned cells data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span> <span class="n">reference_disc</span><span class="p">,</span>
+                 <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;ch1_normalized&#39;</span><span class="p">,</span>
+                 <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;crosscorrelation&#39;</span><span class="p">,</span>
+                 <span class="n">window_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for alignment of one Disc instance with another.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            disc (data.discs.Disc) - aligned disc</span>
+
+<span class="sd">            reference_disc (data.discs.Disc) - reference disc</span>
+
+<span class="sd">            channel (str) - cells attribute used as alignment values</span>
+
+<span class="sd">            metric (str) - name of alignment criterion</span>
+
+<span class="sd">            window_size (int) - window size used for local smoothing (# cells)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hours_per_pixel</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">hours_per_pixel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disc</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">disc</span><span class="p">)</span>
+
+        <span class="c1"># select precursor dataframes</span>
+        <span class="n">precursor_data</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">reference_precursor_data</span> <span class="o">=</span> <span class="n">reference_disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c1"># if no precursors were found, check for &#39;wpre&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">precursor_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">precursor_data</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;wpre&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">reference_precursor_data</span> <span class="o">=</span> <span class="n">reference_disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;wpre&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="c1"># initialize alignment object (discs must be aligned on time)</span>
+        <span class="n">CellsAlignment</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precursor_data</span><span class="p">,</span> <span class="n">reference_data</span><span class="o">=</span><span class="n">reference_precursor_data</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>  <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+
+        <span class="c1"># update time lags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">space_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lag</span> <span class="o">/</span> <span class="n">disc</span><span class="o">.</span><span class="n">hours_per_pixel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lag</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return aligned disc &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_aligned_disc</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DiscAlignment.apply_to_disc"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.DiscAlignment.apply_to_disc">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">apply_to_disc</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="n">space_lag</span><span class="p">,</span> <span class="n">time_lag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply lag to copy of disc.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            disc (data.discs.Disc)</span>
+
+<span class="sd">            space_lag (float) - lag to be applied (x-units)</span>
+
+<span class="sd">            time_lag (float) - lag to be applied (t-units)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            disc (data.discs.Disc) - copy of disc with lag applied</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">disc</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">disc</span><span class="p">)</span>
+        <span class="n">disc</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_x</span> <span class="o">+=</span> <span class="p">(</span><span class="n">space_lag</span> <span class="o">-</span> <span class="n">disc</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">centroid_x</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">disc</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span> <span class="o">+=</span> <span class="p">(</span><span class="n">time_lag</span> <span class="o">-</span> <span class="n">disc</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">disc</span></div>
+
+<div class="viewcode-block" id="DiscAlignment.get_aligned_disc"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.DiscAlignment.get_aligned_disc">[docs]</a>    <span class="k">def</span> <span class="nf">get_aligned_disc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return aligned copy of disc. &quot;&quot;&quot;</span>
+        <span class="n">disc</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disc</span><span class="p">)</span>
+        <span class="n">disc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_to_disc</span><span class="p">(</span><span class="n">disc</span><span class="p">,</span> <span class="n">space_lag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">space_lag</span><span class="p">,</span> <span class="n">time_lag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_lag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">disc</span></div></div>
+
+
+<div class="viewcode-block" id="ExperimentAlignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.ExperimentAlignment">[docs]</a><span class="k">class</span> <span class="nc">ExperimentAlignment</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for the time-alignment of all discs within an experiment.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        experiment (data.experiments.Experiment) - copy of experiment</span>
+
+<span class="sd">        scores (dict) - keys are disc IDs, values are quality of alignment</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for the time-alignment of all discs within an experiment. The first disc serves as the reference.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            experiment (data.experiments.Experiment)</span>
+
+<span class="sd">            kwargs: keyword arguments for DiscAlignment instantiation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align_discs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">disc</span><span class="p">:</span> <span class="n">alignment</span><span class="o">.</span><span class="n">score</span> <span class="k">for</span> <span class="n">disc</span><span class="p">,</span> <span class="n">alignment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alignments</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_align_discs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Align all discs with first disc.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            experiment (data.experiments.Experiment)</span>
+
+<span class="sd">            kwargs: keyword arguments for DiscAlignment instantiation</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            experiment (data.experiments.Experiment) - copy of experiment</span>
+
+<span class="sd">            alignments (dict) - {disc ID: Alignment} pairs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reference_disc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alignments</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">disc_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">)):</span>
+            <span class="n">alignment</span> <span class="o">=</span> <span class="n">DiscAlignment</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">disc_id</span><span class="p">],</span> <span class="n">reference_disc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">alignments</span><span class="p">[</span><span class="n">disc_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">alignment</span>
+            <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">disc_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">alignment</span><span class="o">.</span><span class="n">get_aligned_disc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">alignments</span>
+
+<div class="viewcode-block" id="ExperimentAlignment.align_discs"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.ExperimentAlignment.align_discs">[docs]</a>    <span class="k">def</span> <span class="nf">align_discs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Align all discs with first disc.</span>
+
+<span class="sd">        kwargs: keyword arguments for DiscAlignment instantiation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiment</span><span class="p">,</span> <span class="n">alignments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_align_discs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alignments</span> <span class="o">=</span> <span class="n">alignments</span></div>
+
+<div class="viewcode-block" id="ExperimentAlignment.get_aligned_experiment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.ExperimentAlignment.get_aligned_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">get_aligned_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return aligned experiment. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span></div></div>
+
+
+<div class="viewcode-block" id="MultiExperimentAlignment"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.MultiExperimentAlignment">[docs]</a><span class="k">class</span> <span class="nc">MultiExperimentAlignment</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object for the time-alignment of multiple experiments. The first experiment serves as the reference.</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">        experiments (list) - copies of Experiment instances</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">experiments</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instantiate object for the time-alignment of multiple experiments. The first experiment serves as the reference.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            experiments (iterable) - data.experiments.Experiment instances</span>
+
+<span class="sd">            kwargs: keyword arguments for the alignment</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span> <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align_experiments</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_align_experiments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span>
+                           <span class="n">channel</span><span class="o">=</span><span class="s1">&#39;ch1_normalized&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Align all experiments with the first experiment.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            experiments (iterable) - data.experiments.Experiment instances</span>
+
+<span class="sd">            channel (str) - fluorescence channel by which to align experiments</span>
+
+<span class="sd">            kwargs: keyword arguments for the alignment</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            experiments (list) - list of copied Experiment instances</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aggregate_discs</span><span class="p">(</span><span class="n">experiments</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span>
+
+        <span class="n">ref_initial_offset</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">aggregate_discs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">aggregate_discs</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="s1">&#39;pre&#39;</span><span class="p">)</span>
+
+            <span class="c1"># shift to zero</span>
+            <span class="n">initial_offset</span> <span class="o">=</span> <span class="n">aggregate_discs</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+            <span class="n">alignment</span> <span class="o">=</span> <span class="n">CellsAlignment</span><span class="p">(</span><span class="n">aggregate_discs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">reference</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">experiment</span><span class="o">.</span><span class="n">apply_lag</span><span class="p">(</span><span class="n">alignment</span><span class="o">.</span><span class="n">lag</span><span class="o">+</span><span class="n">ref_initial_offset</span><span class="o">-</span><span class="n">initial_offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">experiments</span>
+
+<div class="viewcode-block" id="MultiExperimentAlignment.align_experiments"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.MultiExperimentAlignment.align_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">align_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Align all experiments with first experiment.</span>
+
+<span class="sd">        kwargs: keyword arguments for alignment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_align_experiments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span> <span class="o">=</span> <span class="n">experiments</span></div>
+
+<div class="viewcode-block" id="MultiExperimentAlignment.aggregate_discs"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.MultiExperimentAlignment.aggregate_discs">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">aggregate_discs</span><span class="p">(</span><span class="n">experiment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aggregate all discs within an Experiment into single Cells object.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            experiment (data.experiments.Experiment)</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            cells (data.cells.Cells)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">discs</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="MultiExperimentAlignment.get_aligned_experiments"><a class="viewcode-back" href="../../../modules/processing.html#flyeye.processing.alignment.MultiExperimentAlignment.get_aligned_experiments">[docs]</a>    <span class="k">def</span> <span class="nf">get_aligned_experiments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return aligned experiments.</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">            experiments (list) - list of copied Experiment instances</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/img/analysis_logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=sbernasek&repo=flyeye&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">INSTALLATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../start.html">GETTING STARTED</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">EXAMPLE USAGE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation.html">DOCUMENTATION</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">CONTACT</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Amaral Lab.
+      
+    </div>
+
+    
+    <a href="https://github.com/sbernasek/flyeye" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

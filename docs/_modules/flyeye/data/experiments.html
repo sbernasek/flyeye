@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>flyeye.data.experiments &#8212; flyeye v0.5 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -33,21 +31,20 @@
           <div class="body" role="main">
             
   <h1>Source code for flyeye.data.experiments</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span></span><span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">gridspec</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">gridspec</span>
 
-<span class="kn">from</span> <span class="nn">.discs</span> <span class="k">import</span> <span class="n">Disc</span>
-<span class="kn">from</span> <span class="nn">.cells</span> <span class="k">import</span> <span class="n">Cells</span>
+<span class="kn">from</span> <span class="nn">.discs</span> <span class="kn">import</span> <span class="n">Disc</span>
+<span class="kn">from</span> <span class="nn">.cells</span> <span class="kn">import</span> <span class="n">Cells</span>
 
-<span class="kn">from</span> <span class="nn">..utilities.iteration</span> <span class="k">import</span> <span class="n">Iterator</span>
-<span class="kn">from</span> <span class="nn">..utilities.string_handling</span> <span class="k">import</span> <span class="n">format_channel</span>
-<span class="kn">from</span> <span class="nn">..processing.triangulation</span> <span class="k">import</span> <span class="n">Triangulation</span>
-<span class="kn">from</span> <span class="nn">..processing.alignment</span> <span class="k">import</span> <span class="n">DiscAlignment</span><span class="p">,</span> <span class="n">ExperimentAlignment</span>
-<span class="kn">from</span> <span class="nn">..analysis.correlation</span> <span class="k">import</span> <span class="n">SpatialCorrelation</span>
+<span class="kn">from</span> <span class="nn">..utilities.iteration</span> <span class="kn">import</span> <span class="n">Iterator</span>
+<span class="kn">from</span> <span class="nn">..utilities.string_handling</span> <span class="kn">import</span> <span class="n">format_channel</span>
+<span class="kn">from</span> <span class="nn">..processing.triangulation</span> <span class="kn">import</span> <span class="n">Triangulation</span>
+<span class="kn">from</span> <span class="nn">..processing.alignment</span> <span class="kn">import</span> <span class="n">DiscAlignment</span><span class="p">,</span> <span class="n">ExperimentAlignment</span>
 
 
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.experiments.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">:</span>
@@ -62,7 +59,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span>
                  <span class="n">auto_alignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">align_by</span><span class="o">=</span><span class="s1">&#39;ch1_normalized&#39;</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -89,11 +86,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">align_discs</span><span class="p">(</span><span class="n">align_by</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">align_to_first_r8</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns disc indexed by &lt;idx&gt;. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Iterate over discs. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Iterator</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discs</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
@@ -345,56 +342,7 @@
         <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="n">cell_types</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_by_concurrency</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">lower_slip</span><span class="p">,</span> <span class="n">upper_slip</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">data</span></div>
-
-<div class="viewcode-block" id="Experiment.get_spatial_correlations"><a class="viewcode-back" href="../../../modules/data.html#flyeye.data.experiments.Experiment.get_spatial_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">get_spatial_correlations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span>
-                                 <span class="n">cell_type</span><span class="o">=</span><span class="s1">&#39;pre&#39;</span><span class="p">,</span>
-                                 <span class="n">y_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                 <span class="n">discs_included</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
-                                 <span class="o">**</span><span class="n">selection_kw</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compile SpatialCorrelation instance for all specified cells.</span>
-
-<span class="sd">        Args:</span>
-
-<span class="sd">            channel (str or int) - channel for which correlations are desired</span>
-
-<span class="sd">            cell_type (str) - type of cells to select</span>
-
-<span class="sd">            y_only (bool) - if True, only use y-component of data</span>
-
-<span class="sd">            discs_included (list or str) - included discs, defaults to all</span>
-
-<span class="sd">            selection_kw: keyword arguments for cell position selection</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">           corr (analysis.correlation.SpatialCorrelation)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># instantiate empty SpatialCorrelation object</span>
-        <span class="n">corr</span> <span class="o">=</span> <span class="n">SpatialCorrelation</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-
-        <span class="c1"># specify included discs</span>
-        <span class="k">if</span> <span class="n">discs_included</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">discs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discs</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">discs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">discs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">discs_included</span><span class="p">]</span>
-
-        <span class="c1"># iterate across all included discs</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">disc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">discs</span><span class="p">):</span>
-
-            <span class="c1"># select cells of specified type within specified time window</span>
-            <span class="n">cells</span> <span class="o">=</span> <span class="n">disc</span><span class="o">.</span><span class="n">select_cell_type</span><span class="p">(</span><span class="n">cell_types</span><span class="o">=</span><span class="n">cell_type</span><span class="p">)</span>
-            <span class="n">cells</span> <span class="o">=</span> <span class="n">cells</span><span class="o">.</span><span class="n">select_by_position</span><span class="p">(</span><span class="o">**</span><span class="n">selection_kw</span><span class="p">)</span>
-
-            <span class="c1"># concatenate fluctuations to existing correlation object</span>
-            <span class="n">corr</span> <span class="o">+=</span> <span class="n">SpatialCorrelation</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">y_only</span><span class="o">=</span><span class="n">y_only</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">corr</span></div></div>
-
-
+        <span class="k">return</span> <span class="n">data</span></div></div>
 </pre></div>
 
           </div>
@@ -443,17 +391,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>

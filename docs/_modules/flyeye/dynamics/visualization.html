@@ -1,19 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>flyeye.dynamics.visualization &#8212; flyeye v0.5 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -34,7 +32,7 @@
             
   <h1>Source code for flyeye.dynamics.visualization</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">.averages</span> <span class="k">import</span> <span class="n">savgol</span><span class="p">,</span> <span class="n">get_rolling_mean</span><span class="p">,</span> <span class="n">get_rolling_mean_interval</span>
+<span class="kn">from</span> <span class="nn">.averages</span> <span class="kn">import</span> <span class="n">savgol</span><span class="p">,</span> <span class="n">get_rolling_mean</span><span class="p">,</span> <span class="n">get_rolling_mean_interval</span>
 
 
 <div class="viewcode-block" id="plot_mean"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.plot_mean">[docs]</a><span class="k">def</span> <span class="nf">plot_mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
@@ -102,7 +100,7 @@
     <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_av</span><span class="p">,</span> <span class="n">y_av</span><span class="p">,</span>
                    <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">dashes</span><span class="o">=</span><span class="n">dashstyle</span><span class="p">,</span>
                    <span class="n">lw</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">line_alpha</span><span class="p">,</span>
-                   <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">)</span>
+                   <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">line</span></div>
 
@@ -167,7 +165,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate a 1D timeseries.</span>
 
@@ -194,15 +192,16 @@
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;expression (a.u.)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (h)&#39;</span><span class="p">),</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Expression (a.u.)&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
 <div class="viewcode-block" id="TimeseriesPlot.scatter"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.scatter">[docs]</a>    <span class="k">def</span> <span class="nf">scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
                  <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                  <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                 <span class="n">rasterized</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">rasterized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">additional</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Scatterplot markers for x and y data.</span>
 
@@ -218,7 +217,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">marker_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="n">rasterized</span><span class="p">)</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">marker_kw</span><span class="p">)</span></div>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">marker_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">additional</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TimeseriesPlot.average"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.average">[docs]</a>    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;savgol&#39;</span><span class="p">,</span>
@@ -228,7 +227,9 @@
             <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
             <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">addtl</span><span class="p">):</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+            <span class="o">**</span><span class="n">additional</span>
+            <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot moving average of x and y data.</span>
 
@@ -250,7 +251,7 @@
         <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">line_color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">line_alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">window_size</span><span class="p">:</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">plot_mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span></div>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">plot_mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">ma_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">,</span> <span class="o">**</span><span class="n">additional</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TimeseriesPlot.interval"><a class="viewcode-back" href="../../../modules/dynamics.html#flyeye.dynamics.visualization.TimeseriesPlot.interval">[docs]</a>    <span class="k">def</span> <span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">ma_type</span><span class="o">=</span><span class="s1">&#39;sliding&#39;</span><span class="p">,</span>
@@ -358,7 +359,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_lower</span><span class="p">,</span> <span class="n">y_upper</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Instantiate a 1D timeseries.</span>
 
@@ -495,17 +496,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
