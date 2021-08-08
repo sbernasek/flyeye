@@ -45,7 +45,7 @@ The simplest method is to install via ``pip``:
 Examples
 ========
 
-For an example of a complete project utilizing the entire **NU FlyEye** platform, please refer to [our study](https://github.com/sbernasek/pnt_yan_ratio) of Pointed and Yan expression during retinal patterning.
+We've provided a couple tutorial notebooks to help get you started with analyzing your own data. For an example of a complete project utilizing the entire **NU FlyEye** platform, please refer to [our study](https://doi.org/10.1101/430744 ) of Pointed and Yan expression during retinal patterning.
 
 
 Authors

@@ -67,7 +67,7 @@ def plot_mean(x, y, ax,
     line = ax.plot(x_av, y_av,
                    linestyle=linestyle, dashes=dashstyle,
                    lw=line_width, color=line_color, alpha=line_alpha,
-                   label=label, markersize=markersize)
+                   label=label, markersize=markersize, **kw)
 
     return line
 
@@ -159,15 +159,16 @@ class TimeseriesPlot:
         fig, ax = plt.subplots(ncols=1, figsize=(3, 2))
         ax.set_xlim(self.x.min(), self.x.max())
         ax.set_ylim(0, 1.1*self.y.max())
-        ax.set_xlabel('time', fontsize=10),
-        ax.set_ylabel('expression (a.u.)', fontsize=10)
+        ax.set_xlabel('Time (h)'),
+        ax.set_ylabel('Expression (a.u.)')
         return ax
 
     def scatter(self,
                  color='k',
                  alpha=1,
                  s=1,
-                 rasterized=False):
+                 rasterized=False,
+                 **additional):
         """
         Scatterplot markers for x and y data.
 
@@ -183,7 +184,7 @@ class TimeseriesPlot:
 
         """
         marker_kw = dict(color=color, s=s, alpha=alpha, lw=0, rasterized=rasterized)
-        _ = self.ax.scatter(self.x, self.y, **marker_kw)
+        _ = self.ax.scatter(self.x, self.y, **marker_kw, **additional)
 
     def average(self,
             ma_type='savgol',
@@ -193,7 +194,9 @@ class TimeseriesPlot:
             color='k',
             alpha=1,
             lw=1,
-            linestyle=None, **addtl):
+            linestyle=None, 
+            **additional
+            ):
         """
         Plot moving average of x and y data.
 
@@ -215,7 +218,7 @@ class TimeseriesPlot:
         line_kw = dict(line_color=color, line_alpha=alpha, line_width=lw, linestyle=linestyle)
 
         if len(self.y) > window_size:
-            _ = plot_mean(self.x, self.y, ax=self.ax, **ma_kw, **line_kw)
+            _ = plot_mean(self.x, self.y, ax=self.ax, **ma_kw, **line_kw, **additional)
 
     def interval(self,
             ma_type='sliding',

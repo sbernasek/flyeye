@@ -305,6 +305,56 @@ class SpatialCorrelation(CorrelationData):
         CorrelationData.__init__(self, d_ij, C_ij)
 
     @staticmethod
+    def from_experiment(experiment, channel,
+                                 cell_type='pre',
+                                 y_only=False,
+                                 discs_included='all',
+                                 **selection_kw):
+        """
+        Instantiate a SpatialCorrelation instance for all specified cells in a flyeye.Experiment instance.
+
+        Args:
+
+            experiment (flyeye.Experiment)
+
+            channel (str or int) - channel for which correlations are desired
+
+            cell_type (str) - type of cells to select
+
+            y_only (bool) - if True, only use y-component of data
+
+            discs_included (list or str) - included discs, defaults to all
+
+            selection_kw: keyword arguments for cell position selection
+
+        Returns:
+
+           corr (analysis.correlation.SpatialCorrelation)
+
+        """
+
+        # instantiate empty SpatialCorrelation object
+        corr = SpatialCorrelation(channel)
+
+        # specify included discs
+        if discs_included == 'all':
+            discs = experiment.discs.values()
+        else:
+            discs = [experiment.discs[i] for i in discs_included]
+
+        # iterate across all included discs
+        for i, disc in enumerate(discs):
+
+            # select cells of specified type within specified time window
+            cells = disc.select_cell_type(cell_types=cell_type)
+            cells = cells.select_by_position(**selection_kw)
+
+            # concatenate fluctuations to existing correlation object
+            corr += SpatialCorrelation(channel, cells, y_only=y_only)
+
+        return corr
+
+    @staticmethod
     def get_matrix_upper(matrix):
         """
         Return upper triangular portion of a 2-D matrix.

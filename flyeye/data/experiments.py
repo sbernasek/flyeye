@@ -12,7 +12,6 @@ from ..utilities.iteration import Iterator
 from ..utilities.string_handling import format_channel
 from ..processing.triangulation import Triangulation
 from ..processing.alignment import DiscAlignment, ExperimentAlignment
-from ..analysis.correlation import SpatialCorrelation
 
 
 class Experiment:
@@ -311,52 +310,3 @@ class Experiment:
             x = self.select_by_concurrency(types, N, lower_slip, upper_slip)
             data = pd.concat([data, x])
         return data
-
-    def get_spatial_correlations(self, channel,
-                                 cell_type='pre',
-                                 y_only=False,
-                                 discs_included='all',
-                                 **selection_kw):
-        """
-        Compile SpatialCorrelation instance for all specified cells.
-
-        Args:
-
-            channel (str or int) - channel for which correlations are desired
-
-            cell_type (str) - type of cells to select
-
-            y_only (bool) - if True, only use y-component of data
-
-            discs_included (list or str) - included discs, defaults to all
-
-            selection_kw: keyword arguments for cell position selection
-
-        Returns:
-
-           corr (analysis.correlation.SpatialCorrelation)
-
-        """
-
-        # instantiate empty SpatialCorrelation object
-        corr = SpatialCorrelation(channel)
-
-        # specify included discs
-        if discs_included == 'all':
-            discs = self.discs.values()
-        else:
-            discs = [self.discs[i] for i in discs_included]
-
-        # iterate across all included discs
-        for i, disc in enumerate(discs):
-
-            # select cells of specified type within specified time window
-            cells = disc.select_cell_type(cell_types=cell_type)
-            cells = cells.select_by_position(**selection_kw)
-
-            # concatenate fluctuations to existing correlation object
-            corr += SpatialCorrelation(channel, cells, y_only=y_only)
-
-        return corr
-
-
