@@ -26,5 +26,5 @@ Alignment
 
 Tools for aligning expression dynamics between populations of cells.
 
-.. automodule:: flyeye.processing.triangulation
+.. automodule:: flyeye.processing.alignment
    :members:
