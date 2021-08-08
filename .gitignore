@@ -4,3 +4,4 @@ MANIFEST
 FlyEye.egg-info/*
 *.pyc
 todo.txt
+*/ipynb_checkpoints/
