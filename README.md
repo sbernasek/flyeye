@@ -1,5 +1,6 @@
 # <img alt="FlyEye Analysis" src="docs/source/graphics/analysis_header.png" height="150">
 
+[![DOI](https://zenodo.org/badge/148401257.svg)](https://zenodo.org/badge/latestdoi/148401257)
 
 **FlyEye Analysis** is part of the **NU FlyEye** platform for studying gene expression in *Drosophila* eye imaginal discs. The analysis package helps users analyze data measured using **FlyEye Silhouette**.
 
